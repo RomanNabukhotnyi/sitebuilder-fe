@@ -1,40 +1,5 @@
 <template>
   <div>
-    <div class="panel">
-      <div class="panelContainer margin">
-        <div class="block"></div>
-        <div class="sort" title="Sort by Created" tabindex="0">
-          <span class="ellipsis">Created</span
-          ><svg width="9" height="6" viewBox="0 0 12 8">
-            <path
-              fill="var(--teflon)"
-              d="M6.003 8c.356 0 .71-.148.982-.442l4.608-4.982c.543-.588.543-1.543-.002-2.132-.546-.593-1.425-.59-1.97-.002L6 4.356 2.383.442C1.84-.145.955-.145.413.444c-.55.593-.548 1.544-.004 2.132l4.605 4.982c.27.293.627.44.984.44L6.002 8z"
-            ></path>
-          </svg>
-        </div>
-      </div>
-      <label class="search"
-        ><svg width="16" height="16" viewBox="0 0 16 16">
-          <path
-            fill="var(--gandalf)"
-            fill-rule="evenodd"
-            d="M2.01 11.715c-2.68-2.68-2.68-7.025 0-9.705 2.68-2.68 7.025-2.68 9.705 0 2.35 2.35 2.64 5.978.87 8.643.034.028.068.06.1.09l2.912 2.913c.536.536.54 1.4 0 1.94-.536.537-1.402.54-1.94 0l-2.913-2.91c-.032-.033-.063-.067-.09-.102-2.666 1.77-6.295 1.48-8.644-.87zm1.94-1.94c1.61 1.607 4.216 1.607 5.824 0 1.608-1.61 1.608-4.216 0-5.824-1.608-1.607-4.215-1.607-5.823 0-1.607 1.61-1.607 4.216 0 5.824z"
-          ></path></svg
-        ><input type="search" placeholder="Filter by name" style="width: 94px"
-      /></label>
-      <div class="panelContainer">
-        <div class="buttonCreate">
-          <button
-            type="button"
-            class="button primary"
-            data-bs-toggle="modal"
-            data-bs-target="#createSlot"
-          >
-            Create Slot
-          </button>
-        </div>
-      </div>
-    </div>
     <div
       class="modal fade"
       id="createSlot"
@@ -57,12 +22,10 @@
             <form>
               <div class="mb-3">
                 <label for="type" class="col-form-label">Type:</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="type"
-                  v-model="slotTemp.type"
-                />
+                <select name="type" id="type" v-model="slotTemp.type">
+                  <option value="DYNAMIC" selected>DYNAMIC</option>
+                  <option value="STATIC">STATIC</option>
+                </select>
               </div>
             </form>
           </div>
@@ -87,54 +50,271 @@
         </div>
       </div>
     </div>
-
-    <div>
-      <div class="row row-cols-1 row-cols-md-6">
-        <div class="col" v-for="slot in getAllSlots" :key="slot.id">
-          <div class="card border-primary" @click="openSlot(slot.id)">
-            <div class="card-header hstack">
-              <h5>{{ slot.type }}</h5>
-              <div class="ms-auto">
-                <button
-                  type="button"
-                  class="btn btn-sm btn-danger"
-                  @click.stop="deleteSlot(slot.id)"
-                >
-                  Delete
-                </button>
+    <div
+      class="modal fade"
+      id="createBlock"
+      tabindex="-1"
+      aria-labelledby="createBlockLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="createBlockLabel">Create Block</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="type" class="col-form-label">Type:</label>
+                <select name="type" id="type" v-model="blockTemp.type">
+                  <option value="TEXT" selected>Text</option>
+                  <option value="IMAGE">Image</option>
+                </select>
               </div>
-            </div>
-            <div class="card-body">
-              <h6>Order: {{ slot.order }}</h6>
-            </div>
+              <div v-if="blockTemp.type">
+                <div class="mb-3" v-if="blockTemp.type === 'TEXT'">
+                  <label for="text" class="col-form-label">Text:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="text"
+                    v-model="blockTemp.content!.text"
+                  />
+                </div>
+                <div class="mb-3" v-else>
+                  <label for="url" class="col-form-label">Url:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="url"
+                    v-model="blockTemp.content!.url"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="subtext" class="col-form-label">Subtext:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="subtext"
+                    v-model="blockTemp.content!.subtext"
+                  />
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              @click.stop="reset"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="createBlock"
+            >
+              Create
+            </button>
           </div>
         </div>
       </div>
+    </div>
+
+    <div>
+      <section class="screenView">
+        <div class="main">
+          <div class="page">
+            <div class="slots">
+              <div class="slot" v-for="slot in getAllSlots" :key="slot.id">
+                <button
+                  class="emptySlot"
+                  v-if="slot.blocks.length === 0"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#createBlock"
+                  @click="setSlotId(slot.id)"
+                >
+                  +
+                </button>
+                <div class="blocks" v-else>
+                  <div
+                    class="block"
+                    v-for="block in slot.blocks"
+                    :key="block.id"
+                  >
+                    <img
+                      src="https://media.istockphoto.com/id/152496976/photo/concrete-block.jpg?s=612x612&w=0&k=20&c=SnP0UWmzk4Kn21BfnHcoFudCwt7S3-qCQ_mLsIe1d9M="
+                      alt=""
+                    />
+                  </div>
+                </div>
+                <div class="slotMenu" id="slotMenu">
+                  <div
+                    class="_39hNm _3Lnlb"
+                    data-hook="actions-bar"
+                    data-skin="legacy"
+                    style="max-height: 164px"
+                  >
+                    <div class="_23lTs">
+                      <div data-collapsible="true" class="Dmx5k">
+                        <div
+                          class="menuAction moveAction"
+                          data-hook="action-move-up"
+                          @click="moveUpSlot(slot.id)"
+                        >
+                          <span
+                            ><svg
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              width="24"
+                              height="24"
+                              class="_3ft7O"
+                            >
+                              <path
+                                d="M12.9970936,6.70710678 L12.9970936,19 L11.9970936,19 L11.9970936,6.70710678 L7.85355339,10.8556944 C7.65829124,11.0509566 7.34170876,11.0509566 7.14644661,10.8556944 C6.95118446,10.6604323 6.95118446,10.3438498 7.14644661,10.1485877 L12.4970936,4.79289322 L17.8536152,10.1485877 C18.0488773,10.3438498 18.0488773,10.6604323 17.8536152,10.8556944 C17.658353,11.0509566 17.3417706,11.0509566 17.1465084,10.8556944 L12.9970936,6.70710678 Z"
+                              ></path></svg
+                          ></span>
+                        </div>
+                        <div
+                          class="menuAction moveAction"
+                          data-hook="action-move-down"
+                          @click="moveDownSlot(slot.id)"
+                        >
+                          <span
+                            ><svg
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              width="24"
+                              height="24"
+                              class="_3ft7O"
+                            >
+                              <path
+                                d="M12.9970936,17.2928932 L17.1465084,13.1443056 C17.3417706,12.9490434 17.658353,12.9490434 17.8536152,13.1443056 C18.0488773,13.3395677 18.0488773,13.6561502 17.8536152,13.8514123 L12.4970936,19.2071068 L7.14644661,13.8514123 C6.95118446,13.6561502 6.95118446,13.3395677 7.14644661,13.1443056 C7.34170876,12.9490434 7.65829124,12.9490434 7.85355339,13.1443056 L11.9970936,17.2928932 L11.9970936,5 L12.9970936,5 L12.9970936,17.2928932 Z"
+                              ></path></svg
+                          ></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="_1_33j"
+                      data-bs-toggle="modal"
+                      data-bs-target="#createBlock"
+                      @click="setSlotId(slot.id)"
+                    >
+                      <div class="menuAction">
+                        <span>
+                          <svg
+                            width="20"
+                            height="20"
+                            class="_3ft7O"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="_1_33j" @click="deleteSlot(slot.id)">
+                      <div
+                        class="menuAction"
+                        data-collapsible="false"
+                        data-hook="action-delete"
+                      >
+                        <span>
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            width="24"
+                            height="24"
+                            class="_3ft7O"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M9 3h6v-1.75c0-.066-.026-.13-.073-.177-.047-.047-.111-.073-.177-.073h-5.5c-.066 0-.13.026-.177.073-.047.047-.073.111-.073.177v1.75zm11 1h-16v18c0 .552.448 1 1 1h14c.552 0 1-.448 1-1v-18zm-10 3.5c0-.276-.224-.5-.5-.5s-.5.224-.5.5v12c0 .276.224.5.5.5s.5-.224.5-.5v-12zm5 0c0-.276-.224-.5-.5-.5s-.5.224-.5.5v12c0 .276.224.5.5.5s.5-.224.5-.5v-12zm8-4.5v1h-2v18c0 1.105-.895 2-2 2h-14c-1.105 0-2-.895-2-2v-18h-2v-1h7v-2c0-.552.448-1 1-1h6c.552 0 1 .448 1 1v2h7z"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="slots slot createSlot">
+              <div class="buttonCreate">
+                <button
+                  type="button"
+                  class="button primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#createSlot"
+                >
+                  Create Slot
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { useSlotsStore } from '../stores/slots';
+import { useBlocksStore } from '../stores/blocks';
+
+type Content = {
+  text?: string;
+  url?: string;
+  subtext?: string | undefined;
+};
 
 interface Data {
   slotTemp: {
     id?: number;
     type?: string;
   };
+  blockTemp: {
+    id?: number;
+    type?: 'TEXT' | 'IMAGE';
+    content?: Content;
+  };
 }
 
 export default {
   setup() {
     const slotsStore = useSlotsStore();
+    const blocksStore = useBlocksStore();
     return {
       slotsStore,
+      blocksStore,
     };
   },
   data(): Data {
     return {
       slotTemp: {
         type: '',
+      },
+      blockTemp: {
+        content: {
+          text: '',
+          url: '',
+          subtext: '',
+        },
       },
     };
   },
@@ -147,6 +327,9 @@ export default {
     },
   },
   methods: {
+    setSlotId(slotId: number) {
+      this.slotTemp.id = slotId;
+    },
     openSlot(slotId: number) {
       this.$router.push(
         `/main/projects/${+this.$route.params.projectId}/pages/${+this.$route
@@ -155,9 +338,28 @@ export default {
     },
     reset() {
       this.slotTemp = {};
+      this.blockTemp = { content: { text: '', url: '', subtext: '' } };
     },
     getEditSlot(slotId: number) {
       Object.assign(this.slotTemp, this.slotsStore.getById(slotId));
+    },
+    async createBlock() {
+      await this.blocksStore.createBlock({
+        slotId: this.slotTemp.id!,
+        type: this.blockTemp.type!,
+        content: {
+          [this.blockTemp.type === 'TEXT' ? 'text' : 'url']:
+            this.blockTemp.type === 'TEXT'
+              ? this.blockTemp.content!.text
+              : this.blockTemp.content!.url,
+          subtext:
+            this.blockTemp.content!.subtext === ''
+              ? undefined
+              : this.blockTemp.content!.subtext,
+        },
+      });
+      this.slotsStore.getAllSlotsApi(+this.$route.params.pageId);
+      this.reset();
     },
     async createSlot() {
       await this.slotsStore.createSlot({
@@ -171,6 +373,238 @@ export default {
       await this.slotsStore.deleteSlot(slotId);
       this.slotsStore.getAllSlotsApi(+this.$route.params.pageId);
     },
+    getEditBlock(blockId: number) {
+      Object.assign(this.blockTemp, this.blocksStore.getById(blockId));
+    },
+    async editBlock() {
+      await this.blocksStore.editBlock(this.blockTemp.id!, {
+        type: this.blockTemp.type!,
+        content: {
+          [this.blockTemp.type === 'TEXT' ? 'text' : 'url']:
+            this.blockTemp.type === 'TEXT'
+              ? this.blockTemp.content!.text
+              : this.blockTemp.content!.url,
+          subtext:
+            this.blockTemp.content!.subtext === ''
+              ? undefined
+              : this.blockTemp.content!.subtext,
+        },
+      });
+      this.reset();
+      this.slotsStore.getAllSlotsApi(+this.$route.params.pageId);
+    },
+    async deleteBlock(blockId: number) {
+      await this.blocksStore.deleteBlock(blockId);
+      this.slotsStore.getAllSlotsApi(+this.$route.params.pageId);
+    },
+    async moveUpSlot(slotId: number) {
+      const slots = this.slotsStore.getAllSlots;
+      const index = slots.findIndex((slot) => slot.id === slotId);
+      if (index === 0) {
+        return;
+      }
+      [slots[index - 1], slots[index]] = [slots[index], slots[index - 1]];
+      this.slotsStore.setSlots(slots);
+      this.updateOrders();
+    },
+    async moveDownSlot(slotId: number) {
+      const slots = this.slotsStore.getAllSlots;
+      const index = slots.findIndex((slot) => slot.id === slotId);
+      if (index === slots.length) {
+        return;
+      }
+      [slots[index + 1], slots[index]] = [slots[index], slots[index + 1]];
+      this.slotsStore.setSlots(slots);
+      this.updateOrders();
+    },
+    async updateOrders() {
+      await this.slotsStore.updateOrders(
+        +this.$route.params.pageId,
+        this.getAllSlots.map((slot, index) => ({
+          id: slot.id,
+          order: index + 1,
+        }))
+      );
+    },
   },
 };
 </script>
+
+<style scoped>
+.main {
+  position: relative;
+  padding: 10px;
+  top: 0;
+  left: 0;
+}
+
+.page {
+  width: 90%;
+  position: relative;
+  margin: 0 auto;
+  background-color: #fff;
+  outline: 1px solid #bcb5b9;
+}
+
+.slots {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.slotMenu {
+  position: absolute;
+  left: 100%;
+  display: none;
+  z-index: 1;
+}
+
+.slot:hover .slotMenu {
+  display: block;
+}
+
+.slots .slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+}
+
+.blocks {
+  width: 100%;
+  text-align: center;
+  display: flex;
+}
+
+.blocks .block {
+  display: block;
+  border: 1px solid;
+  flex: 1;
+}
+
+.blocks .block img {
+  width: 100%;
+  height: 100%;
+}
+
+.emptySlot {
+  margin: 5px;
+  width: calc(100% - 10px);
+  border: 1px dotted;
+  font-size: 200%;
+  color: #554d56;
+  height: 100px;
+}
+
+.slots .buttonCreate {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+}
+
+.slot .blocks:hover {
+  border: 1px solid #419bf9;
+}
+
+.createSlot {
+  border: 1px dashed;
+  display: flex;
+  justify-content: center;
+}
+
+._39hNm {
+  width: 36px;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 10px 0 rgba(0, 0, 0, 0.08),
+    0 1px 20px 0 rgba(0, 0, 0, 0.08);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+._23lTs {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  overflow: hidden;
+  flex-shrink: 1;
+}
+
+.Dmx5k {
+  width: 100%;
+}
+
+.menuAction {
+  --bg-color: transparent;
+  background: transparent;
+  cursor: pointer;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  position: relative;
+  --elements-color: #000624;
+}
+
+.menuAction:hover {
+  color: #116dff;
+}
+
+._1Vnch,
+.menuAction {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+._3Lnlb .menuAction,
+.ORISo .menuAction {
+  padding-top: 0;
+}
+
+.menuAction:first-child {
+  padding-top: 6px;
+  padding-bottom: 3px;
+}
+
+.slot:first-child .moveAction:first-child,
+.slot:last-child .moveAction:last-child {
+  cursor: default;
+}
+
+.slot:first-child .moveAction:first-child svg,
+.slot:last-child .moveAction:last-child svg {
+  fill: #bcbcbc;
+}
+
+.menuAction:last-child {
+  padding-top: 3px;
+  padding-bottom: 6px;
+}
+
+.menuAction:last-child::after {
+  content: '';
+  width: 36px;
+  height: 1px;
+  background: #dfe5eb;
+  position: absolute;
+  bottom: 0;
+}
+
+._1_33j .menuAction:first-child::after {
+  content: '';
+  bottom: unset;
+  top: -1px;
+}
+
+.menuAction:last-child::after {
+  content: '';
+  width: 36px;
+  height: 1px;
+  background: var(--group-border-color);
+  position: absolute;
+  bottom: 0;
+}
+</style>

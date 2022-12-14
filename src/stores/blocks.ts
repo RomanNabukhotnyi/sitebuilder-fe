@@ -23,6 +23,20 @@ export const useBlocksStore = defineStore('blocks', {
         this.setBlocks(response.data.data.blocks);
       }
     },
+    async isEmptySlot(slotId: number): Promise<boolean> {
+      const response = await axios.get('/blocks', {
+        params: {
+          slotId,
+        },
+      });
+      if (response && response.data) {
+        const blocks = response.data.data.blocks;
+        if (blocks.length === 0) {
+          return true;
+        }
+      }
+      return false;
+    },
     getById(id: number) {
       return this.blocks.find((block) => block.id === id);
     },

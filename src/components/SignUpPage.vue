@@ -2,9 +2,7 @@
   <div id="signupPageContainer">
     <div class="loginSignupTemplate">
       <div class="illustration">
-        <img
-          src="https://cdni.iconscout.com/illustration/premium/thumb/user-account-sign-up-4489360-3723267.png"
-        />
+        <img src="https://cdni.iconscout.com/illustration/premium/thumb/user-account-sign-up-4489360-3723267.png" />
       </div>
       <div class="content">
         <h1>Welcome to SiteBuilder!</h1>
@@ -15,29 +13,17 @@
             <div class="formField textFormField signupFormField">
               <div class="formFieldContent">
                 <div class="formFieldInput">
-                  <input
-                    class="signupFormInput"
-                    name="Email"
-                    placeholder="Work email"
-                    maxlength="254"
-                    autofocus="true"
-                    autocapitalize="off"
-                    autocomplete="off"
-                    type="email"
-                    required
-                    v-model="email"
-                    @input="validateEmail"
-                  />
+                  <input class="signupFormInput" name="Email" placeholder="Work email" maxlength="254" autofocus="true"
+                    autocapitalize="off" autocomplete="off" type="email" required v-model="email"
+                    @input="validateEmail" />
                 </div>
                 <div class="formFieldTipText" v-if="emailError">
                   <div class="tipTextWrapper">
                     <div class="tipText">
                       <svg width="9" height="9" viewBox="0 0 12 12">
-                        <path
-                          fill="#EE6723"
-                          fill-rule="evenodd"
-                          d="M6 3.898L2.317.215c-.282-.282-.759-.284-1.052.01l-1.04 1.04c-.298.298-.298.764-.01 1.052L3.898 6 .215 9.683c-.282.282-.284.759.01 1.052l1.04 1.04c.298.298.764.298 1.052.01L6 8.102l3.683 3.683c.282.282.759.284 1.052-.01l1.04-1.04c.298-.298.298-.764.01-1.052L8.102 6l3.683-3.683c.282-.282.284-.759-.01-1.052l-1.04-1.04c-.298-.298-.764-.298-1.052-.01L6 3.898z"
-                        ></path>
+                        <path fill="#EE6723" fill-rule="evenodd"
+                          d="M6 3.898L2.317.215c-.282-.282-.759-.284-1.052.01l-1.04 1.04c-.298.298-.298.764-.01 1.052L3.898 6 .215 9.683c-.282.282-.284.759.01 1.052l1.04 1.04c.298.298.764.298 1.052.01L6 8.102l3.683 3.683c.282.282.759.284 1.052-.01l1.04-1.04c.298-.298.298-.764.01-1.052L8.102 6l3.683-3.683c.282-.282.284-.759-.01-1.052l-1.04-1.04c-.298-.298-.764-.298-1.052-.01L6 3.898z">
+                        </path>
                       </svg>
                       <p class="error">{{ emailError }}</p>
                     </div>
@@ -48,30 +34,17 @@
             <div class="formField textFormField signupFormField">
               <div class="formFieldContent">
                 <div class="formFieldInput">
-                  <input
-                    class="signupFormInput"
-                    name="Password"
-                    placeholder="Password"
-                    maxlength="100"
-                    type="password"
-                    pattern=".{8,100}"
-                    required
-                    minlength="8"
-                    autocomplete="new-password"
-                    autocapitalize="off"
-                    v-model="password"
-                    @input="validatePassword"
-                  />
+                  <input class="signupFormInput" name="Password" placeholder="Password" maxlength="100" type="password"
+                    pattern=".{8,100}" required minlength="8" autocomplete="new-password" autocapitalize="off"
+                    v-model="password" @input="validatePassword" />
                 </div>
                 <div class="formFieldTipText" v-if="passwordError">
                   <div class="tipTextWrapper">
                     <div class="tipText">
                       <svg width="9" height="9" viewBox="0 0 12 12">
-                        <path
-                          fill="#EE6723"
-                          fill-rule="evenodd"
-                          d="M6 3.898L2.317.215c-.282-.282-.759-.284-1.052.01l-1.04 1.04c-.298.298-.298.764-.01 1.052L3.898 6 .215 9.683c-.282.282-.284.759.01 1.052l1.04 1.04c.298.298.764.298 1.052.01L6 8.102l3.683 3.683c.282.282.759.284 1.052-.01l1.04-1.04c.298-.298.298-.764.01-1.052L8.102 6l3.683-3.683c.282-.282.284-.759-.01-1.052l-1.04-1.04c-.298-.298-.764-.298-1.052-.01L6 3.898z"
-                        ></path>
+                        <path fill="#EE6723" fill-rule="evenodd"
+                          d="M6 3.898L2.317.215c-.282-.282-.759-.284-1.052.01l-1.04 1.04c-.298.298-.298.764-.01 1.052L3.898 6 .215 9.683c-.282.282-.284.759.01 1.052l1.04 1.04c.298.298.764.298 1.052.01L6 8.102l3.683 3.683c.282.282.759.284 1.052-.01l1.04-1.04c.298-.298.298-.764.01-1.052L8.102 6l3.683-3.683c.282-.282.284-.759-.01-1.052l-1.04-1.04c-.298-.298-.764-.298-1.052-.01L6 3.898z">
+                        </path>
                       </svg>
                       <p class="error">{{ passwordError }}</p>
                     </div>
@@ -79,20 +52,15 @@
                 </div>
               </div>
             </div>
-            <button
-              type="submit"
-              class="signupFormButton button primary"
-              @click="signUp"
-            >
+            <button type="button" class="signupFormButton button primary" @click="signUp">
               Sign up
             </button>
           </form>
         </div>
         <hr />
         <div class="footer">
-          <span class="signupPageFooter"
-            >Already have an account? <a href="/login">Login</a></span
-          >
+          <span class="signupPageFooter">Already have an account?
+            <router-link to="/login">Login</router-link></span>
         </div>
       </div>
     </div>
@@ -193,13 +161,13 @@ export default {
   color: #554d56;
 }
 
-.loginSignupTemplate .content > h1 {
+.loginSignupTemplate .content>h1 {
   font-weight: 300;
   font-size: 36px;
   line-height: 42px;
 }
 
-.loginSignupTemplate .content > p {
+.loginSignupTemplate .content>p {
   margin-top: 12px;
   font-size: 15px;
   line-height: 18px;
@@ -271,13 +239,13 @@ form {
   word-break: break-word;
 }
 
-.textFormField .formFieldContent .formFieldInput > input {
+.textFormField .formFieldContent .formFieldInput>input {
   height: 40px;
   padding: 0 12px;
 }
 
-.textFormField .formFieldContent .formFieldInput > input,
-.textFormField .formFieldContent .formFieldInput > textarea {
+.textFormField .formFieldContent .formFieldInput>input,
+.textFormField .formFieldContent .formFieldInput>textarea {
   flex: 1;
   background-color: transparent;
   font-size: 15px;
