@@ -433,18 +433,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.panel .search {
-  width: 140px;
-  height: 28px;
-  padding: 0 12px;
-  border-radius: 2px;
-  background-color: #f7f7f7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: text;
-}
-
 .search svg {
   margin-right: 6px;
 }
@@ -459,10 +447,6 @@ foreignObject {
   overflow-y: hidden;
 }
 
-input[type='search'] {
-  appearance: textfield;
-}
-
 .search input {
   font-size: 15px;
   color: #554d56;
@@ -471,30 +455,6 @@ input[type='search'] {
   caret-color: #419bf9;
   flex: initial;
   width: calc(100% - 22px);
-}
-
-.search:focus-within {
-  padding: 0 10px;
-  background-color: #fff;
-  border: 2px solid #edeced;
-}
-
-input {
-  -webkit-text-fill-color: currentColor;
-}
-
-input[type='search']::-webkit-search-decoration,
-input[type='search']::-webkit-search-cancel-button,
-input[type='search']::-webkit-search-results-button,
-input[type='search']::-webkit-search-results-decoration {
-  display: none;
-}
-
-.search:focus-within input[type='search']::-webkit-search-decoration,
-.search:focus-within input[type='search']::-webkit-search-cancel-button,
-.search:focus-within input[type='search']::-webkit-search-results-button,
-.search:focus-within input[type='search']::-webkit-search-results-decoration {
-  display: block;
 }
 
 .panel .panelContainer:last-of-type {
