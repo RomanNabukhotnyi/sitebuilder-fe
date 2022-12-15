@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-import SignUp from './components/SignUpPage.vue';
-import Login from './components/LoginPage.vue';
-import Main from './components/MainPage.vue';
-import Projects from './components/ProjectsPage.vue';
-import Pages from './components/PagesPage.vue';
-import Slots from './components/SlotsPage.vue';
-import Blocks from './components/BlocksPage.vue';
+import SignUp from './components/pages/signUp/SignUpPage.vue';
+import Login from './components/pages/login/LoginPage.vue';
+import Main from './components/pages/main/MainPage.vue';
+import Projects from './components/pages/projects/ProjectsPage.vue';
+import Pages from './components/pages/pages/PagesPage.vue';
+import Slots from './components/pages/slots/SlotsPage.vue';
+import Blocks from './components/pages/blocks/BlocksPage.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from './stores/auth';
 
