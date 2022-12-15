@@ -21,7 +21,7 @@
             d="M2.01 11.715c-2.68-2.68-2.68-7.025 0-9.705 2.68-2.68 7.025-2.68 9.705 0 2.35 2.35 2.64 5.978.87 8.643.034.028.068.06.1.09l2.912 2.913c.536.536.54 1.4 0 1.94-.536.537-1.402.54-1.94 0l-2.913-2.91c-.032-.033-.063-.067-.09-.102-2.666 1.77-6.295 1.48-8.644-.87zm1.94-1.94c1.61 1.607 4.216 1.607 5.824 0 1.608-1.61 1.608-4.216 0-5.824-1.608-1.607-4.215-1.607-5.823 0-1.607 1.61-1.607 4.216 0 5.824z"
           ></path>
         </svg>
-        <span class="placeholder1 ellipsis">Search workspace</span>
+        <span class="placeholder1">Search workspace</span>
         <span class="placeholder2">⌘+K</span>
       </div>
       <router-link to=""
@@ -34,7 +34,7 @@
             ></path>
           </svg></button
       ></router-link>
-      <div class="popoverContainer" @click="logout">
+      <div @click="logout">
         <button>
           <div
             class="avatar"
@@ -44,7 +44,6 @@
               src="https://lh3.googleusercontent.com/a/ALm5wu1GtNGrAmCvrQInUoiVlcw1gc5hnOV9xdiTQib6=s96-c"
               width="28"
               height="28"
-              alt="👤"
             />
           </div>
         </button>
@@ -58,13 +57,6 @@
   <div class="main">
     <div>
       <router-view></router-view>
-    </div>
-    <div class="сircle">
-      <img
-        width="28"
-        height="28"
-        src="https://cdn.zeplin.io/assets/webapp/img/icLifeBuoy.svg"
-      />
     </div>
   </div>
 </template>

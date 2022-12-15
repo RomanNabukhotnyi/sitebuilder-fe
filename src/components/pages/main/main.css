@@ -30,7 +30,6 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 500;
   box-shadow: 0 1px 0 0 rgba(193, 190, 193, 0.4);
   background-color: #fbfbfb;
   font-size: 15px;
@@ -104,11 +103,6 @@ a {
   font-weight: normal;
 }
 
-.popoverContainer {
-  line-height: 0;
-  cursor: pointer;
-}
-
 .searchAndAvatar .search svg {
   margin-right: 6px;
   width: 16px;
@@ -134,12 +128,6 @@ foreignObject {
 .searchAndAvatar .search:hover .placeholder1,
 .searchAndAvatar .search:not(:hover) .placeholder2 {
   display: none;
-}
-
-.ellipsis {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .notification {
@@ -206,26 +194,6 @@ input {
   margin-left: 24px;
 }
 
-.сircle {
-  position: fixed;
-  right: 12px;
-  bottom: 12px;
-  z-index: 1000000;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: #f7f7f7;
-  box-shadow: 0 0 2px 0 rgba(85, 77, 86, 0.5);
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
 input:is([type='radio'], [type='checkbox']) {
   margin-top: 3px;
   margin-right: 2px;
@@ -259,18 +227,6 @@ progress {
   writing-mode: horizontal-tb;
 }
 
-.main .tabs hr {
-  position: absolute;
-  bottom: -1px;
-  width: calc(100% - 72px);
-  height: 1px;
-  background-color: #f7f7f7;
-  z-index: 25;
-  border: 0;
-  margin: 0;
-  opacity: 1;
-}
-
 .panel {
   width: 100%;
   height: 52px;
@@ -286,22 +242,6 @@ progress {
   top: 0;
   height: 76px;
   background-color: #fff;
-  z-index: 20;
-}
-
-.panel .panelContainer:first-of-type {
-  justify-content: flex-start;
-}
-
-.panel .panelContainer.margin {
-  flex: 0 1 auto;
-  margin-right: 12px;
-}
-
-.panel .panelContainer {
-  display: flex;
-  align-items: center;
-  flex: 1;
 }
 
 .sort {
@@ -356,10 +296,6 @@ foreignObject {
   caret-color: #419bf9;
   flex: initial;
   width: calc(100% - 22px);
-}
-
-.panel .panelContainer:last-of-type {
-  justify-content: flex-end;
 }
 
 .buttonCreate {

@@ -1,6 +1,6 @@
 <template>
-  <div class="dialog" v-if="show">
-    <div class="dialog__content">
+  <div class="dialog" v-if="show" @click="hideDialog">
+    <div @click.stop class="dialog__content">
       <slot></slot>
     </div>
   </div>
@@ -19,6 +19,11 @@ export default defineComponent({
   setup() {
     return {};
   },
+  methods: {
+    hideDialog() {
+      this.$emit('update:show', false);
+    },
+  },
 });
 </script>
 
@@ -31,10 +36,12 @@ export default defineComponent({
   background: rgba(0, 0, 0, 0.5);
   position: fixed;
   display: flex;
+  z-index: 999;
 }
 .dialog__content {
   margin: auto;
   background: white;
   border-radius: 12px;
+  padding: 20px;
 }
 </style>

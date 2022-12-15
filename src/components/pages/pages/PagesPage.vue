@@ -4,7 +4,7 @@
       <div class="panelContainer margin">
         <div class="block"></div>
         <div class="sort" title="Sort by Created" tabindex="0">
-          <span class="ellipsis">Created</span
+          <span>Created</span
           ><svg class="chevron" width="9" height="6" viewBox="0 0 12 8">
             <path
               fill="#554d56"
@@ -210,13 +210,12 @@
                         minlength="1"
                         maxlength="100"
                         type="text"
-                        class="ellipsis"
                         v-model="page.name"
                         @change="editNamePage(page)"
                       />
                     </div>
                   </div>
-                  <div class="screenLastUpdated ellipsis">
+                  <div class="screenLastUpdated">
                     {{
                       Math.ceil(
                         Math.abs(

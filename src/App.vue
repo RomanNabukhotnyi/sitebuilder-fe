@@ -10,9 +10,7 @@ export default {};
 
 <style>
 @import './styles/global.css';
-*,
-::before,
-::after {
+* {
   margin: 0;
   padding: 0;
   border: none;

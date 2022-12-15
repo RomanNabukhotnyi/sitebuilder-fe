@@ -4,7 +4,7 @@
       <div class="panelContainer margin">
         <div class="block"></div>
         <div class="sort" title="Sort by Created" tabindex="0">
-          <span class="ellipsis">Created</span
+          <span>Created</span
           ><svg width="9" height="6" viewBox="0 0 12 8">
             <path
               fill="var(--teflon)"

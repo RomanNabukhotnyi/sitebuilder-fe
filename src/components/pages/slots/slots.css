@@ -23,7 +23,6 @@
   position: absolute;
   left: 100%;
   display: none;
-  z-index: 1;
 }
 
 .slot:hover .slotMenu {
