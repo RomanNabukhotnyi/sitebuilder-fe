@@ -12,6 +12,7 @@
       <input
         class="input"
         name="Password"
+        type="password"
         placeholder="Password"
         v-model="payload.password"
       />
@@ -75,5 +76,9 @@ export default defineComponent({
   background-color: #419bf9;
   color: #fff;
   border-radius: 2px;
+}
+
+.button:hover {
+  opacity: 0.9;
 }
 </style>

@@ -14,7 +14,6 @@ export default {};
   margin: 0;
   padding: 0;
   border: none;
-  outline: none;
   box-shadow: none;
   border-radius: 0;
   font-family: Roboto, Helvetica, sans-serif;

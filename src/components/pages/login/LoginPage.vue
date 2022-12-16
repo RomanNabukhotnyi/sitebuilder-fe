@@ -48,7 +48,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .template {
   display: flex;
   padding-top: 124px;
@@ -58,11 +58,12 @@ export default {
   justify-content: flex-end;
   max-width: 50%;
   padding-right: 68px;
-}
-.illustration img {
-  height: min-content;
-  max-width: 80%;
-  max-height: 80%;
+
+  & img {
+    height: min-content;
+    max-width: 80%;
+    max-height: 80%;
+  }
 }
 .content {
   display: flex;

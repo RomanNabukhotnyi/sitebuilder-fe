@@ -46,7 +46,7 @@ const routes = [
   },
 ];
 
-axios.defaults.baseURL = 'https://sitebuilder-be.herokuapp.com';
+axios.defaults.baseURL = 'http://localhost:3000';
 axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use(

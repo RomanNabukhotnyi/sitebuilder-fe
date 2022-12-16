@@ -25,8 +25,11 @@ export default defineComponent({
   },
   methods: {
     createProject() {
-      this.$emit('create', this.project);
-      this.project.name = '';
+      const func = async () => {
+        await this.$emit('create', this.project);
+        this.project.name = '';
+      };
+      func();
     },
   },
 });
