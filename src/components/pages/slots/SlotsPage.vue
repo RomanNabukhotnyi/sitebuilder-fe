@@ -142,6 +142,7 @@ type Content = {
 };
 
 interface Data {
+  dialogVisible: boolean;
   slotTemp: {
     id?: number;
     type?: string;
@@ -167,6 +168,7 @@ export default {
   },
   data(): Data {
     return {
+      dialogVisible: false,
       slotTemp: {
         type: '',
       },
@@ -188,6 +190,9 @@ export default {
     },
   },
   methods: {
+    showDialog() {
+      this.dialogVisible = true;
+    },
     setSlotId(slotId: number) {
       this.slotTemp.id = slotId;
     },
