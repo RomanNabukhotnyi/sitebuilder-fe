@@ -66,6 +66,7 @@ header {
 .avatar {
   width: 28px;
   height: 28px;
+  cursor: pointer;
 }
 
 .avatar img {
