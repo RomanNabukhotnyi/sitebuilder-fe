@@ -20,11 +20,12 @@ export default defineComponent({
   display: flex;
   background-color: #419bf9;
   color: #fff;
-  min-width: 72px;
   height: 28px;
   border-radius: 2px;
   font-size: 15px;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  padding: 10px;
 }
 </style>

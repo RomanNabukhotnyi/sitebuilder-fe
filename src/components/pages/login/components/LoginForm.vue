@@ -16,7 +16,7 @@
         v-model="payload.password"
       />
     </div>
-    <button type="button" class="button" @click="signUp">Sign up</button>
+    <button type="button" class="button" @click="login">Login</button>
   </form>
 </template>
 
@@ -36,8 +36,8 @@ export default defineComponent({
     };
   },
   methods: {
-    signUp() {
-      this.$emit('signUp', this.payload);
+    login() {
+      this.$emit('login', this.payload);
       this.payload.email = '';
       this.payload.password = '';
     },

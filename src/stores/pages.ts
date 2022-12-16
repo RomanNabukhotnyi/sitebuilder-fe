@@ -2,7 +2,13 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 interface State {
-  pages: { id: number; order: number; createdAt: string; name: string }[];
+  pages: {
+    id: number;
+    order: number;
+    createdAt: string;
+    name: string;
+    meta: any;
+  }[];
 }
 
 export const usePagesStore = defineStore('pages', {
