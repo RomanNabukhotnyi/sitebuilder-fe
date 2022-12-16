@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent>
-    <h4>Edit project</h4>
-    <my-input type="text" placeholder="Name" v-model="editedProject.name" />
+    <h4>Edit page</h4>
+    <my-input type="text" placeholder="Name" v-model="editedPage.name" />
     <my-button class="button" @click="editProject">Edit</my-button>
   </form>
 </template>
@@ -17,25 +17,25 @@ export default defineComponent({
     MyInput,
   },
   props: {
-    project: {
+    page: {
       type: Object,
       required: true,
     },
   },
   data() {
     return {
-      editedProject: {
+      editedPage: {
         name: '',
       },
     };
   },
   mounted() {
-    this.editedProject = Object.create(this.$props.project);
+    this.editedPage = Object.create(this.$props.page);
   },
   methods: {
     editProject() {
-      this.$emit('edit', this.editedProject);
-      this.editedProject.name = '';
+      this.$emit('edit', this.editedPage);
+      this.editedPage.name = '';
     },
   },
 });

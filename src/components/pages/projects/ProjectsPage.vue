@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div>
     <div class="panel">
       <div class="panel__sort">
         <!-- SORT -->
@@ -8,18 +8,17 @@
       <my-dialog v-model:show="dialogVisible">
         <create-project-form @create="createProject" />
       </my-dialog>
-      <my-button class="button-create" @click="showDialog">
+      <my-button class="button__create" @click="showDialog">
         Create Project
       </my-button>
     </div>
     <div>
-      <div v-if="getAllProjects.length !== 0" class="projectsContainer">
-        <projects-list
-          :projects="getAllProjects"
-          @edit="editProject"
-          @delete="deleteProject"
-        />
-      </div>
+      <project-list
+        v-if="getAllProjects.length !== 0"
+        :projects="getAllProjects"
+        @edit="editProject"
+        @delete="deleteProject"
+      />
       <div v-else class="noProjects">
         <h3>No projects 🤷‍♀️</h3>
       </div>
@@ -29,10 +28,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import ProjectsList from './components/ProjectsList.vue';
-import MyDialog from './components/MyDialog.vue';
+import ProjectList from './components/ProjectList.vue';
+import MyDialog from '../../common/MyDialog.vue';
 import CreateProjectForm from './components/CreateProjectForm.vue';
-import MyButton from './components/MyButton.vue';
+import MyButton from '../../common/MyButton.vue';
 import SearchProject from './components/SearchProject.vue';
 import { useProjectsStore } from '../../../stores/projects';
 
@@ -42,7 +41,7 @@ interface Data {
 
 export default defineComponent({
   components: {
-    ProjectsList,
+    ProjectList,
     MyDialog,
     CreateProjectForm,
     MyButton,
@@ -89,7 +88,6 @@ export default defineComponent({
         name: project.name,
       });
       this.projectsStore.getAllProjectsApi();
-      this.dialogVisible = false;
     },
     async deleteProject(id: number) {
       await this.projectsStore.deleteProject(id);
@@ -100,5 +98,26 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@import 'projects.css';
+.panel {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  top: 0;
+  height: 76px;
+}
+.noProjects {
+  padding: 60px 84px 108px;
+  text-align: center;
+}
+.noProjects h3 {
+  line-height: 28px;
+  font-weight: 300;
+  font-size: 24px;
+  color: #554d56;
+  margin-bottom: 12px;
+}
+.button__create {
+  margin: 0 36px 0 auto;
+}
 </style>

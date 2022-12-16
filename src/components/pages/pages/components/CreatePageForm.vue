@@ -1,14 +1,14 @@
 <template>
   <form @submit.prevent>
-    <h4>Create project</h4>
-    <my-input type="text" placeholder="Name" v-model="project.name" />
-    <my-button class="button" @click="createProject">Create</my-button>
+    <h4>Create page</h4>
+    <my-input type="text" placeholder="Name" v-model="page.name" />
+    <my-button class="button" @click="createPage">Create</my-button>
   </form>
 </template>
 
 <script lang="ts">
-import MyButton from '../../../common/MyButton.vue';
-import MyInput from '../../../common/MyInput.vue';
+import MyButton from '@/components/common/MyButton.vue';
+import MyInput from '@/components/common/MyInput.vue';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -18,15 +18,16 @@ export default defineComponent({
   },
   data() {
     return {
-      project: {
+      page: {
         name: '',
+        meta: {},
       },
     };
   },
   methods: {
-    createProject() {
-      this.$emit('create', this.project);
-      this.project.name = '';
+    createPage() {
+      this.$emit('create', this.page);
+      this.page.name = '';
     },
   },
 });

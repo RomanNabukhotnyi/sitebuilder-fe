@@ -1,241 +1,44 @@
 <template>
   <div>
-    <div
-      class="modal fade"
-      id="createSlot"
-      tabindex="-1"
-      aria-labelledby="createSlotLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="createSlotLabel">Create Slot</h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form>
-              <div class="mb-3">
-                <label for="type" class="col-form-label">Type:</label>
-                <select name="type" id="type" v-model="slotTemp.type">
-                  <option value="DYNAMIC" selected>DYNAMIC</option>
-                  <option value="STATIC">STATIC</option>
-                </select>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-              @click.stop="reset"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-dismiss="modal"
-              @click="createSlot"
-            >
-              Create
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      class="modal fade"
-      id="createBlock"
-      tabindex="-1"
-      aria-labelledby="createBlockLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="createBlockLabel">Create Block</h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form>
-              <div class="mb-3">
-                <label for="type" class="col-form-label">Type:</label>
-                <select name="type" id="type" v-model="blockTemp.type">
-                  <option value="TEXT" selected>Text</option>
-                  <option value="IMAGE">Image</option>
-                </select>
-              </div>
-              <div v-if="blockTemp.type">
-                <div class="mb-3" v-if="blockTemp.type === 'TEXT'">
-                  <label for="text" class="col-form-label">Text:</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="text"
-                    v-model="blockTemp.content!.text"
-                  />
-                </div>
-                <div class="mb-3" v-else>
-                  <label for="url" class="col-form-label">Url:</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="url"
-                    v-model="blockTemp.content!.url"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label for="subtext" class="col-form-label">Subtext:</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="subtext"
-                    v-model="blockTemp.content!.subtext"
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-              @click.stop="reset"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-dismiss="modal"
-              @click="createBlock"
-            >
-              Create
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div>
       <section class="screenView">
-        <div class="main">
-          <div class="page">
-            <div class="slots">
-              <div class="slot" v-for="slot in getAllSlots" :key="slot.id">
-                <button
-                  class="emptySlot"
-                  v-if="slot.blocks.length === 0"
-                  type="button"
-                  data-bs-toggle="modal"
-                  data-bs-target="#createBlock"
-                  @click="setSlotId(slot.id)"
-                >
-                  +
-                </button>
-                <div class="blocks" v-else>
-                  <div
-                    class="block"
-                    v-for="block in slot.blocks"
-                    :key="block.id"
-                  >
-                    <img
-                      src="https://media.istockphoto.com/id/152496976/photo/concrete-block.jpg?s=612x612&w=0&k=20&c=SnP0UWmzk4Kn21BfnHcoFudCwt7S3-qCQ_mLsIe1d9M="
-                      alt=""
-                    />
-                  </div>
+        <div class="page">
+          <div class="slots">
+            <div class="slot" v-for="slot in getAllSlots" :key="slot.id">
+              <button
+                class="emptySlot"
+                v-if="slot.blocks.length === 0"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#createBlock"
+                @click="setSlotId(slot.id)"
+              >
+                +
+              </button>
+              <div class="blocks" v-else>
+                <div class="block" v-for="block in slot.blocks" :key="block.id">
+                  <img
+                    src="https://media.istockphoto.com/id/152496976/photo/concrete-block.jpg?s=612x612&w=0&k=20&c=SnP0UWmzk4Kn21BfnHcoFudCwt7S3-qCQ_mLsIe1d9M="
+                    alt=""
+                  />
                 </div>
-                <div class="slotMenu" id="slotMenu">
-                  <div
-                    class="_39hNm _3Lnlb"
-                    data-hook="actions-bar"
-                    data-skin="legacy"
-                    style="max-height: 164px"
-                  >
-                    <div class="_23lTs">
-                      <div data-collapsible="true" class="Dmx5k">
-                        <div
-                          class="menuAction moveAction"
-                          data-hook="action-move-up"
-                          @click="moveUpSlot(slot.id)"
-                        >
-                          <span
-                            ><svg
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              width="24"
-                              height="24"
-                              class="_3ft7O"
-                            >
-                              <path
-                                d="M12.9970936,6.70710678 L12.9970936,19 L11.9970936,19 L11.9970936,6.70710678 L7.85355339,10.8556944 C7.65829124,11.0509566 7.34170876,11.0509566 7.14644661,10.8556944 C6.95118446,10.6604323 6.95118446,10.3438498 7.14644661,10.1485877 L12.4970936,4.79289322 L17.8536152,10.1485877 C18.0488773,10.3438498 18.0488773,10.6604323 17.8536152,10.8556944 C17.658353,11.0509566 17.3417706,11.0509566 17.1465084,10.8556944 L12.9970936,6.70710678 Z"
-                              ></path></svg
-                          ></span>
-                        </div>
-                        <div
-                          class="menuAction moveAction"
-                          data-hook="action-move-down"
-                          @click="moveDownSlot(slot.id)"
-                        >
-                          <span
-                            ><svg
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              width="24"
-                              height="24"
-                              class="_3ft7O"
-                            >
-                              <path
-                                d="M12.9970936,17.2928932 L17.1465084,13.1443056 C17.3417706,12.9490434 17.658353,12.9490434 17.8536152,13.1443056 C18.0488773,13.3395677 18.0488773,13.6561502 17.8536152,13.8514123 L12.4970936,19.2071068 L7.14644661,13.8514123 C6.95118446,13.6561502 6.95118446,13.3395677 7.14644661,13.1443056 C7.34170876,12.9490434 7.65829124,12.9490434 7.85355339,13.1443056 L11.9970936,17.2928932 L11.9970936,5 L12.9970936,5 L12.9970936,17.2928932 Z"
-                              ></path></svg
-                          ></span>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="_1_33j"
-                      data-bs-toggle="modal"
-                      data-bs-target="#createBlock"
-                      @click="setSlotId(slot.id)"
-                    >
-                      <div class="menuAction">
-                        <span>
-                          <svg
-                            width="20"
-                            height="20"
-                            class="_3ft7O"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"
-                            />
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-                    <div class="_1_33j" @click="deleteSlot(slot.id)">
+              </div>
+              <div class="slotMenu" id="slotMenu">
+                <div
+                  class="_39hNm _3Lnlb"
+                  data-hook="actions-bar"
+                  data-skin="legacy"
+                  style="max-height: 164px"
+                >
+                  <div class="_23lTs">
+                    <div data-collapsible="true" class="Dmx5k">
                       <div
-                        class="menuAction"
-                        data-collapsible="false"
-                        data-hook="action-delete"
+                        class="menuAction moveAction"
+                        data-hook="action-move-up"
+                        @click="moveUpSlot(slot.id)"
                       >
-                        <span>
-                          <svg
+                        <span
+                          ><svg
                             viewBox="0 0 24 24"
                             fill="currentColor"
                             width="24"
@@ -243,29 +46,83 @@
                             class="_3ft7O"
                           >
                             <path
-                              fill-rule="evenodd"
-                              d="M9 3h6v-1.75c0-.066-.026-.13-.073-.177-.047-.047-.111-.073-.177-.073h-5.5c-.066 0-.13.026-.177.073-.047.047-.073.111-.073.177v1.75zm11 1h-16v18c0 .552.448 1 1 1h14c.552 0 1-.448 1-1v-18zm-10 3.5c0-.276-.224-.5-.5-.5s-.5.224-.5.5v12c0 .276.224.5.5.5s.5-.224.5-.5v-12zm5 0c0-.276-.224-.5-.5-.5s-.5.224-.5.5v12c0 .276.224.5.5.5s.5-.224.5-.5v-12zm8-4.5v1h-2v18c0 1.105-.895 2-2 2h-14c-1.105 0-2-.895-2-2v-18h-2v-1h7v-2c0-.552.448-1 1-1h6c.552 0 1 .448 1 1v2h7z"
-                            />
-                          </svg>
-                        </span>
+                              d="M12.9970936,6.70710678 L12.9970936,19 L11.9970936,19 L11.9970936,6.70710678 L7.85355339,10.8556944 C7.65829124,11.0509566 7.34170876,11.0509566 7.14644661,10.8556944 C6.95118446,10.6604323 6.95118446,10.3438498 7.14644661,10.1485877 L12.4970936,4.79289322 L17.8536152,10.1485877 C18.0488773,10.3438498 18.0488773,10.6604323 17.8536152,10.8556944 C17.658353,11.0509566 17.3417706,11.0509566 17.1465084,10.8556944 L12.9970936,6.70710678 Z"
+                            ></path></svg
+                        ></span>
                       </div>
+                      <div
+                        class="menuAction moveAction"
+                        data-hook="action-move-down"
+                        @click="moveDownSlot(slot.id)"
+                      >
+                        <span
+                          ><svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            width="24"
+                            height="24"
+                            class="_3ft7O"
+                          >
+                            <path
+                              d="M12.9970936,17.2928932 L17.1465084,13.1443056 C17.3417706,12.9490434 17.658353,12.9490434 17.8536152,13.1443056 C18.0488773,13.3395677 18.0488773,13.6561502 17.8536152,13.8514123 L12.4970936,19.2071068 L7.14644661,13.8514123 C6.95118446,13.6561502 6.95118446,13.3395677 7.14644661,13.1443056 C7.34170876,12.9490434 7.65829124,12.9490434 7.85355339,13.1443056 L11.9970936,17.2928932 L11.9970936,5 L12.9970936,5 L12.9970936,17.2928932 Z"
+                            ></path></svg
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="_1_33j"
+                    data-bs-toggle="modal"
+                    data-bs-target="#createBlock"
+                    @click="setSlotId(slot.id)"
+                  >
+                    <div class="menuAction">
+                      <span>
+                        <svg
+                          width="20"
+                          height="20"
+                          class="_3ft7O"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"
+                          />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="_1_33j" @click="deleteSlot(slot.id)">
+                    <div
+                      class="menuAction"
+                      data-collapsible="false"
+                      data-hook="action-delete"
+                    >
+                      <span>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          width="24"
+                          height="24"
+                          class="_3ft7O"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M9 3h6v-1.75c0-.066-.026-.13-.073-.177-.047-.047-.111-.073-.177-.073h-5.5c-.066 0-.13.026-.177.073-.047.047-.073.111-.073.177v1.75zm11 1h-16v18c0 .552.448 1 1 1h14c.552 0 1-.448 1-1v-18zm-10 3.5c0-.276-.224-.5-.5-.5s-.5.224-.5.5v12c0 .276.224.5.5.5s.5-.224.5-.5v-12zm5 0c0-.276-.224-.5-.5-.5s-.5.224-.5.5v12c0 .276.224.5.5.5s.5-.224.5-.5v-12zm8-4.5v1h-2v18c0 1.105-.895 2-2 2h-14c-1.105 0-2-.895-2-2v-18h-2v-1h7v-2c0-.552.448-1 1-1h6c.552 0 1 .448 1 1v2h7z"
+                          />
+                        </svg>
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="slots slot createSlot">
-              <div class="buttonCreate">
-                <button
-                  type="button"
-                  class="button primary"
-                  data-bs-toggle="modal"
-                  data-bs-target="#createSlot"
-                >
-                  Create Slot
-                </button>
-              </div>
-            </div>
+          </div>
+          <div class="slots slot createSlot">
+            <my-button class="button__create" @click="showDialog">
+              Create Slot
+            </my-button>
           </div>
         </div>
       </section>
@@ -276,6 +133,7 @@
 <script lang="ts">
 import { useSlotsStore } from '../../../stores/slots';
 import { useBlocksStore } from '../../../stores/blocks';
+import MyButton from '@/components/common/MyButton.vue';
 
 type Content = {
   text?: string;
@@ -296,6 +154,9 @@ interface Data {
 }
 
 export default {
+  components: {
+    MyButton,
+  },
   setup() {
     const slotsStore = useSlotsStore();
     const blocksStore = useBlocksStore();
@@ -432,4 +293,10 @@ export default {
 
 <style scoped>
 @import 'slots.css';
+.createSlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+}
 </style>
