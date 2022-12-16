@@ -26,7 +26,9 @@ export default defineComponent({
   methods: {
     createProject() {
       this.$emit('create', this.project);
-      this.project.name = '';
+      this.$nextTick(() => {
+        this.project.name = '';
+      });
     },
   },
 });
