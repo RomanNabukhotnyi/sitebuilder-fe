@@ -24,19 +24,19 @@ export default defineComponent({
     };
   },
   methods: {
-    // createProject() {
-    //   const func = async () => {
-    //     await this.$emit('create', this.project);
-    //     this.project.name = '';
-    //   };
-    //   func();
-    // },
     createProject() {
-      this.$emit('create', this.project);
-      this.$nextTick(() => {
+      const func = async () => {
+        await this.$emit('create', this.project);
         this.project.name = '';
-      });
+      };
+      func();
     },
+    // createProject() {
+    //   this.$emit('create', this.project);
+    //   this.$nextTick(() => {
+    //     this.project.name = '';
+    //   });
+    // },
   },
 });
 </script>
