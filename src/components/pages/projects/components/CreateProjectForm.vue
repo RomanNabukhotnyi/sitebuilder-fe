@@ -26,7 +26,7 @@ export default defineComponent({
   methods: {
     createProject() {
       const func = async () => {
-        await this.$emit('create', this.project);
+        await new Promise(() => this.$emit('create', this.project));
         await new Promise(() => (this.project.name = ''));
       };
       func();
