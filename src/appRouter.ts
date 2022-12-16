@@ -46,7 +46,7 @@ const routes = [
   },
 ];
 
-axios.defaults.baseURL = 'https://sitebuilder-be.herokuapp.com';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use(
