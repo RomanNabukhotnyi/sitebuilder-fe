@@ -24,12 +24,18 @@ export default defineComponent({
     };
   },
   methods: {
+    // createProject() {
+    //   const func = async () => {
+    //     await this.$emit('create', this.project);
+    //     this.project.name = '';
+    //   };
+    //   func();
+    // },
     createProject() {
-      const func = async () => {
-        await this.$emit('create', this.project);
+      this.$emit('create', this.project);
+      this.$nextTick(() => {
         this.project.name = '';
-      };
-      func();
+      });
     },
   },
 });
