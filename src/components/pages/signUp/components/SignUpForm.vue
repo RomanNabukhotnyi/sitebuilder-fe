@@ -5,8 +5,10 @@
         class="input"
         name="Email"
         placeholder="Work email"
+        @input="emailValidation"
         v-model="payload.email"
       />
+      <p v-if="emailError" class="error">{{ emailError }}</p>
     </div>
     <div class="field">
       <MyInput
@@ -14,10 +16,14 @@
         name="Password"
         type="password"
         placeholder="Password"
+        @input="passwordValidation"
         v-model="payload.password"
       />
+      <p v-if="passwordError" class="error">{{ passwordError }}</p>
     </div>
-    <MyButton class="button" @click="signUp">Sign Up</MyButton>
+    <MyButton class="button" @click="signUp" :disabled="validation">
+      Sign Up
+    </MyButton>
   </div>
 </template>
 
@@ -38,11 +44,44 @@ export default defineComponent({
         email: '',
         password: '',
       },
+      emailError: '',
+      passwordError: '',
     };
   },
+  computed: {
+    validation(): boolean {
+      return !!this.emailError || !!this.passwordError;
+    },
+  },
   methods: {
+    emailValidation(): boolean {
+      if (this.payload.email === '') {
+        this.emailError = 'Field is required';
+        return false;
+      }
+      if (!this.payload.email.match(/^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+        this.emailError = 'That’s not a valid email';
+        return false;
+      }
+      this.emailError = '';
+      return true;
+    },
+    passwordValidation(): boolean {
+      if (this.payload.password === '') {
+        this.passwordError = 'Field is required';
+        return false;
+      }
+      if (this.payload.password.length < 8) {
+        this.passwordError = 'Your password must have at least 8 characters.';
+        return false;
+      }
+      this.passwordError = '';
+      return true;
+    },
     signUp() {
-      this.$emit('signUp', this.payload);
+      if (this.emailValidation() && this.passwordValidation()) {
+        this.$emit('signUp', this.payload);
+      }
     },
   },
 });
@@ -60,6 +99,10 @@ export default defineComponent({
   padding: 0 12px;
   width: 100%;
 }
+.error {
+  font-size: 10px;
+  color: rgb(255, 107, 107);
+}
 .button {
   position: relative;
   background: transparent none;
@@ -72,5 +115,12 @@ export default defineComponent({
   background-color: #419bf9;
   color: #fff;
   border-radius: 2px;
+}
+.button:disabled {
+  background-color: #a9b5c2;
+}
+.button:disabled:hover {
+  opacity: 1;
+  cursor: default;
 }
 </style>
