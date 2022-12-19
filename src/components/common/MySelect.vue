@@ -24,16 +24,18 @@
         </g>
       </svg>
     </div>
-    <div class="options" v-if="optionsVisible">
-      <div
-        class="option"
-        v-for="option in options"
-        :key="option.name"
-        @click="selectOption(option)"
-      >
-        {{ option.name }}
+    <Transition name="slide">
+      <div class="options" v-if="optionsVisible">
+        <div
+          class="option"
+          v-for="option in options"
+          :key="option.name"
+          @click="selectOption(option)"
+        >
+          {{ option.name }}
+        </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -87,13 +89,14 @@ export default defineComponent({
 <style scoped lang="scss">
 .select {
   color: #fff;
+  background-color: #419bf9;
   cursor: pointer;
+  border-radius: 5px;
 }
 .selected {
   padding: 10px;
   display: flex;
-  border-radius: 2px 2px 0 0;
-  background-color: #419bf9;
+  border-radius: 5px 5px 0 0;
   justify-content: space-between;
   svg {
     align-self: center;
@@ -111,10 +114,19 @@ export default defineComponent({
   background-color: #58a9ff;
 }
 .option:last-child {
-  border-radius: 0 0 2px 2px;
+  border-radius: 0 0 5px 5px;
 }
 .option:hover {
   opacity: 0.9;
+}
+.slide-enter-active,
+.slide-leave-active {
+  transform-origin: top;
+  transition: transform 0.1s linear;
+}
+.slide-enter-from,
+.slide-leave-to {
+  transform: scaleY(0);
 }
 // start chevron animation
 .chevron {

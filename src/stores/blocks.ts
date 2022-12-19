@@ -61,5 +61,11 @@ export const useBlocksStore = defineStore('blocks', {
     async deleteBlock(id: number): Promise<void> {
       await axios.delete(`/blocks/${id}`);
     },
+    async updateOrders(slotId: number, orders: any[]): Promise<void> {
+      await axios.put('/blocks/order', {
+        slotId,
+        orders,
+      });
+    },
   },
 });

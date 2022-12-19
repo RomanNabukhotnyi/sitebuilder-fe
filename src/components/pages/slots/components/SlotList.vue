@@ -15,16 +15,13 @@
             <path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" />
           </svg>
         </div>
-        <div class="blocks" v-else>
-          <div class="block" v-for="block in slot.blocks" :key="block.id">
-            <div class="type__image" v-if="block.type === 'IMAGE'">
-              <img :src="block.content.url" />
-            </div>
-            <div class="type__text" v-if="block.type === 'TEXT'">
-              <h1>{{ block.content.text }}</h1>
-            </div>
-          </div>
-        </div>
+        <BlockList
+          v-else
+          :mySlot="slot"
+          @deleteBlock="deleteBlock"
+          @moveLeft="moveLeftBlock"
+          @moveRight="moveRightBlock"
+        />
         <SlotMenu
           :mySlot="slot"
           @create="createBlock"
@@ -42,6 +39,7 @@ import { defineComponent } from 'vue';
 import MyDialog from '@/components/common/MyDialog.vue';
 import CreateBlockForm from './CreateBlockForm.vue';
 import SlotMenu from './SlotMenu.vue';
+import BlockList from './BlockList.vue';
 
 import type { Slot } from '@/interfaces/Slot';
 import type { Block } from '@/interfaces/Block';
@@ -56,6 +54,7 @@ export default defineComponent({
     MyDialog,
     CreateBlockForm,
     SlotMenu,
+    BlockList,
   },
   props: {
     slots: {
@@ -91,8 +90,17 @@ export default defineComponent({
         this.$emit('moveDown', slotId);
       }
     },
-    deleteSlot(slotId: number) {
-      this.$emit('delete', slotId);
+    deleteSlot(id: number) {
+      this.$emit('deleteSlot', id);
+    },
+    deleteBlock(id: number) {
+      this.$emit('deleteBlock', id);
+    },
+    moveLeftBlock(blockId: number, slotId: number) {
+      this.$emit('moveLeft', blockId, slotId);
+    },
+    moveRightBlock(blockId: number, slotId: number) {
+      this.$emit('moveRight', blockId, slotId);
     },
   },
 });
@@ -117,6 +125,7 @@ export default defineComponent({
   min-height: 100px;
   display: block;
   flex: 1;
+  position: relative;
 }
 .blocks .type__text {
   height: 100%;
@@ -127,11 +136,17 @@ export default defineComponent({
 .blocks .type__text h1 {
   margin: 5px;
 }
+.blocks .type__image {
+  height: 100%;
+}
 .blocks .type__image img {
   width: 100%;
   height: 100%;
 }
 .slot:hover {
+  border: 1px solid #419bf9;
+}
+.block:hover {
   border: 1px solid #419bf9;
 }
 .emptySlot {

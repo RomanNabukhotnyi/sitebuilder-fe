@@ -3,9 +3,12 @@
     <SlotList
       :slots="getAllSlots"
       @create="createBlock"
-      @delete="deleteSlot"
+      @deleteSlot="deleteSlot"
       @moveUp="moveUpSlot"
       @moveDown="moveDownSlot"
+      @deleteBlock="deleteBlock"
+      @moveLeft="moveLeftBlock"
+      @moveRight="moveRightBlock"
     />
     <div class="createSlot">
       <MyDialog v-model:show="dialogVisible">
@@ -116,23 +119,54 @@ export default defineComponent({
       }
       [slots[index - 1], slots[index]] = [slots[index], slots[index - 1]];
       this.slotsStore.setSlots(slots);
-      this.updateOrders();
+      this.updateOrderSlots();
     },
     async moveDownSlot(slotId: number) {
       const slots = this.slotsStore.getAllSlots;
       const index = slots.findIndex((slot) => slot.id === slotId);
-      if (index === slots.length) {
+      if (index === slots.length - 1) {
         return;
       }
       [slots[index + 1], slots[index]] = [slots[index], slots[index + 1]];
       this.slotsStore.setSlots(slots);
-      this.updateOrders();
+      this.updateOrderSlots();
     },
-    async updateOrders() {
+    async moveLeftBlock(blockId: number, slotId: number) {
+      const blocks = this.getAllSlots.find((slot) => slot.id === slotId)
+        ?.blocks!;
+      const index = blocks.findIndex((block) => block.id === blockId);
+      if (index === 0) {
+        return;
+      }
+      [blocks[index - 1], blocks[index]] = [blocks[index], blocks[index - 1]];
+      this.blocksStore.setBlocks(blocks);
+      this.updateOrderBlocks(slotId, blocks);
+    },
+    async moveRightBlock(blockId: number, slotId: number) {
+      const blocks = this.getAllSlots.find((slot) => slot.id === slotId)
+        ?.blocks!;
+      const index = blocks.findIndex((block) => block.id === blockId);
+      if (index === blocks.length - 1) {
+        return;
+      }
+      [blocks[index + 1], blocks[index]] = [blocks[index], blocks[index + 1]];
+      this.blocksStore.setBlocks(blocks);
+      this.updateOrderBlocks(slotId, blocks);
+    },
+    async updateOrderSlots() {
       await this.slotsStore.updateOrders(
         +this.$route.params.pageId,
         this.getAllSlots.map((slot, index) => ({
           id: slot.id,
+          order: index + 1,
+        }))
+      );
+    },
+    async updateOrderBlocks(slotId: number, blocks: Block[]) {
+      await this.blocksStore.updateOrders(
+        slotId,
+        blocks.map((block, index) => ({
+          id: block.id,
           order: index + 1,
         }))
       );

@@ -1,9 +1,6 @@
 <template>
-  <MyDialog v-model:show="dialogVisible">
-    <CreateBlockForm :slotId="mySlot.id" @create="createBlock" />
-  </MyDialog>
-  <div class="slotMenu">
-    <div class="menuAction moveAction" @click="moveUpSlot">
+  <div class="blockMenu">
+    <div class="menuAction moveAction" @click="moveLeftBlock">
       <svg
         viewBox="0 0 24 24"
         fill="currentColor"
@@ -16,7 +13,7 @@
         ></path>
       </svg>
     </div>
-    <div class="menuAction moveAction" @click="moveDownSlot">
+    <div class="menuAction moveAction" @click="moveRightBlock">
       <svg
         viewBox="0 0 24 24"
         fill="currentColor"
@@ -29,24 +26,7 @@
         ></path>
       </svg>
     </div>
-    <div
-      :class="mySlot.type === 'STATIC' ? 'disabled' : 'menuAction'"
-      @click="mySlot.type !== 'STATIC' && showDialog()"
-    >
-      <svg
-        width="20"
-        height="20"
-        class="_3ft7O"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"
-        />
-      </svg>
-    </div>
-    <div @click="deleteSlot" class="menuAction">
+    <div @click="deleteBlock" class="menuAction">
       <svg
         viewBox="0 0 24 24"
         fill="currentColor"
@@ -66,16 +46,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { Block } from '@/interfaces/Block';
-import MyDialog from '@/components/common/MyDialog.vue';
-import CreateBlockForm from './CreateBlockForm.vue';
 
 export default defineComponent({
-  name: 'SlotMenu',
-  components: {
-    MyDialog,
-    CreateBlockForm,
-  },
+  name: 'BlockMenu',
   props: {
+    block: {
+      type: Object,
+      required: true,
+    },
+    blocks: {
+      type: Array<Block>,
+      required: true,
+    },
     mySlot: {
       type: Object,
       required: true,
@@ -90,70 +72,77 @@ export default defineComponent({
     showDialog() {
       this.dialogVisible = true;
     },
-    moveUpSlot() {
-      this.$emit('moveUp', this.$props.mySlot.id);
+    moveLeftBlock() {
+      if (
+        this.$props.blocks.findIndex(
+          (block) => block.id === this.$props.block.id
+        ) !== 0
+      ) {
+        this.$emit('moveLeft', this.$props.block.id, this.$props.mySlot.id);
+      }
     },
-    moveDownSlot() {
-      this.$emit('moveDown', this.$props.mySlot.id);
+    moveRightBlock() {
+      if (
+        this.$props.blocks.findIndex(
+          (block) => block.id === this.$props.block.id
+        ) !==
+        this.$props.blocks.length - 1
+      ) {
+        this.$emit('moveRight', this.$props.block.id, this.$props.mySlot.id);
+      }
     },
-    deleteSlot() {
-      this.$emit('delete', this.$props.mySlot.id);
-    },
-    createBlock(slotId: number, block: Block) {
-      this.$emit('create', slotId, block);
-      this.dialogVisible = false;
+    deleteBlock() {
+      this.$emit('delete', this.$props.block.id);
     },
   },
 });
 </script>
 
 <style scoped>
-.slotMenu {
+.blockMenu {
   position: absolute;
-  left: 100%;
   display: none;
-  width: 36px;
+  top: calc(100% - 36px);
+  left: 50%;
+  background-color: white;
+  transform: translateX(-50%);
+  height: 36px;
   border-radius: 4px;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 10px 0 rgba(0, 0, 0, 0.08),
     0 1px 20px 0 rgba(0, 0, 0, 0.08);
 }
-.slot:hover .slotMenu {
-  display: block;
+.block:hover .blockMenu {
+  display: flex;
 }
 .menuAction {
   cursor: pointer;
-  padding-top: 3px;
-  padding-bottom: 3px;
+  padding-right: 3px;
+  padding-left: 3px;
 }
 .menuAction:hover {
   color: #116dff;
 }
 .menuAction {
   display: flex;
-  justify-content: center;
-  width: 100%;
+  align-items: center;
 }
 .menuAction:first-child {
-  padding-top: 6px;
-  padding-bottom: 3px;
+  padding-left: 6px;
+  padding-right: 3px;
 }
-.slot:last-child .moveAction:nth-child(2) {
+.moveAction svg {
+  transform: rotate(-90deg);
+}
+.block:last-child .moveAction:nth-child(2) {
   cursor: default;
   color: #bcbcbc;
 }
-.slot:first-child .moveAction:first-child svg {
+.block:first-child .moveAction:first-child svg {
   cursor: default;
   color: #bcbcbc;
 }
 .menuAction:last-child {
-  padding-top: 3px;
-  padding-bottom: 6px;
-}
-.disabled {
-  cursor: default;
-  color: #bcbcbc;
-  display: flex;
-  justify-content: center;
-  width: 100%;
+  padding-left: 3px;
+  padding-right: 6px;
 }
 </style>

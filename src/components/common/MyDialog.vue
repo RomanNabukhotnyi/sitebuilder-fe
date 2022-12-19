@@ -80,48 +80,6 @@ export default defineComponent({
 .pop-enter-from,
 .pop-leave-to {
   opacity: 0;
-  transform: scale(0.3) translateY(-50%);
+  transform: scale(0.3);
 }
-/* .dialog {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  position: fixed;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  z-index: 999;
-}
-.dialog__content {
-  margin: auto;
-  min-width: 200px;
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-} */
-
-/* animations */
-
-/* .modal-enter-active {
-  animation: 0.75s modal;
-}
-@keyframes modal {
-  from {
-    background: rgba(0, 0, 0, 0);
-  }
-  to {
-    background: rgba(0, 0, 0, 0.5);
-  }
-}
-.content-enter-active {
-  animation: 0.75s scale;
-}
-@keyframes scale {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
-} */
 </style>
