@@ -6,7 +6,7 @@
       </div>
       <SearchPage @filter="filter" />
       <MyDialog v-model:show="dialogVisible">
-        <CreatePageForm @create="createPage" />
+        <CreatePageForm @create="createPage" :pages="getAllPages" />
       </MyDialog>
       <MyButton class="button__create" @click="showDialog">
         Create Page

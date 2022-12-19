@@ -1,7 +1,11 @@
 <template>
   <div class="projectsContainer">
     <MyDialog v-model:show="dialogVisible">
-      <EditProjectForm :project="project" @edit="editProject" />
+      <EditProjectForm
+        :project="project"
+        @edit="editProject"
+        :projects="projects"
+      />
     </MyDialog>
     <div
       class="project"

@@ -1,7 +1,7 @@
 <template>
   <div class="pagesContainer">
     <MyDialog v-model:show="dialogVisible">
-      <EditPageForm :page="page" @edit="editPage" />
+      <EditPageForm :page="page" @edit="editPage" :pages="pages" />
     </MyDialog>
     <div v-for="page in pages" :key="page.id">
       <div class="page">

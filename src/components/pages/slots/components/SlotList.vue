@@ -3,34 +3,36 @@
     <MyDialog v-model:show="dialogVisible">
       <CreateBlockForm :slotId="slotId" @create="createBlock" />
     </MyDialog>
-    <div class="slot" v-for="slot in slots" :key="slot.id">
-      <div
-        class="emptySlot"
-        v-if="slot.blocks.length === 0"
-        @click="showDialog(slot.id)"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" />
-        </svg>
-      </div>
-      <div class="blocks" v-else>
-        <div class="block" v-for="block in slot.blocks" :key="block.id">
-          <div class="type__image" v-if="block.type === 'IMAGE'">
-            <img :src="block.content.url" />
-          </div>
-          <div class="type__text" v-if="block.type === 'TEXT'">
-            <h4>{{ block.content.text }}</h4>
+    <TransitionGroup name="list">
+      <div class="slot" v-for="slot in slots" :key="slot.id">
+        <div
+          class="emptySlot"
+          v-if="slot.blocks.length === 0"
+          @click="showDialog(slot.id)"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" />
+          </svg>
+        </div>
+        <div class="blocks" v-else>
+          <div class="block" v-for="block in slot.blocks" :key="block.id">
+            <div class="type__image" v-if="block.type === 'IMAGE'">
+              <img :src="block.content.url" />
+            </div>
+            <div class="type__text" v-if="block.type === 'TEXT'">
+              <h1>{{ block.content.text }}</h1>
+            </div>
           </div>
         </div>
+        <SlotMenu
+          :id="slot.id"
+          @create="createBlock"
+          @delete="deleteSlot"
+          @moveUp="moveUpSlot"
+          @moveDown="moveDownSlot"
+        />
       </div>
-      <SlotMenu
-        :id="slot.id"
-        @create="createBlock"
-        @delete="deleteSlot"
-        @moveUp="moveUpSlot"
-        @moveDown="moveDownSlot"
-      />
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -104,10 +106,17 @@ export default defineComponent({
   display: flex;
 }
 .blocks .block {
+  min-height: 100px;
   display: block;
   flex: 1;
 }
-.blocks .type__text h4 {
+.blocks .type__text {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.blocks .type__text h1 {
   margin: 5px;
 }
 .blocks .type__image img {
@@ -127,5 +136,16 @@ export default defineComponent({
   justify-content: center;
   cursor: pointer;
   flex: 1;
+}
+/* animations */
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: scale(0.3);
 }
 </style>

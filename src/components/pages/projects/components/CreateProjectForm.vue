@@ -11,9 +11,9 @@
       />
       <p v-if="nameError" class="error">{{ nameError }}</p>
     </div>
-    <MyButton class="button" :disabled="validation" @click="createProject"
-      >Create</MyButton
-    >
+    <MyButton class="button" :disabled="validation" @click="createProject">
+      Create
+    </MyButton>
   </div>
 </template>
 

@@ -1,8 +1,19 @@
 <template>
   <div class="form">
     <h4>Create page</h4>
-    <MyInput class="input" type="text" placeholder="Name" v-model="page.name" />
-    <MyButton class="button" @click="createPage">Create</MyButton>
+    <div class="field">
+      <MyInput
+        class="input"
+        type="text"
+        placeholder="Name"
+        @input="nameValidation"
+        v-model="page.name"
+      />
+      <p v-if="nameError" class="error">{{ nameError }}</p>
+    </div>
+    <MyButton class="button" @click="createPage" :disabled="validation">
+      Create
+    </MyButton>
   </div>
 </template>
 
@@ -10,6 +21,7 @@
 import MyButton from '@/components/common/MyButton.vue';
 import MyInput from '@/components/common/MyInput.vue';
 import { defineComponent } from 'vue';
+import type { Page } from '@/interfaces/Page';
 
 export default defineComponent({
   name: 'CreatePageForm',
@@ -17,17 +29,43 @@ export default defineComponent({
     MyButton,
     MyInput,
   },
+  props: {
+    pages: {
+      type: Array<Page>,
+      required: true,
+    },
+  },
   data() {
     return {
       page: {
         name: '',
         meta: {},
       },
+      nameError: '',
     };
   },
+  computed: {
+    validation(): boolean {
+      return !!this.nameError;
+    },
+  },
   methods: {
+    nameValidation(): boolean {
+      if (this.page.name === '') {
+        this.nameError = 'Field is required';
+        return false;
+      }
+      if (this.$props.pages.find((page) => page.name === this.page.name)) {
+        this.nameError = 'A page with that name exists';
+        return false;
+      }
+      this.nameError = '';
+      return true;
+    },
     createPage() {
-      this.$emit('create', this.page);
+      if (this.nameValidation()) {
+        this.$emit('create', this.page);
+      }
     },
   },
 });
@@ -38,10 +76,21 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
 }
-.input {
+.field {
   margin: 15px 0;
+}
+.error {
+  font-size: 10px;
+  color: rgb(255, 107, 107);
 }
 .button {
   align-self: flex-end;
+}
+.button:disabled {
+  background-color: #a9b5c2;
+}
+.button:disabled:hover {
+  opacity: 1;
+  cursor: default;
 }
 </style>

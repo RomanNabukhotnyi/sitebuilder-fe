@@ -27,12 +27,15 @@ export const useSlotsStore = defineStore('slots', {
         },
       });
       if (response && response.data) {
-        const sortedSlots = response.data.data.sort((a: Slot, b: Slot) => {
+        console.log(response.data.data);
+        const sortedSlots = (response.data.data as ISlot[]).sort((a, b) => {
           if (a.order === 0) {
-            return;
+            return 1;
           }
-          return a.order > b.order;
-        }) as ISlot[];
+          console.log(a, b);
+          return a.order > b.order ? 1 : -1;
+        });
+        console.log(sortedSlots);
         this.setSlots(
           await Promise.all(
             sortedSlots.map(async (slot) => {
