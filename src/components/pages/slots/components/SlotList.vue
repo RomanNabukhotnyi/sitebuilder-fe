@@ -5,10 +5,11 @@
     </MyDialog>
     <TransitionGroup name="list">
       <div class="slot" v-for="slot in slots" :key="slot.id">
+        <div v-if="slot.type === 'STATIC'" class="staticSlot">STATIC</div>
         <div
           class="emptySlot"
-          v-if="slot.blocks.length === 0"
-          @click="showDialog(slot.id)"
+          v-else-if="slot.blocks.length === 0 && slot.type !== 'STATIC'"
+          @click="slot.type !== 'STATIC' && showDialog(slot.id)"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" />
@@ -25,7 +26,7 @@
           </div>
         </div>
         <SlotMenu
-          :id="slot.id"
+          :mySlot="slot"
           @create="createBlock"
           @delete="deleteSlot"
           @moveUp="moveUpSlot"
@@ -78,10 +79,17 @@ export default defineComponent({
       this.dialogVisible = false;
     },
     moveUpSlot(slotId: number) {
-      this.$emit('moveUp', slotId);
+      if (this.$props.slots.findIndex((slot) => slot.id === slotId) !== 0) {
+        this.$emit('moveUp', slotId);
+      }
     },
     moveDownSlot(slotId: number) {
-      this.$emit('moveDown', slotId);
+      if (
+        this.$props.slots.findIndex((slot) => slot.id === slotId) !==
+        this.$props.slots.length - 1
+      ) {
+        this.$emit('moveDown', slotId);
+      }
     },
     deleteSlot(slotId: number) {
       this.$emit('delete', slotId);
@@ -136,6 +144,15 @@ export default defineComponent({
   justify-content: center;
   cursor: pointer;
   flex: 1;
+}
+.staticSlot {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #6a6a6a;
+  color: white;
+  padding: 5px;
 }
 /* animations */
 .list-move,

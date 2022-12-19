@@ -55,7 +55,6 @@ export default defineComponent({
   },
   async mounted() {
     await this.slotsStore.getAllSlotsApi(+this.$route.params.pageId);
-    console.log(this.getAllSlots);
   },
   computed: {
     getAllSlots() {

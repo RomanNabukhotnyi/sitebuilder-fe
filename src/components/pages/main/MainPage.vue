@@ -43,7 +43,6 @@ export default defineComponent({
           email: '',
         };
         this.authStore.setUserProfile(resetUser);
-        console.log(this.authStore.getUserProfile);
         this.authStore.setLogout(false);
         this.$router.push('/login');
       }

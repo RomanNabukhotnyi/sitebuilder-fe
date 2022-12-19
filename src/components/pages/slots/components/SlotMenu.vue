@@ -27,9 +27,12 @@
       </svg>
     </div>
     <MyDialog v-model:show="dialogVisible">
-      <CreateBlockForm :slotId="id" @create="createBlock" />
+      <CreateBlockForm :slotId="mySlot.id" @create="createBlock" />
     </MyDialog>
-    <div class="menuAction" @click="showDialog">
+    <div
+      :class="mySlot.type === 'STATIC' ? 'disabled' : 'menuAction'"
+      @click="mySlot.type !== 'STATIC' && showDialog()"
+    >
       <svg
         width="20"
         height="20"
@@ -73,8 +76,8 @@ export default defineComponent({
     CreateBlockForm,
   },
   props: {
-    id: {
-      type: Number,
+    mySlot: {
+      type: Object,
       required: true,
     },
   },
@@ -88,13 +91,13 @@ export default defineComponent({
       this.dialogVisible = true;
     },
     moveUpSlot() {
-      this.$emit('moveUp', this.$props.id);
+      this.$emit('moveUp', this.$props.mySlot.id);
     },
     moveDownSlot() {
-      this.$emit('moveDown', this.$props.id);
+      this.$emit('moveDown', this.$props.mySlot.id);
     },
     deleteSlot() {
-      this.$emit('delete', this.$props.id);
+      this.$emit('delete', this.$props.mySlot.id);
     },
     createBlock(slotId: number, block: Block) {
       this.$emit('create', slotId, block);
@@ -145,5 +148,12 @@ export default defineComponent({
 .menuAction:last-child {
   padding-top: 3px;
   padding-bottom: 6px;
+}
+.disabled {
+  cursor: default;
+  color: #bcbcbc;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 </style>
