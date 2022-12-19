@@ -9,12 +9,11 @@
       <h1>Great to have you here!</h1>
       <p>You can login to access your workspace.</p>
       <hr />
-      <login-form @login="login" />
+      <LoginForm @login="login" />
       <hr />
       <div class="footer">
         <span class="footer"
-          >No account yet?
-          <router-link to="/sign-up">Sign up</router-link></span
+          >No account yet? <RouterLink to="/sign-up">Sign up</RouterLink></span
         >
       </div>
     </div>
@@ -23,9 +22,11 @@
 
 <script lang="ts">
 import { useAuthStore } from '../../../stores/auth';
+import { defineComponent } from 'vue';
 import LoginForm from './components/LoginForm.vue';
 
-export default {
+export default defineComponent({
+  name: 'LoginPage',
   components: {
     LoginForm,
   },
@@ -40,12 +41,10 @@ export default {
       await this.authStore.loginApi(payload);
       if (this.authStore.getLoginApiStatus == 'success') {
         this.$router.push('main/projects');
-      } else {
-        alert('failed');
       }
     },
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
@@ -63,6 +62,7 @@ export default {
     height: min-content;
     max-width: 80%;
     max-height: 80%;
+    align-self: center;
   }
 }
 .content {
@@ -87,7 +87,6 @@ export default {
   border-radius: 1px;
   background-color: #edeced;
 }
-
 .footer {
   font-size: 15px;
   line-height: 18px;

@@ -1,9 +1,14 @@
 <template>
-  <form @submit.prevent>
+  <div class="form">
     <h4>Edit page</h4>
-    <my-input type="text" placeholder="Name" v-model="editedPage.name" />
-    <my-button class="button" @click="editProject">Edit</my-button>
-  </form>
+    <MyInput
+      class="input"
+      type="text"
+      placeholder="Name"
+      v-model="editedPage.name"
+    />
+    <MyButton class="button" @click="editProject">Edit</MyButton>
+  </div>
 </template>
 
 <script lang="ts">
@@ -12,6 +17,7 @@ import MyInput from '../../../common/MyInput.vue';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
+  name: 'EditPageForm',
   components: {
     MyButton,
     MyInput,
@@ -35,19 +41,20 @@ export default defineComponent({
   methods: {
     editProject() {
       this.$emit('edit', this.editedPage);
-      this.editedPage.name = '';
     },
   },
 });
 </script>
 
 <style scoped>
-form {
+.form {
   display: flex;
   flex-direction: column;
 }
+.input {
+  margin: 15px 0;
+}
 .button {
-  margin-top: 15px;
   align-self: flex-end;
 }
 </style>

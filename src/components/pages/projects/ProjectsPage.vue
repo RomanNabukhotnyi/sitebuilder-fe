@@ -4,23 +4,23 @@
       <div class="panel__sort">
         <!-- SORT -->
       </div>
-      <search-project @filter="filter" />
-      <my-dialog v-model:show="dialogVisible">
-        <create-project-form @create="createProject" />
-      </my-dialog>
-      <my-button class="button__create" @click="showDialog">
+      <SearchProject @filter="filter" />
+      <MyDialog v-model:show="dialogVisible">
+        <CreateProjectForm @create="createProject" :projects="getAllProjects" />
+      </MyDialog>
+      <MyButton class="button__create" @click="showDialog">
         Create Project
-      </my-button>
+      </MyButton>
     </div>
     <div>
-      <project-list
+      <ProjectList
         v-if="getAllProjects.length !== 0"
         :projects="getAllProjects"
         @edit="editProject"
         @delete="deleteProject"
       />
       <div v-else class="noProjects">
-        <h3>No projects 🤷‍♀️</h3>
+        <h3>No projects</h3>
       </div>
     </div>
   </div>
@@ -40,6 +40,7 @@ interface Data {
 }
 
 export default defineComponent({
+  name: 'ProjectsPage',
   components: {
     ProjectList,
     MyDialog,
@@ -58,8 +59,8 @@ export default defineComponent({
       dialogVisible: false,
     };
   },
-  mounted() {
-    this.projectsStore.getAllProjectsApi();
+  async mounted() {
+    await this.projectsStore.getAllProjectsApi();
   },
   computed: {
     getAllProjects() {
@@ -80,18 +81,18 @@ export default defineComponent({
     },
     async createProject(project: { name: string }) {
       await this.projectsStore.createProject({ name: project.name });
-      this.projectsStore.getAllProjectsApi();
+      await this.projectsStore.getAllProjectsApi();
       this.dialogVisible = false;
     },
     async editProject(project: { id: number; name: string }) {
       await this.projectsStore.editProject(project.id, {
         name: project.name,
       });
-      this.projectsStore.getAllProjectsApi();
+      await this.projectsStore.getAllProjectsApi();
     },
     async deleteProject(id: number) {
       await this.projectsStore.deleteProject(id);
-      this.projectsStore.getAllProjectsApi();
+      await this.projectsStore.getAllProjectsApi();
     },
   },
 });

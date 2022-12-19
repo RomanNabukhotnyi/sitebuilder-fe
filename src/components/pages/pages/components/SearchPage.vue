@@ -20,9 +20,7 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  setup() {
-    return {};
-  },
+  name: 'SearchPage',
   data() {
     return {
       search: '',

@@ -267,8 +267,8 @@ export default {
       },
     };
   },
-  mounted() {
-    this.blocksStore.getAllBlocksApi(+this.$route.params.slotId);
+  async mounted() {
+    await this.blocksStore.getAllBlocksApi(+this.$route.params.slotId);
   },
   computed: {
     getAllBlocks() {
@@ -292,7 +292,7 @@ export default {
         },
       });
       this.reset();
-      this.blocksStore.getAllBlocksApi(+this.$route.params.slotId);
+      await this.blocksStore.getAllBlocksApi(+this.$route.params.slotId);
     },
     reset() {
       this.blockTemp = { content: { text: '', url: '', subtext: '' } };
@@ -315,11 +315,11 @@ export default {
         },
       });
       this.reset();
-      this.blocksStore.getAllBlocksApi(+this.$route.params.slotId);
+      await this.blocksStore.getAllBlocksApi(+this.$route.params.slotId);
     },
     async deleteBlock(blockId: number) {
       await this.blocksStore.deleteBlock(blockId);
-      this.blocksStore.getAllBlocksApi(+this.$route.params.slotId);
+      await this.blocksStore.getAllBlocksApi(+this.$route.params.slotId);
     },
   },
 };

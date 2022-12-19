@@ -24,13 +24,7 @@ export const useAuthStore = defineStore('auth', {
       this.signUpApiStatus = data;
     },
     async loginApi(payload: { email: string; password: string }) {
-      const response = await axios
-        .post('/auth/login', payload, {
-          withCredentials: true,
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const response = await axios.post('/auth/login', payload);
 
       if (response && response.data) {
         this.setLoginApiStatus('success');
@@ -45,13 +39,7 @@ export const useAuthStore = defineStore('auth', {
       this.userProfile = userProfile;
     },
     async signUpApi(payload: { email: string; password: string }) {
-      const response = await axios
-        .post('/auth/sign-up', payload, {
-          withCredentials: true,
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const response = await axios.post('/auth/sign-up', payload);
 
       if (response && response.data) {
         this.setSignUpApiStatus('success');
@@ -60,13 +48,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async userProfileApi() {
-      const response = await axios
-        .get('/users', {
-          withCredentials: true,
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const response = await axios.get('/users');
 
       if (response && response.data) {
         this.setUserProfile(response.data.data);
@@ -76,13 +58,7 @@ export const useAuthStore = defineStore('auth', {
       this.logOut = payload;
     },
     async userLogout() {
-      const response = await axios
-        .get('/auth/sign-out', {
-          withCredentials: true,
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const response = await axios.get('/auth/sign-out');
 
       if (response && response.data) {
         this.setLogout(true);

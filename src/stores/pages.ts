@@ -1,14 +1,10 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
+import type { Page } from '../interfaces/Page';
+
 interface State {
-  pages: {
-    id: number;
-    order: number;
-    createdAt: string;
-    name: string;
-    meta: any;
-  }[];
+  pages: Page[];
 }
 
 export const usePagesStore = defineStore('pages', {
@@ -16,10 +12,10 @@ export const usePagesStore = defineStore('pages', {
     pages: [],
   }),
   getters: {
-    getAllPages: (state) => state.pages,
+    getAllPages: (state): Page[] => state.pages,
   },
   actions: {
-    async getAllPagesApi(projectId: number) {
+    async getAllPagesApi(projectId: number): Promise<void> {
       const response = await axios.get('/pages', {
         params: {
           projectId,
@@ -29,26 +25,33 @@ export const usePagesStore = defineStore('pages', {
         this.setPages(response.data.data);
       }
     },
-    getById(id: number) {
+    getById(id: number): Page | undefined {
       return this.pages.find((page) => page.id === id);
     },
-    setPages(payload: any[]) {
-      this.pages = payload;
+    setPages(pages: Page[]): void {
+      this.pages = pages;
     },
-    async createPage(payload: { projectId: number; name: string; meta: any }) {
+    async createPage(payload: {
+      projectId: number;
+      name: string;
+      meta: any;
+    }): Promise<void> {
       await axios.post('/pages', payload);
     },
-    async editPage(pageId: number, payload: { name: string; meta: any }) {
-      await axios.put(`/pages/${pageId}`, payload);
+    async editPage(
+      id: number,
+      payload: { name: string; meta: any }
+    ): Promise<void> {
+      await axios.put(`/pages/${id}`, payload);
     },
-    async updateOrders(projectId: number, orders: any[]) {
+    async updateOrders(projectId: number, orders: any[]): Promise<void> {
       await axios.put('/pages/order', {
         projectId,
         orders,
       });
     },
-    async deletePage(pageId: number) {
-      await axios.delete(`/pages/${pageId}`);
+    async deletePage(id: number): Promise<void> {
+      await axios.delete(`/pages/${id}`);
     },
   },
 });

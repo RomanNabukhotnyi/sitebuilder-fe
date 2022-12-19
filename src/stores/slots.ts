@@ -1,19 +1,15 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-type Content = {
-  text?: string;
-  url?: string;
-  subtext?: string | undefined;
-};
+import type { Slot } from '../interfaces/Slot';
+import type { Block } from '../interfaces/Block';
+
+interface ISlot extends Slot {
+  blocks: Block[];
+}
 
 interface State {
-  slots: {
-    id: number;
-    type: string;
-    order: number;
-    blocks: { id: number; type: string; content: Content }[];
-  }[];
+  slots: ISlot[];
 }
 
 export const useSlotsStore = defineStore('slots', {
@@ -24,59 +20,55 @@ export const useSlotsStore = defineStore('slots', {
     getAllSlots: (state) => state.slots,
   },
   actions: {
-    async getAllSlotsApi(pageId: number) {
+    async getAllSlotsApi(pageId: number): Promise<void> {
       const response = await axios.get('/slots', {
         params: {
           pageId,
         },
       });
       if (response && response.data) {
+        const sortedSlots = response.data.data.sort((a: Slot, b: Slot) => {
+          if (a.order === 0) {
+            return;
+          }
+          return a.order > b.order;
+        }) as ISlot[];
         this.setSlots(
-          response.data.data.sort((a: any, b: any) => {
-            if (a.order === 0) {
-              return;
-            }
-            return a.order > b.order;
-          })
+          await Promise.all(
+            sortedSlots.map(async (slot) => {
+              const blocks = (
+                await axios.get('/blocks', {
+                  params: {
+                    slotId: slot.id,
+                  },
+                })
+              ).data.data.blocks;
+              return {
+                ...slot,
+                blocks,
+              };
+            })
+          )
         );
-      } else {
-        return;
       }
-      this.setSlots(
-        await Promise.all(
-          this.slots.map(async (slot) => {
-            const blocks = (
-              await axios.get('/blocks', {
-                params: {
-                  slotId: slot.id,
-                },
-              })
-            ).data.data.blocks;
-            return {
-              ...slot,
-              blocks,
-            };
-          })
-        )
-      );
     },
     getById(id: number) {
       return this.slots.find((slot) => slot.id === id);
     },
-    async updateOrders(pageId: number, orders: any[]) {
+    async updateOrders(pageId: number, orders: any[]): Promise<void> {
       await axios.put('/slots/order', {
         pageId,
         orders,
       });
     },
-    setSlots(payload: any[]) {
-      this.slots = payload;
+    setSlots(slots: any[]): void {
+      this.slots = slots;
     },
-    async createSlot(payload: { pageId: number; type: string }) {
+    async createSlot(payload: { pageId: number; type: string }): Promise<void> {
       await axios.post('/slots', payload);
     },
-    async deleteSlot(slotId: number) {
-      await axios.delete(`/slots/${slotId}`);
+    async deleteSlot(id: number): Promise<void> {
+      await axios.delete(`/slots/${id}`);
     },
   },
 });

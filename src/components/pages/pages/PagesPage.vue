@@ -4,29 +4,30 @@
       <div class="panel__sort">
         <!-- SORT -->
       </div>
-      <search-page @filter="filter" />
-      <my-dialog v-model:show="dialogVisible">
-        <create-page-form @create="createPage" />
-      </my-dialog>
-      <my-button class="button__create" @click="showDialog">
+      <SearchPage @filter="filter" />
+      <MyDialog v-model:show="dialogVisible">
+        <CreatePageForm @create="createPage" />
+      </MyDialog>
+      <MyButton class="button__create" @click="showDialog">
         Create Page
-      </my-button>
+      </MyButton>
     </div>
     <div>
-      <page-list
+      <PageList
         v-if="getAllPages.length !== 0"
         :pages="getAllPages"
         @edit="editPage"
         @delete="deletePage"
       />
       <div v-else class="noPages">
-        <h3>No pages 🤷‍♀️</h3>
+        <h3>No pages</h3>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import { usePagesStore } from '../../../stores/pages';
 import CreatePageForm from './components/CreatePageForm.vue';
 import PageList from './components/PageList.vue';
@@ -53,7 +54,8 @@ interface Page {
   meta: any;
 }
 
-export default {
+export default defineComponent({
+  name: 'PagesPage',
   components: {
     CreatePageForm,
     MyDialog,
@@ -79,8 +81,8 @@ export default {
       },
     };
   },
-  mounted() {
-    this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
+  async mounted() {
+    await this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
   },
   computed: {
     getAllPages() {
@@ -104,7 +106,7 @@ export default {
         projectId: +this.$route.params.projectId,
         ...page,
       });
-      this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
+      await this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
       this.dialogVisible = false;
     },
     // async updateOrders() {
@@ -118,14 +120,14 @@ export default {
         name: page.name,
         meta: page.meta,
       });
-      this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
+      await this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
     },
     async deletePage(id: number) {
       await this.pagesStore.deletePage(id);
-      this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
+      await this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
     },
   },
-};
+});
 </script>
 
 <style scoped>

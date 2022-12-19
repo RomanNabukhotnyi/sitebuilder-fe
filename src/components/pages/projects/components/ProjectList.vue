@@ -1,8 +1,8 @@
 <template>
   <div class="projectsContainer">
-    <my-dialog v-model:show="dialogVisible">
-      <edit-project-form :project="project" @edit="editProject" />
-    </my-dialog>
+    <MyDialog v-model:show="dialogVisible">
+      <EditProjectForm :project="project" @edit="editProject" />
+    </MyDialog>
     <div
       class="project"
       v-for="project in projects"
@@ -22,15 +22,15 @@
           {{ project.name }}
         </div>
         <div class="actions">
-          <my-button class="button__edit" @click.stop="showDialog(project)">
+          <MyButton class="button__edit" @click.stop="showDialog(project)">
             Edit
-          </my-button>
-          <my-button
+          </MyButton>
+          <MyButton
             class="button__delete"
             @click.stop="deleteProject(project.id)"
           >
             Delete
-          </my-button>
+          </MyButton>
         </div>
       </div>
     </div>
@@ -43,13 +43,10 @@ import MyButton from '../../../common/MyButton.vue';
 import EditProjectForm from './EditProjectForm.vue';
 import MyDialog from '../../../common/MyDialog.vue';
 
-interface Project {
-  id: number;
-  name: string;
-  createdAt: string;
-}
+import type { Project } from '@/interfaces/Project';
 
 export default defineComponent({
+  name: 'ProjectList',
   components: {
     MyButton,
     EditProjectForm,
@@ -72,11 +69,11 @@ export default defineComponent({
   },
   methods: {
     openProject(projectId: number) {
-      this.$router.push(`projects/${projectId}/pages`);
+      this.$router.push(`/projects/${projectId}`);
     },
     showDialog(project: Project) {
-      this.dialogVisible = true;
       this.project = project;
+      this.dialogVisible = true;
     },
     deleteProject(id: number) {
       this.$emit('delete', id);

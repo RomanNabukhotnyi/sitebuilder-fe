@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
+import type { Project } from '../interfaces/Project';
+
 interface State {
-  projects: { id: number; name: string; createdAt: string }[];
+  projects: Project[];
 }
 
 export const useProjectsStore = defineStore('projects', {
@@ -10,29 +12,29 @@ export const useProjectsStore = defineStore('projects', {
     projects: [],
   }),
   getters: {
-    getAllProjects: (state) => state.projects,
+    getAllProjects: (state): Project[] => state.projects,
   },
   actions: {
-    async getAllProjectsApi() {
+    async getAllProjectsApi(): Promise<void> {
       const response = await axios.get('/projects');
       if (response && response.data) {
         this.setProjects(response.data.data);
       }
     },
-    getById(id: number) {
+    getById(id: number): Project | undefined {
       return this.projects.find((project) => project.id === id);
     },
-    setProjects(payload: any[]) {
-      this.projects = payload;
+    setProjects(projects: Project[]): void {
+      this.projects = projects;
     },
-    async createProject(payload: { name: string }) {
+    async createProject(payload: { name: string }): Promise<void> {
       await axios.post('/projects', payload);
     },
-    async editProject(projectId: number, payload: { name: string }) {
-      await axios.put(`/projects/${projectId}`, payload);
+    async editProject(id: number, payload: { name: string }): Promise<void> {
+      await axios.put(`/projects/${id}`, payload);
     },
-    async deleteProject(projectId: number) {
-      await axios.delete(`/projects/${projectId}`);
+    async deleteProject(id: number): Promise<void> {
+      await axios.delete(`/projects/${id}`);
     },
   },
 });

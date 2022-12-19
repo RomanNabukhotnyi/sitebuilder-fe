@@ -1,7 +1,7 @@
 <template>
-  <form @submit.prevent class="form">
+  <div class="form">
     <div class="field">
-      <input
+      <MyInput
         class="input"
         name="Email"
         placeholder="Work email"
@@ -9,23 +9,28 @@
       />
     </div>
     <div class="field">
-      <input
+      <MyInput
         class="input"
         name="Password"
+        type="password"
         placeholder="Password"
         v-model="payload.password"
       />
     </div>
-    <button type="button" class="button" @click="signUp">Sign up</button>
-  </form>
+    <MyButton class="button" @click="signUp">Sign Up</MyButton>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import MyButton from '@/components/common/MyButton.vue';
+import MyInput from '@/components/common/MyInput.vue';
 
 export default defineComponent({
-  setup() {
-    return {};
+  name: 'SignUpForm',
+  components: {
+    MyButton,
+    MyInput,
   },
   data() {
     return {
@@ -38,8 +43,6 @@ export default defineComponent({
   methods: {
     signUp() {
       this.$emit('signUp', this.payload);
-      this.payload.email = '';
-      this.payload.password = '';
     },
   },
 });
@@ -54,14 +57,7 @@ export default defineComponent({
   margin-bottom: 8px;
 }
 .input {
-  border-radius: 2px;
-  background-color: #f7f7f7;
   padding: 0 12px;
-  width: 100%;
-  height: 40px;
-  font-size: 15px;
-  color: #554d56;
-  caret-color: #419bf9;
 }
 .button {
   position: relative;

@@ -8,9 +8,7 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  setup() {
-    return {};
-  },
+  name: 'MyButton',
 });
 </script>
 
@@ -27,5 +25,8 @@ export default defineComponent({
   justify-content: center;
   cursor: pointer;
   padding: 10px;
+}
+.btn:hover {
+  opacity: 0.9;
 }
 </style>

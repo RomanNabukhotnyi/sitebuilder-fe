@@ -14,7 +14,7 @@ const routes = [
   { path: '/sign-up', component: SignUp, meta: { requiredAuth: false } },
   { path: '/login', component: Login, meta: { requiredAuth: false } },
   {
-    path: '/main',
+    path: '/',
     component: Main,
     meta: { requiredAuth: true },
     children: [
@@ -24,17 +24,17 @@ const routes = [
         meta: { requiredAuth: true },
       },
       {
-        path: 'projects/:projectId/pages',
+        path: 'projects/:projectId',
         component: Pages,
         meta: { requiredAuth: true },
       },
       {
-        path: 'projects/:projectId/pages/:pageId/slots',
+        path: 'pages/:pageId',
         component: Slots,
         meta: { requiredAuth: true },
       },
       {
-        path: 'projects/:projectId/pages/:pageId/slots/:slotId/blocks',
+        path: 'slots/:slotId',
         component: Blocks,
         meta: { requiredAuth: true },
       },
@@ -42,7 +42,7 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/main/projects',
+    redirect: '/projects',
   },
 ];
 
@@ -55,12 +55,13 @@ axios.interceptors.response.use(
   },
   async (error) => {
     if (
+      error.response &&
       error.response.status === 401 &&
       error.response.config.url === '/auth/refresh'
     ) {
       routeConfig.push('/login');
       return Promise.reject(error);
-    } else if (error.response.status === 401) {
+    } else if (error.response && error.response.status === 401) {
       await axios.get('/auth/refresh');
       return axios(error.config);
     } else {
@@ -77,11 +78,9 @@ export const routeConfig = createRouter({
 routeConfig.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
   if (to.meta.requiredAuth) {
-    let userProfile = authStore.getUserProfile;
-    if (!userProfile.email) {
+    if (!authStore.getUserProfile.email) {
       await authStore.userProfileApi();
-      userProfile = authStore.getUserProfile;
-      if (!userProfile.email) {
+      if (!authStore.getUserProfile.email) {
         return next({ path: '/login' });
       } else {
         return next();

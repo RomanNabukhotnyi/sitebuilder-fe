@@ -9,23 +9,25 @@
       <h1>Welcome to SiteBuilder!</h1>
       <p>We're so happy you're here, let’s start by signing up.</p>
       <hr />
-      <sign-up-form @signUp="signUp" />
+      <SignUpForm @signUp="signUp" />
       <hr />
       <div class="footer">
         <span
           >Already have an account?
-          <router-link to="/login">Login</router-link></span
-        >
+          <RouterLink to="/login">Login</RouterLink>
+        </span>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import { useAuthStore } from '../../../stores/auth';
 import SignUpForm from './components/SignUpForm.vue';
 
-export default {
+export default defineComponent({
+  name: 'SignUpPage',
   components: {
     SignUpForm,
   },
@@ -40,12 +42,10 @@ export default {
       await this.authStore.signUpApi(payload);
       if (this.authStore.getSignUpApiStatus == 'success') {
         this.$router.push('/login');
-      } else {
-        alert('failed');
       }
     },
   },
-};
+});
 </script>
 
 <style scoped>
@@ -63,6 +63,7 @@ export default {
   height: min-content;
   max-width: 80%;
   max-height: 80%;
+  align-self: center;
 }
 .content {
   display: flex;

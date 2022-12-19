@@ -6,11 +6,11 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
+  name: 'MyInput',
   props: {
-    modelValue: [String, Number],
-  },
-  setup() {
-    return {};
+    modelValue: {
+      type: [String, Number],
+    },
   },
   methods: {
     updateInput(event: any) {
@@ -22,9 +22,14 @@ export default defineComponent({
 
 <style scoped>
 .input {
-  width: 100%;
-  border: 1px solid #419bf9;
   padding: 10px;
-  margin: 15px 0 0;
+  border-radius: 2px;
+  border: 0;
+  background-color: #f7f7f7;
+  height: 40px;
+  font-size: 15px;
+  color: #554d56;
+  caret-color: #419bf9;
+  outline-color: #419bf9;
 }
 </style>

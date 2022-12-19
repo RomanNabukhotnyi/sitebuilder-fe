@@ -1,7 +1,7 @@
 <template>
-  <form @submit.prevent class="form">
+  <div class="form">
     <div class="field">
-      <input
+      <MyInput
         class="input"
         name="Email"
         placeholder="Work email"
@@ -9,7 +9,7 @@
       />
     </div>
     <div class="field">
-      <input
+      <MyInput
         class="input"
         name="Password"
         type="password"
@@ -17,14 +17,21 @@
         v-model="payload.password"
       />
     </div>
-    <button type="button" class="button" @click="login">Login</button>
-  </form>
+    <MyButton class="button" @click="login">Login</MyButton>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import MyButton from '@/components/common/MyButton.vue';
+import MyInput from '@/components/common/MyInput.vue';
 
 export default defineComponent({
+  name: 'LoginForm',
+  components: {
+    MyButton,
+    MyInput,
+  },
   setup() {
     return {};
   },
@@ -39,8 +46,6 @@ export default defineComponent({
   methods: {
     login() {
       this.$emit('login', this.payload);
-      this.payload.email = '';
-      this.payload.password = '';
     },
   },
 });
@@ -55,14 +60,7 @@ export default defineComponent({
   margin-bottom: 8px;
 }
 .input {
-  border-radius: 2px;
-  background-color: #f7f7f7;
   padding: 0 12px;
-  width: 100%;
-  height: 40px;
-  font-size: 15px;
-  color: #554d56;
-  caret-color: #419bf9;
 }
 .button {
   position: relative;
@@ -76,9 +74,5 @@ export default defineComponent({
   background-color: #419bf9;
   color: #fff;
   border-radius: 2px;
-}
-
-.button:hover {
-  opacity: 0.9;
 }
 </style>

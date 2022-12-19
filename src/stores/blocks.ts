@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
+import type { Block } from '../interfaces/Block';
+
 interface State {
-  blocks: any[];
+  blocks: Block[];
 }
 
 export const useBlocksStore = defineStore('blocks', {
@@ -10,10 +12,10 @@ export const useBlocksStore = defineStore('blocks', {
     blocks: [],
   }),
   getters: {
-    getAllBlocks: (state) => state.blocks,
+    getAllBlocks: (state): Block[] => state.blocks,
   },
   actions: {
-    async getAllBlocksApi(slotId: number) {
+    async getAllBlocksApi(slotId: number): Promise<void> {
       const response = await axios.get('/blocks', {
         params: {
           slotId,
@@ -37,20 +39,27 @@ export const useBlocksStore = defineStore('blocks', {
       }
       return false;
     },
-    getById(id: number) {
+    getById(id: number): Block | undefined {
       return this.blocks.find((block) => block.id === id);
     },
-    setBlocks(payload: any[]) {
-      this.blocks = payload;
+    setBlocks(blocks: Block[]): void {
+      this.blocks = blocks;
     },
-    async createBlock(payload: { slotId: number; type: string; content: any }) {
+    async createBlock(payload: {
+      slotId: number;
+      type: string;
+      content: any;
+    }): Promise<void> {
       await axios.post('/blocks', payload);
     },
-    async editBlock(blockId: number, payload: { type: string; content: any }) {
-      await axios.put(`/blocks/${blockId}`, payload);
+    async editBlock(
+      id: number,
+      payload: { type: string; content: any }
+    ): Promise<void> {
+      await axios.put(`/blocks/${id}`, payload);
     },
-    async deleteBlock(blockId: number) {
-      await axios.delete(`/blocks/${blockId}`);
+    async deleteBlock(id: number): Promise<void> {
+      await axios.delete(`/blocks/${id}`);
     },
   },
 });

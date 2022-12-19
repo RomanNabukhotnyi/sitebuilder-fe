@@ -1,9 +1,9 @@
 <template>
-  <form @submit.prevent>
+  <div class="form">
     <h4>Create page</h4>
-    <my-input type="text" placeholder="Name" v-model="page.name" />
-    <my-button class="button" @click="createPage">Create</my-button>
-  </form>
+    <MyInput class="input" type="text" placeholder="Name" v-model="page.name" />
+    <MyButton class="button" @click="createPage">Create</MyButton>
+  </div>
 </template>
 
 <script lang="ts">
@@ -12,6 +12,7 @@ import MyInput from '@/components/common/MyInput.vue';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
+  name: 'CreatePageForm',
   components: {
     MyButton,
     MyInput,
@@ -27,19 +28,20 @@ export default defineComponent({
   methods: {
     createPage() {
       this.$emit('create', this.page);
-      this.page.name = '';
     },
   },
 });
 </script>
 
 <style scoped>
-form {
+.form {
   display: flex;
   flex-direction: column;
 }
+.input {
+  margin: 15px 0;
+}
 .button {
-  margin-top: 15px;
   align-self: flex-end;
 }
 </style>

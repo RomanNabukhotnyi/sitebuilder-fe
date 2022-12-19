@@ -1,8 +1,8 @@
 <template>
   <div class="pagesContainer">
-    <my-dialog v-model:show="dialogVisible">
-      <edit-page-form :page="page" @edit="editPage" />
-    </my-dialog>
+    <MyDialog v-model:show="dialogVisible">
+      <EditPageForm :page="page" @edit="editPage" />
+    </MyDialog>
     <div v-for="page in pages" :key="page.id">
       <div class="page">
         <div @click="openPage(page.id)">
@@ -19,12 +19,12 @@
             <input type="text" v-model="page.name" @change="editPage(page)" />
           </div>
           <div class="actions">
-            <my-button class="button__edit" @click.stop="showDialog(page)">
+            <MyButton class="button__edit" @click.stop="showDialog(page)">
               Edit
-            </my-button>
-            <my-button class="button__delete" @click.stop="deletePage(page.id)">
+            </MyButton>
+            <MyButton class="button__delete" @click.stop="deletePage(page.id)">
               Delete
-            </my-button>
+            </MyButton>
           </div>
         </div>
       </div>
@@ -38,14 +38,10 @@ import MyButton from '@/components/common/MyButton.vue';
 import MyDialog from '@/components/common/MyDialog.vue';
 import EditPageForm from './EditPageForm.vue';
 
-interface Page {
-  id: number;
-  name: string;
-  meta: any;
-  order: number;
-}
+import type { Page } from '@/interfaces/Page';
 
 export default defineComponent({
+  name: 'PageList',
   components: {
     MyButton,
     MyDialog,
@@ -57,9 +53,6 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
-    return {};
-  },
   data() {
     return {
       dialogVisible: false,
@@ -67,22 +60,20 @@ export default defineComponent({
     };
   },
   methods: {
-    sortedPages() {
+    sortedPages(): Page[] {
       return this.$props.pages.sort((a, b) => (a.order > b.order ? 1 : -1));
     },
-    openPage(pageId: number) {
-      this.$router.push(
-        `/main/projects/${+this.$route.params.projectId}/pages/${pageId}/slots`
-      );
+    openPage(pageId: number): void {
+      this.$router.push(`/pages/${pageId}`);
     },
-    showDialog(page: Page) {
+    showDialog(page: Page): void {
       this.dialogVisible = true;
       this.page = page;
     },
-    deletePage(id: number) {
+    deletePage(id: number): void {
       this.$emit('delete', id);
     },
-    editPage(page: Page) {
+    editPage(page: Page): void {
       this.$emit('edit', page);
       this.dialogVisible = false;
     },

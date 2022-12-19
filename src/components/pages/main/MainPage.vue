@@ -1,12 +1,12 @@
 <template>
   <header>
     <div class="icon">
-      <router-link to="/main/projects"
+      <RouterLink to="/main/projects"
         ><img
           width="36"
           height="29"
           src="https://static.thenounproject.com/png/2317669-200.png"
-      /></router-link>
+      /></RouterLink>
     </div>
     <div>Workspace</div>
     <div class="avatar" @click="logout">
@@ -19,14 +19,16 @@
   </header>
 
   <div>
-    <router-view></router-view>
+    <RouterView></RouterView>
   </div>
 </template>
 
 <script lang="ts">
 import { useAuthStore } from '../../../stores/auth';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
+  name: 'MainPage',
   setup() {
     const authStore = useAuthStore();
     return {
@@ -47,7 +49,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style scoped>
