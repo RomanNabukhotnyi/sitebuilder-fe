@@ -61,6 +61,7 @@ export default defineComponent({
 }
 .input {
   padding: 0 12px;
+  width: 100%;
 }
 .button {
   position: relative;
