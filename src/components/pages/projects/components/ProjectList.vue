@@ -7,37 +7,39 @@
         :projects="projects"
       />
     </MyDialog>
-    <div
-      class="project"
-      v-for="project in projects"
-      :key="project.id"
-      @click="openProject(project.id)"
-    >
-      <div class="imageContainer">
-        <img
-          class="projectImage"
-          width="270"
-          height="92"
-          src="https://img.zeplin.io/https%3A%2F%2Fcdn.zeplin.io%2F638878ea1a052582d3461e31%2Fscreens%2F1ef6e135-a095-40bb-a7a6-ef091643fe44.png?w=270&amp;cropTop=0&amp;cropLeft=0&amp;cropWidth=270&amp;cropHeight=92"
-        />
-      </div>
-      <div class="project__body">
-        <div class="projectName">
-          {{ project.name }}
+    <TransitionGroup name="list">
+      <div
+        class="project"
+        v-for="project in projects"
+        :key="project.id"
+        @click="openProject(project.id)"
+      >
+        <div class="imageContainer">
+          <img
+            class="projectImage"
+            width="270"
+            height="92"
+            src="https://img.zeplin.io/https%3A%2F%2Fcdn.zeplin.io%2F638878ea1a052582d3461e31%2Fscreens%2F1ef6e135-a095-40bb-a7a6-ef091643fe44.png?w=270&amp;cropTop=0&amp;cropLeft=0&amp;cropWidth=270&amp;cropHeight=92"
+          />
         </div>
-        <div class="actions">
-          <MyButton class="button__edit" @click.stop="showDialog(project)">
-            Edit
-          </MyButton>
-          <MyButton
-            class="button__delete"
-            @click.stop="deleteProject(project.id)"
-          >
-            Delete
-          </MyButton>
+        <div class="project__body">
+          <div class="projectName">
+            {{ project.name }}
+          </div>
+          <div class="actions">
+            <MyButton class="button__edit" @click.stop="showDialog(project)">
+              Edit
+            </MyButton>
+            <MyButton
+              class="button__delete"
+              @click.stop="deleteProject(project.id)"
+            >
+              Delete
+            </MyButton>
+          </div>
         </div>
       </div>
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -134,5 +136,15 @@ export default defineComponent({
 }
 .button__delete {
   background-color: #ff4747;
+}
+/* animations */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: scale(0.3);
 }
 </style>

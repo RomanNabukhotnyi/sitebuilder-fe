@@ -3,32 +3,37 @@
     <MyDialog v-model:show="dialogVisible">
       <EditPageForm :page="page" @edit="editPage" :pages="pages" />
     </MyDialog>
-    <div v-for="page in pages" :key="page.id">
-      <div class="page">
-        <div @click="openPage(page.id)">
-          <a class="pageImage">
-            <img
-              width="240"
-              height="520"
-              src="https://img.zeplin.io/https%3A%2F%2Fcdn.zeplin.io%2F638878ea1a052582d3461e31%2Fscreens%2Fd3c4ec2b-e88d-4f68-a1ff-ac47e9b32cc7.png?w=240&amp;cropTop=0&amp;cropLeft=0&amp;cropWidth=240&amp;cropHeight=520"
-            />
-          </a>
-        </div>
-        <div class="page__body">
-          <div class="page__name">
-            <input type="text" v-model="page.name" @change="editPage(page)" />
+    <TransitionGroup name="list">
+      <div v-for="page in pages" :key="page.id">
+        <div class="page">
+          <div @click="openPage(page.id)">
+            <a class="pageImage">
+              <img
+                width="240"
+                height="520"
+                src="https://img.zeplin.io/https%3A%2F%2Fcdn.zeplin.io%2F638878ea1a052582d3461e31%2Fscreens%2Fd3c4ec2b-e88d-4f68-a1ff-ac47e9b32cc7.png?w=240&amp;cropTop=0&amp;cropLeft=0&amp;cropWidth=240&amp;cropHeight=520"
+              />
+            </a>
           </div>
-          <div class="actions">
-            <MyButton class="button__edit" @click.stop="showDialog(page)">
-              Edit
-            </MyButton>
-            <MyButton class="button__delete" @click.stop="deletePage(page.id)">
-              Delete
-            </MyButton>
+          <div class="page__body">
+            <div class="page__name">
+              <input type="text" v-model="page.name" @change="editPage(page)" />
+            </div>
+            <div class="actions">
+              <MyButton class="button__edit" @click.stop="showDialog(page)">
+                Edit
+              </MyButton>
+              <MyButton
+                class="button__delete"
+                @click.stop="deletePage(page.id)"
+              >
+                Delete
+              </MyButton>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -150,5 +155,15 @@ export default defineComponent({
 }
 .button__delete {
   background-color: #ff4747;
+}
+/* animations */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: scale(0.3);
 }
 </style>
