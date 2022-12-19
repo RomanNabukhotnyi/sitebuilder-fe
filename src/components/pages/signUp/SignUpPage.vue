@@ -61,7 +61,6 @@ export default defineComponent({
 }
 .illustration img {
   height: min-content;
-  max-width: 80%;
   max-height: 80%;
   align-self: center;
 }
