@@ -69,6 +69,7 @@ axios.interceptors.response.use(
         refreshToken: localStorage.getItem('refreshToken'),
       });
       const accessToken = response.data.data.accessToken;
+      localStorage.removeItem('accessToken');
       localStorage.setItem('accessToken', accessToken);
       return axios(error.config);
     } else {
