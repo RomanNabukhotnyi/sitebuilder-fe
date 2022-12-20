@@ -6,13 +6,14 @@
           <img :src="block.content.url" />
         </div>
         <div class="type__text" v-if="block.type === 'TEXT'">
-          <h1>{{ block.content.text }}</h1>
+          {{ block.content.text }}
         </div>
         <BlockMenu
           :block="block"
           :blocks="mySlot.blocks"
           :mySlot="mySlot"
           @delete="deleteBlock"
+          @editBlock="editBlock"
           @moveLeft="moveLeftBlock"
           @moveRight="moveRightBlock"
         />
@@ -24,6 +25,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import BlockMenu from './BlockMenu.vue';
+import type { Block } from '@/interfaces/Block';
 
 export default defineComponent({
   name: 'SlotList',
@@ -51,6 +53,9 @@ export default defineComponent({
     moveRightBlock(blockId: number, slotId: number) {
       this.$emit('moveRight', blockId, slotId);
     },
+    editBlock(block: Block) {
+      this.$emit('editBlock', block);
+    },
   },
 });
 </script>
@@ -58,7 +63,6 @@ export default defineComponent({
 <style scoped>
 .blocks {
   width: 100%;
-  text-align: center;
   display: flex;
 }
 .blocks .block {
@@ -69,12 +73,10 @@ export default defineComponent({
 }
 .blocks .type__text {
   height: 100%;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  text-align: center;
   align-items: center;
-}
-.blocks .type__text h1 {
-  margin: 5px;
+  padding: 5px;
 }
 .blocks .type__image {
   height: 100%;

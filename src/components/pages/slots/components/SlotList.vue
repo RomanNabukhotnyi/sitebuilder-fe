@@ -19,6 +19,7 @@
           v-else
           :mySlot="slot"
           @deleteBlock="deleteBlock"
+          @editBlock="editBlock"
           @moveLeft="moveLeftBlock"
           @moveRight="moveRightBlock"
         />
@@ -93,6 +94,9 @@ export default defineComponent({
     deleteSlot(id: number) {
       this.$emit('deleteSlot', id);
     },
+    editBlock(block: Block) {
+      this.$emit('editBlock', block);
+    },
     deleteBlock(id: number) {
       this.$emit('deleteBlock', id);
     },
@@ -116,37 +120,7 @@ export default defineComponent({
   justify-content: center;
   height: auto;
 }
-.blocks {
-  width: 100%;
-  text-align: center;
-  display: flex;
-}
-.blocks .block {
-  min-height: 100px;
-  display: block;
-  flex: 1;
-  position: relative;
-}
-.blocks .type__text {
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.blocks .type__text h1 {
-  margin: 5px;
-}
-.blocks .type__image {
-  height: 100%;
-}
-.blocks .type__image img {
-  width: 100%;
-  height: 100%;
-}
 .slot:hover {
-  border: 1px solid #419bf9;
-}
-.block:hover {
   border: 1px solid #419bf9;
 }
 .emptySlot {

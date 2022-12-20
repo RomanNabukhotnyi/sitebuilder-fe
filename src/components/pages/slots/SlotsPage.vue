@@ -4,6 +4,7 @@
       :slots="getAllSlots"
       @create="createBlock"
       @deleteSlot="deleteSlot"
+      @editBlock="editBlock"
       @moveUp="moveUpSlot"
       @moveDown="moveDownSlot"
       @deleteBlock="deleteBlock"
@@ -91,22 +92,13 @@ export default defineComponent({
       await this.slotsStore.deleteSlot(id);
       await this.slotsStore.getAllSlotsApi(+this.$route.params.pageId);
     },
-    // async editBlock() {
-    //   await this.blocksStore.editBlock(this.blockTemp.id!, {
-    //     type: this.blockTemp.type!,
-    //     content: {
-    //       [this.blockTemp.type === 'TEXT' ? 'text' : 'url']:
-    //         this.blockTemp.type === 'TEXT'
-    //           ? this.blockTemp.content!.text
-    //           : this.blockTemp.content!.url,
-    //       subtext:
-    //         this.blockTemp.content!.subtext === ''
-    //           ? undefined
-    //           : this.blockTemp.content!.subtext,
-    //     },
-    //   });
-    //   this.slotsStore.getAllSlotsApi(+this.$route.params.pageId);
-    // },
+    async editBlock(block: Block) {
+      await this.blocksStore.editBlock(block.id, {
+        type: block.type,
+        content: block.content,
+      });
+      this.slotsStore.getAllSlotsApi(+this.$route.params.pageId);
+    },
     async deleteBlock(id: number) {
       await this.blocksStore.deleteBlock(id);
       await this.slotsStore.getAllSlotsApi(+this.$route.params.pageId);
