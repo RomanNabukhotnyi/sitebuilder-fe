@@ -47,7 +47,10 @@ const routes = [
 ];
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
+axios.defaults.headers.common['Cookie'] = `accessToken=${localStorage.getItem(
+  'accessToken'
+)}; refreshToken=${localStorage.getItem('refreshToken')};`;
 
 axios.interceptors.response.use(
   (response) => {
@@ -62,7 +65,9 @@ axios.interceptors.response.use(
       routeConfig.push('/login');
       return Promise.reject(error);
     } else if (error.response && error.response.status === 401) {
-      await axios.get('/auth/refresh');
+      const response = await axios.get('/auth/refresh');
+      const accessToken = response.data.data.accessToken;
+      localStorage.setItem('accessToken', accessToken);
       return axios(error.config);
     } else {
       return Promise.reject(error);

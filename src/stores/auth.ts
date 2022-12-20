@@ -25,8 +25,10 @@ export const useAuthStore = defineStore('auth', {
     },
     async loginApi(payload: { email: string; password: string }) {
       const response = await axios.post('/auth/login', payload);
-
+      const tokens = response.data.data;
       if (response && response.data) {
+        localStorage.setItem('accessToken', tokens.accessToken);
+        localStorage.setItem('refreshToken', tokens.refreshToken);
         this.setLoginApiStatus('success');
       } else {
         this.setLoginApiStatus('failed');
