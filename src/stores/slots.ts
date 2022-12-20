@@ -37,12 +37,19 @@ export const useSlotsStore = defineStore('slots', {
           await Promise.all(
             sortedSlots.map(async (slot) => {
               const blocks = (
-                await axios.get('/blocks', {
-                  params: {
-                    slotId: slot.id,
-                  },
-                })
-              ).data.data.blocks;
+                (
+                  await axios.get('/blocks', {
+                    params: {
+                      slotId: slot.id,
+                    },
+                  })
+                ).data.data.blocks as Block[]
+              ).sort((a, b) => {
+                if (a.order === 0) {
+                  return 1;
+                }
+                return a.order > b.order ? 1 : -1;
+              });
               return {
                 ...slot,
                 blocks,
