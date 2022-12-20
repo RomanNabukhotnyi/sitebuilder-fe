@@ -48,9 +48,9 @@ const routes = [
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
-axios.defaults.headers.common['Cookie'] = `accessToken=${localStorage.getItem(
+axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem(
   'accessToken'
-)}; refreshToken=${localStorage.getItem('refreshToken')};`;
+)}`;
 
 axios.interceptors.response.use(
   (response) => {
@@ -65,7 +65,9 @@ axios.interceptors.response.use(
       routeConfig.push('/login');
       return Promise.reject(error);
     } else if (error.response && error.response.status === 401) {
-      const response = await axios.get('/auth/refresh');
+      const response = await axios.post('/auth/refresh', {
+        refreshToken: localStorage.getItem('refreshToken'),
+      });
       const accessToken = response.data.data.accessToken;
       localStorage.setItem('accessToken', accessToken);
       return axios(error.config);

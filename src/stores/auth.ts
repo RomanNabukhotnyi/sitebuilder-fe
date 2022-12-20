@@ -29,7 +29,6 @@ export const useAuthStore = defineStore('auth', {
       if (response && response.data) {
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);
-        console.log(localStorage.getItem('accessToken'));
         this.setLoginApiStatus('success');
       } else {
         this.setLoginApiStatus('failed');
@@ -51,13 +50,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async userProfileApi() {
-      const response = await axios.get('/users', {
-        headers: {
-          Cookie: `accessToken=${localStorage.getItem(
-            'accessToken'
-          )}; refreshToken=${localStorage.getItem('refreshToken')};`,
-        },
-      });
+      const response = await axios.get('/users');
 
       if (response && response.data) {
         this.setUserProfile(response.data.data);
