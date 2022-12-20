@@ -71,6 +71,9 @@ axios.interceptors.response.use(
       const accessToken = response.data.data.accessToken;
       localStorage.removeItem('accessToken');
       localStorage.setItem('accessToken', accessToken);
+      axios.defaults.headers.common[
+        'Authorization'
+      ] = `Bearer ${localStorage.getItem('accessToken')}`;
       return axios({
         ...error.config,
         headers: {
