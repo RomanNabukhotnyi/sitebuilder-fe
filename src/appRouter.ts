@@ -47,7 +47,7 @@ const routes = [
 ];
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
-// axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true;
 axios.defaults.headers.common['cookie'] = `accessToken=${localStorage.getItem(
   'accessToken'
 )}; refreshToken=${localStorage.getItem('refreshToken')};`;
