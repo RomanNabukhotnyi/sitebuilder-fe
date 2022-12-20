@@ -29,6 +29,7 @@ export const useAuthStore = defineStore('auth', {
       if (response && response.data) {
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);
+        console.log(localStorage.getItem('accessToken'));
         this.setLoginApiStatus('success');
       } else {
         this.setLoginApiStatus('failed');
