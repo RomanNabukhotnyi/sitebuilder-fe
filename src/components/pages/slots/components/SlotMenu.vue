@@ -89,6 +89,7 @@ export default defineComponent({
   left: 100%;
   display: none;
   width: 36px;
+  background-color: white;
   border-radius: 4px;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 10px 0 rgba(0, 0, 0, 0.08),
     0 1px 20px 0 rgba(0, 0, 0, 0.08);
