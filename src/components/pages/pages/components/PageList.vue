@@ -7,13 +7,12 @@
       <div v-for="page in pages" :key="page.id">
         <div class="page">
           <div @click="openPage(page.id)">
-            <a class="pageImage">
-              <img
-                width="240"
-                height="520"
-                src="https://img.zeplin.io/https%3A%2F%2Fcdn.zeplin.io%2F638878ea1a052582d3461e31%2Fscreens%2Fd3c4ec2b-e88d-4f68-a1ff-ac47e9b32cc7.png?w=240&amp;cropTop=0&amp;cropLeft=0&amp;cropWidth=240&amp;cropHeight=520"
-              />
-            </a>
+            <img
+              class="pageImage"
+              width="240"
+              height="520"
+              src="https://img.zeplin.io/https%3A%2F%2Fcdn.zeplin.io%2F638878ea1a052582d3461e31%2Fscreens%2Fd3c4ec2b-e88d-4f68-a1ff-ac47e9b32cc7.png?w=240&amp;cropTop=0&amp;cropLeft=0&amp;cropWidth=240&amp;cropHeight=520"
+            />
           </div>
           <div class="page__body">
             <div class="page__name">
