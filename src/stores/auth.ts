@@ -50,7 +50,13 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async userProfileApi() {
-      const response = await axios.get('/users');
+      const response = await axios.get('/users', {
+        headers: {
+          Cookie: `accessToken=${localStorage.getItem(
+            'accessToken'
+          )}; refreshToken=${localStorage.getItem('refreshToken')};`,
+        },
+      });
 
       if (response && response.data) {
         this.setUserProfile(response.data.data);
@@ -61,7 +67,8 @@ export const useAuthStore = defineStore('auth', {
     },
     async userLogout() {
       const response = await axios.get('/auth/sign-out');
-
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       if (response && response.data) {
         this.setLogout(true);
       } else {
