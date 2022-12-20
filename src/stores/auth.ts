@@ -60,14 +60,14 @@ export const useAuthStore = defineStore('auth', {
       this.logOut = payload;
     },
     async userLogout() {
-      const response = await axios.get('/auth/sign-out');
+      // const response = await axios.get('/auth/sign-out');
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      if (response && response.data) {
-        this.setLogout(true);
-      } else {
-        this.setLogout(false);
-      }
+      // if (response && response.data) {
+      this.setLogout(true);
+      // } else {
+      //   this.setLogout(false);
+      // }
     },
   },
 });
