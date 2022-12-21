@@ -2,8 +2,14 @@
   <div class="form">
     <h4>Edit block</h4>
     <div v-if="block.type === 'TEXT'" class="field">
-      <MyInput
+      <!-- <MyInput
         class="input"
+        placeholder="Text"
+        v-model="content.text"
+        @input="textValidation"
+      /> -->
+      <MyTextarea
+        class="textarea"
         placeholder="Text"
         v-model="content.text"
         @input="textValidation"
@@ -31,6 +37,7 @@
 <script lang="ts">
 import MyButton from '../../../common/MyButton.vue';
 import MyInput from '@/components/common/MyInput.vue';
+import MyTextarea from '@/components/common/MyTextarea.vue';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -38,6 +45,7 @@ export default defineComponent({
   components: {
     MyButton,
     MyInput,
+    MyTextarea,
   },
   props: {
     block: {
@@ -109,6 +117,10 @@ export default defineComponent({
 .select,
 .field {
   margin: 10px 0 0;
+}
+.textarea,
+.input {
+  width: 100%;
 }
 .error {
   font-size: 10px;

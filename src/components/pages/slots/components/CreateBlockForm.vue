@@ -8,8 +8,14 @@
       @select="selectOption"
     />
     <div v-if="selected === 'text'" class="field">
-      <MyInput
+      <!-- <MyInput
         class="input"
+        placeholder="Text"
+        v-model="block.content.text"
+        @input="textValidation"
+      /> -->
+      <MyTextarea
+        class="textarea"
         placeholder="Text"
         v-model="block.content.text"
         @input="textValidation"
@@ -42,6 +48,7 @@
 import MyButton from '../../../common/MyButton.vue';
 import MySelect from '../../../common/MySelect.vue';
 import MyInput from '@/components/common/MyInput.vue';
+import MyTextarea from '@/components/common/MyTextarea.vue';
 import { defineComponent } from 'vue';
 import type { Option } from '@/interfaces/Option';
 
@@ -51,6 +58,7 @@ export default defineComponent({
     MyButton,
     MySelect,
     MyInput,
+    MyTextarea,
   },
   props: {
     slotId: {
@@ -136,6 +144,10 @@ export default defineComponent({
 .select,
 .field {
   margin: 10px 0 0;
+}
+.textarea,
+.input {
+  width: 100%;
 }
 .error {
   font-size: 10px;
