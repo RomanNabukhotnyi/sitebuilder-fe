@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="!loading">
     <div class="panel">
       <div class="panel__sort">
         <!-- SORT -->
@@ -24,6 +24,7 @@
       </div>
     </div>
   </div>
+  <div v-show="loading">Loading...</div>
 </template>
 
 <script lang="ts">
@@ -36,6 +37,7 @@ import SearchProject from './components/SearchProject.vue';
 import { useProjectsStore } from '../../../stores/projects';
 
 interface Data {
+  loading: boolean;
   dialogVisible: boolean;
 }
 
@@ -56,11 +58,14 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      loading: true,
       dialogVisible: false,
     };
   },
   async mounted() {
-    await this.projectsStore.getAllProjectsApi();
+    await this.projectsStore.getAllProjectsApi().then(() => {
+      this.loading = false;
+    });
   },
   computed: {
     getAllProjects() {
