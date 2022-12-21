@@ -13,16 +13,16 @@
       </MyButton>
     </div>
     <div>
+      <!-- v-if="getAllProjects.length !== 0" -->
       <ProjectList
-        v-if="getAllProjects.length !== 0"
         :projects="getAllProjects"
         :loading="loading"
         @edit="editProject"
         @delete="deleteProject"
       />
-      <div v-else class="noProjects">
+      <!-- <div v-else class="noProjects">
         <h3>No projects</h3>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
