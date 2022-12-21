@@ -117,17 +117,6 @@ export default defineComponent({
   top: 0;
   height: 76px;
 }
-.noProjects {
-  padding: 60px 84px 108px;
-  text-align: center;
-}
-.noProjects h3 {
-  line-height: 28px;
-  font-weight: 300;
-  font-size: 24px;
-  color: #554d56;
-  margin-bottom: 12px;
-}
 .button__create {
   margin: 0 36px 0 auto;
 }

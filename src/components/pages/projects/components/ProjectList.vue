@@ -1,5 +1,5 @@
 <template>
-  <div class="projectsContainer" v-show="!loading">
+  <div class="projectsContainer" v-show="!loading && projects.length !== 0">
     <MyDialog v-model:show="dialogVisible">
       <EditProjectForm
         :project="project"
@@ -40,6 +40,9 @@
         </div>
       </div>
     </TransitionGroup>
+  </div>
+  <div v-show="!loading && projects.length === 0" class="noProjects">
+    <h3>No projects</h3>
   </div>
   <div v-show="loading" class="projectsContainer">
     <div
@@ -138,6 +141,17 @@ export default defineComponent({
   line-height: 21px;
   font-size: 18px;
   color: #554d56;
+}
+.noProjects {
+  padding: 60px 84px 108px;
+  text-align: center;
+}
+.noProjects h3 {
+  line-height: 28px;
+  font-weight: 300;
+  font-size: 24px;
+  color: #554d56;
+  margin-bottom: 12px;
 }
 .actions {
   display: flex;
