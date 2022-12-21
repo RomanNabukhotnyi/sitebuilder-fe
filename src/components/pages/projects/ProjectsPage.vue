@@ -1,5 +1,5 @@
 <template>
-  <div v-show="!loading">
+  <div>
     <div class="panel">
       <div class="panel__sort">
         <!-- SORT -->
@@ -16,6 +16,7 @@
       <ProjectList
         v-if="getAllProjects.length !== 0"
         :projects="getAllProjects"
+        :loading="loading"
         @edit="editProject"
         @delete="deleteProject"
       />
@@ -24,7 +25,6 @@
       </div>
     </div>
   </div>
-  <div v-show="loading">Loading...</div>
 </template>
 
 <script lang="ts">

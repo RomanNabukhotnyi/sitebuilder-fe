@@ -1,5 +1,5 @@
 <template>
-  <div class="projectsContainer">
+  <div class="projectsContainer" v-show="!loading">
     <MyDialog v-model:show="dialogVisible">
       <EditProjectForm
         :project="project"
@@ -41,6 +41,14 @@
       </div>
     </TransitionGroup>
   </div>
+  <div v-show="loading" class="projectsContainer">
+    <div
+      class="project-placeholder placeholder-animate"
+      v-for="index in projects.length"
+      :style="{ animationDelay: `1.${index}s` }"
+      :key="index"
+    ></div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -61,6 +69,10 @@ export default defineComponent({
   props: {
     projects: {
       type: Array<Project>,
+      required: true,
+    },
+    loading: {
+      type: Boolean,
       required: true,
     },
   },
@@ -92,7 +104,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .projectsContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, 272px);
@@ -146,5 +158,28 @@ export default defineComponent({
 .list-leave-to {
   opacity: 0;
   transform: scale(0.3);
+}
+
+/* placeholders */
+.project-placeholder {
+  background-color: #f7f7f7;
+  width: 272px;
+  height: 191px;
+  border-radius: 2px;
+}
+@keyframes loading {
+  0% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.placeholder-animate {
+  animation-name: loading;
+  animation-timing-function: steps(10, end);
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+  animation-duration: 1s;
 }
 </style>
