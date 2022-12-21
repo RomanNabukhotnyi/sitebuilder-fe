@@ -1,38 +1,65 @@
 <template>
-  <div class="pagesContainer">
+  <div>
     <MyDialog v-model:show="dialogVisible">
       <EditPageForm :page="page" @edit="editPage" :pages="pages" />
     </MyDialog>
-    <TransitionGroup name="list">
-      <div v-for="page in pages" :key="page.id">
-        <div class="page">
-          <div @click="openPage(page.id)">
-            <img
-              class="pageImage"
-              width="240"
-              height="520"
-              src="https://img.zeplin.io/https%3A%2F%2Fcdn.zeplin.io%2F638878ea1a052582d3461e31%2Fscreens%2Fd3c4ec2b-e88d-4f68-a1ff-ac47e9b32cc7.png?w=240&amp;cropTop=0&amp;cropLeft=0&amp;cropWidth=240&amp;cropHeight=520"
-            />
-          </div>
-          <div class="page__body">
-            <div class="page__name">
-              <input type="text" v-model="page.name" @change="editPage(page)" />
+    <div class="pagesContainer">
+      <Draggable
+        v-show="!loading && pages.length !== 0"
+        v-model="draggablePages"
+        tag="transition-group"
+        @start="onDragStart"
+        @end="onDragEnd"
+        :component-data="{ name: 'list' }"
+      >
+        <template #item="{ element }">
+          <div class="page">
+            <div @click="openPage(element.id)">
+              <img
+                class="pageImage"
+                width="240"
+                height="520"
+                src="https://img.zeplin.io/https%3A%2F%2Fcdn.zeplin.io%2F638878ea1a052582d3461e31%2Fscreens%2Fd3c4ec2b-e88d-4f68-a1ff-ac47e9b32cc7.png?w=240&amp;cropTop=0&amp;cropLeft=0&amp;cropWidth=240&amp;cropHeight=520"
+              />
             </div>
-            <div class="actions">
-              <MyButton class="button__edit" @click.stop="showDialog(page)">
-                Edit
-              </MyButton>
-              <MyButton
-                class="button__delete"
-                @click.stop="deletePage(page.id)"
-              >
-                Delete
-              </MyButton>
+            <div class="page__body">
+              <div class="page__name">
+                <input
+                  type="text"
+                  v-model="element.name"
+                  @change="editPage(element)"
+                />
+              </div>
+              <div class="actions">
+                <MyButton
+                  class="button__edit"
+                  @click.stop="showDialog(element)"
+                >
+                  Edit
+                </MyButton>
+                <MyButton
+                  class="button__delete"
+                  @click.stop="deletePage(element.id)"
+                >
+                  Delete
+                </MyButton>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </TransitionGroup>
+        </template>
+      </Draggable>
+    </div>
+    <div v-show="!loading && pages.length === 0" class="noPages">
+      <h3>No pages</h3>
+    </div>
+    <div v-show="loading" class="pagesContainer">
+      <div
+        class="page-placeholder placeholder-animate"
+        v-for="item in 3"
+        :style="{ animationDelay: `1.${item}s` }"
+        :key="item"
+      ></div>
+    </div>
   </div>
 </template>
 
@@ -41,6 +68,7 @@ import { defineComponent } from 'vue';
 import MyButton from '@/components/common/MyButton.vue';
 import MyDialog from '@/components/common/MyDialog.vue';
 import EditPageForm from './EditPageForm.vue';
+import Draggable from 'vuedraggable';
 
 import type { Page } from '@/interfaces/Page';
 
@@ -50,18 +78,34 @@ export default defineComponent({
     MyButton,
     MyDialog,
     EditPageForm,
+    Draggable,
   },
   props: {
     pages: {
       type: Array<Page>,
       required: true,
     },
+    loading: {
+      type: Boolean,
+      required: true,
+    },
   },
+  emits: ['delete', 'edit', 'updateOrders'],
   data() {
     return {
       dialogVisible: false,
       page: {},
     };
+  },
+  computed: {
+    draggablePages: {
+      get() {
+        return this.pages;
+      },
+      set(value: any) {
+        this.$emit('updateOrders', value);
+      },
+    },
   },
   methods: {
     sortedPages(): Page[] {
@@ -81,36 +125,20 @@ export default defineComponent({
       this.$emit('edit', page);
       this.dialogVisible = false;
     },
-    // onDragStart(event: DragEvent, page: any) {
-    //   event.dataTransfer!.dropEffect = 'move';
-    //   event.dataTransfer!.effectAllowed = 'move';
-    //   event.dataTransfer!.setData('pageId', String(page.id));
-    //   event.dataTransfer!.setData('orderBefore', String(page.order));
-    // },
-    // onDrop(event: DragEvent, order: number) {
-    //   const pageId = +event.dataTransfer!.getData('pageId');
-    //   const orderBefore = +event.dataTransfer!.getData('orderBefore');
-    //   console.log(orderBefore);
-    //   let arr: any[] = this.$props.pages.map((page) => {
-    //     if (page.order === order) {
-    //       page.order = orderBefore;
-    //     }
-    //     if (page.id === pageId) {
-    //       page.order = order;
-    //     }
-    //     return page;
-    //   });
-    //   if (arr.find((page) => page.order === 0)) {
-    //     arr = arr.map((page) => ({ ...page, order: page.order + 1 }));
-    //   }
-    //   this.pagesStore.setPages(arr);
-    //   this.updateOrders();
-    // },
+    onDragStart(e: any) {
+      e.target.classList.add('grabbing');
+    },
+    onDragEnd(e: any) {
+      e.target.classList.remove('grabbing');
+    },
   },
 });
 </script>
 
 <style scoped>
+.grabbing {
+  cursor: grabbing !important;
+}
 .pagesContainer {
   grid-gap: 24px;
   padding: 12px 36px;
@@ -120,6 +148,7 @@ export default defineComponent({
 }
 .page {
   position: relative;
+  background-color: white;
   outline: 1px solid rgba(188, 181, 185, 0.3);
   border-radius: 2px;
 }
@@ -145,6 +174,17 @@ export default defineComponent({
   border-image-slice: 0 0 2 0;
   border-image-repeat: repeat;
 }
+.noPages {
+  padding: 60px 84px 108px;
+  text-align: center;
+}
+.noPages h3 {
+  line-height: 28px;
+  font-weight: 300;
+  font-size: 24px;
+  color: #554d56;
+  margin-bottom: 12px;
+}
 .actions {
   display: flex;
   justify-content: end;
@@ -155,7 +195,30 @@ export default defineComponent({
 .button__delete {
   background-color: #ff4747;
 }
+/* placeholders */
+.page-placeholder {
+  background-color: #f7f7f7;
+  width: 240px;
+  height: 590px;
+  border-radius: 2px;
+}
+@keyframes loading {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.placeholder-animate {
+  animation-name: loading;
+  animation-timing-function: steps(10, end);
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+  animation-duration: 1s;
+}
 /* animations */
+.list-move,
 .list-enter-active,
 .list-leave-active {
   transition: all 0.5s ease;

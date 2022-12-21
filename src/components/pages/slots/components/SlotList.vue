@@ -1,5 +1,5 @@
 <template>
-  <div class="slots">
+  <div class="slots" v-show="!loading && slots.length !== 0">
     <MyDialog v-model:show="dialogVisible">
       <CreateBlockForm :slotId="slotId" @create="createBlock" />
     </MyDialog>
@@ -33,6 +33,14 @@
       </div>
     </TransitionGroup>
   </div>
+  <div v-show="loading">
+    <div
+      class="slot-placeholder placeholder-animate"
+      v-for="item in 3"
+      :style="{ animationDelay: `1.${item}s` }"
+      :key="item"
+    ></div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -60,6 +68,10 @@ export default defineComponent({
   props: {
     slots: {
       type: Array<ISlot>,
+      required: true,
+    },
+    loading: {
+      type: Boolean,
       required: true,
     },
   },
@@ -142,6 +154,26 @@ export default defineComponent({
   background-color: #6a6a6a;
   color: white;
   padding: 5px;
+}
+/* placeholders */
+.slot-placeholder {
+  background-color: #f7f7f7;
+  height: 100px;
+}
+@keyframes loading {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.placeholder-animate {
+  animation-name: loading;
+  animation-timing-function: steps(10, end);
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+  animation-duration: 1s;
 }
 /* animations */
 .list-move,

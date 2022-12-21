@@ -14,14 +14,12 @@
     </div>
     <div>
       <PageList
-        v-if="getAllPages.length !== 0"
+        :loading="loading"
         :pages="getAllPages"
         @edit="editPage"
         @delete="deletePage"
+        @updateOrders="updateOrders"
       />
-      <div v-else class="noPages">
-        <h3>No pages</h3>
-      </div>
     </div>
   </div>
 </template>
@@ -34,8 +32,10 @@ import PageList from './components/PageList.vue';
 import MyDialog from '@/components/common/MyDialog.vue';
 import MyButton from '@/components/common/MyButton.vue';
 import SearchPage from './components/SearchPage.vue';
+import type { Page } from '@/interfaces/Page';
 
 interface Data {
+  loading: boolean;
   dialogVisible: boolean;
   search: string;
   orderTemp: number;
@@ -46,12 +46,6 @@ interface Data {
       url?: string;
     };
   };
-}
-
-interface Page {
-  id: number;
-  name: string;
-  meta: any;
 }
 
 export default defineComponent({
@@ -71,6 +65,7 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      loading: true,
       dialogVisible: false,
       search: '',
       orderTemp: 0,
@@ -81,8 +76,10 @@ export default defineComponent({
       },
     };
   },
-  async mounted() {
-    await this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
+  mounted() {
+    this.pagesStore.getAllPagesApi(+this.$route.params.projectId).then(() => {
+      this.loading = false;
+    });
   },
   computed: {
     getAllPages() {
@@ -109,12 +106,13 @@ export default defineComponent({
       await this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
       this.dialogVisible = false;
     },
-    // async updateOrders() {
-    //   await this.pagesStore.updateOrders(
-    //     +this.$route.params.projectId,
-    //     this.getAllPages.map((page) => ({ id: page.id, order: page.order }))
-    //   );
-    // },
+    async updateOrders(pages: Page[]) {
+      await this.pagesStore.updateOrders(
+        +this.$route.params.projectId,
+        pages.map((page, index) => ({ id: page.id, order: index + 1 }))
+      );
+      this.pagesStore.setPages(pages);
+    },
     async editPage(page: Page) {
       await this.pagesStore.editPage(page.id, {
         name: page.name,
@@ -141,16 +139,5 @@ export default defineComponent({
 }
 .button__create {
   margin: 0 36px 0 auto;
-}
-.noPages {
-  padding: 60px 84px 108px;
-  text-align: center;
-}
-.noPages h3 {
-  line-height: 28px;
-  font-weight: 300;
-  font-size: 24px;
-  color: #554d56;
-  margin-bottom: 12px;
 }
 </style>

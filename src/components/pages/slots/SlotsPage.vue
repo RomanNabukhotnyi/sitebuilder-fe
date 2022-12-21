@@ -1,6 +1,7 @@
 <template>
   <div class="page">
     <SlotList
+      :loading="loading"
       :slots="getAllSlots"
       @create="createBlock"
       @deleteSlot="deleteSlot"
@@ -33,6 +34,7 @@ import SlotList from './components/SlotList.vue';
 import type { Block } from '@/interfaces/Block';
 
 interface Data {
+  loading: boolean;
   dialogVisible: boolean;
 }
 
@@ -54,11 +56,14 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      loading: true,
       dialogVisible: false,
     };
   },
-  async mounted() {
-    await this.slotsStore.getAllSlotsApi(+this.$route.params.pageId);
+  mounted() {
+    this.slotsStore.getAllSlotsApi(+this.$route.params.pageId).then(() => {
+      this.loading = false;
+    });
   },
   computed: {
     getAllSlots() {

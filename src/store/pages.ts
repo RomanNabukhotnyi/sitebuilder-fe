@@ -22,7 +22,14 @@ export const usePagesStore = defineStore('pages', {
         },
       });
       if (response && response.data) {
-        this.setPages(response.data.data);
+        this.setPages(
+          (response.data.data as Page[]).sort((a, b) => {
+            if (a.order === 0) {
+              return 1;
+            }
+            return a.order > b.order ? 1 : -1;
+          })
+        );
       }
     },
     getById(id: number): Page | undefined {

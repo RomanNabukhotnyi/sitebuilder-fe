@@ -6,7 +6,6 @@ import Main from './components/pages/main/MainPage.vue';
 import Projects from './components/pages/projects/ProjectsPage.vue';
 import Pages from './components/pages/pages/PagesPage.vue';
 import Slots from './components/pages/slots/SlotsPage.vue';
-import Blocks from './components/pages/blocks/BlocksPage.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from './store/auth';
 
@@ -31,11 +30,6 @@ const routes = [
       {
         path: 'pages/:pageId',
         component: Slots,
-        meta: { requiredAuth: true },
-      },
-      {
-        path: 'slots/:slotId',
-        component: Blocks,
         meta: { requiredAuth: true },
       },
     ],
