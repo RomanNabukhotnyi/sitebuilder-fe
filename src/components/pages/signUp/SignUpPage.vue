@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useAuthStore } from '../../../stores/auth';
+import { useAuthStore } from '../../../store/auth';
 import SignUpForm from './components/SignUpForm.vue';
 
 export default defineComponent({

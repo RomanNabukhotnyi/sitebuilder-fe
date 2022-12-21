@@ -44,9 +44,9 @@
   <div v-show="loading" class="projectsContainer">
     <div
       class="project-placeholder placeholder-animate"
-      v-for="index in projects.length"
-      :style="{ animationDelay: `1.${index}s` }"
-      :key="index"
+      v-for="item in 3"
+      :style="{ animationDelay: `1.${item}s` }"
+      :key="item"
     ></div>
   </div>
 </template>
@@ -169,7 +169,7 @@ export default defineComponent({
 }
 @keyframes loading {
   0% {
-    opacity: 0.2;
+    opacity: 0.3;
   }
   100% {
     opacity: 1;

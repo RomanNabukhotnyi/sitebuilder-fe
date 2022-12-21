@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { useAuthStore } from '../../../stores/auth';
+import { useAuthStore } from '../../../store/auth';
 import { defineComponent } from 'vue';
 import LoginForm from './components/LoginForm.vue';
 

@@ -233,7 +233,7 @@
 </template>
 
 <script lang="ts">
-import { useBlocksStore } from '../../../stores/blocks';
+import { useBlocksStore } from '../../../store/blocks';
 
 type Content = {
   text?: string;

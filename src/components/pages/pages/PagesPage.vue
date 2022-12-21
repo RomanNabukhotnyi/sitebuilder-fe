@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { usePagesStore } from '../../../stores/pages';
+import { usePagesStore } from '../../../store/pages';
 import CreatePageForm from './components/CreatePageForm.vue';
 import PageList from './components/PageList.vue';
 import MyDialog from '@/components/common/MyDialog.vue';

@@ -24,8 +24,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useSlotsStore } from '../../../stores/slots';
-import { useBlocksStore } from '../../../stores/blocks';
+import { useSlotsStore } from '../../../store/slots';
+import { useBlocksStore } from '../../../store/blocks';
 import MyButton from '@/components/common/MyButton.vue';
 import MyDialog from '@/components/common/MyDialog.vue';
 import CreateSlotForm from './components/CreateSlotForm.vue';

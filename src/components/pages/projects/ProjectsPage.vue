@@ -34,7 +34,7 @@ import MyDialog from '../../common/MyDialog.vue';
 import CreateProjectForm from './components/CreateProjectForm.vue';
 import MyButton from '../../common/MyButton.vue';
 import SearchProject from './components/SearchProject.vue';
-import { useProjectsStore } from '../../../stores/projects';
+import { useProjectsStore } from '../../../store/projects';
 
 interface Data {
   loading: boolean;
@@ -62,10 +62,15 @@ export default defineComponent({
       dialogVisible: false,
     };
   },
-  async mounted() {
-    await this.projectsStore.getAllProjectsApi().then(() => {
+  mounted() {
+    this.projectsStore.getAllProjectsApi().then(() => {
       this.loading = false;
     });
+    // setTimeout(() => {
+    //   this.loading = false;
+    // }, 5000);
+
+    // this.loading = false;
   },
   computed: {
     getAllProjects() {
