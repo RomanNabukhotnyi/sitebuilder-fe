@@ -9,7 +9,7 @@
         tag="transition-group"
         @start="onDragStart"
         @end="onDragEnd"
-        :component-data="{ name: 'list' }"
+        :component-data="{ name: 'pageList' }"
       >
         <template #item="{ element }">
           <div class="page">
@@ -217,13 +217,12 @@ export default defineComponent({
   animation-duration: 1s;
 }
 /* animations */
-.list-move,
-.list-enter-active,
-.list-leave-active {
+.pageList-enter-active,
+.pageList-leave-active {
   transition: all 0.5s ease;
 }
-.list-enter-from,
-.list-leave-to {
+.pageList-enter-from,
+.pageList-leave-to {
   opacity: 0;
   transform: scale(0.3);
 }

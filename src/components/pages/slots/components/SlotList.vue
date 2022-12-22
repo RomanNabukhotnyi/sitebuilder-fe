@@ -1,45 +1,47 @@
 <template>
-  <div class="slots" v-show="!loading && slots.length !== 0">
+  <div>
     <MyDialog v-model:show="dialogVisible">
       <CreateBlockForm :slotId="slotId" @create="createBlock" />
     </MyDialog>
-    <TransitionGroup name="list">
-      <div class="slot" v-for="slot in slots" :key="slot.id">
-        <div v-if="slot.type === 'STATIC'" class="staticSlot">STATIC</div>
-        <div
-          class="emptySlot"
-          v-else-if="slot.blocks.length === 0 && slot.type !== 'STATIC'"
-          @click="slot.type !== 'STATIC' && showDialog(slot.id)"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" />
-          </svg>
+    <div class="slots" v-show="!loading && slots.length !== 0">
+      <TransitionGroup name="list">
+        <div class="slot" v-for="slot in slots" :key="slot.id">
+          <div v-if="slot.type === 'STATIC'" class="staticSlot">STATIC</div>
+          <div
+            class="emptySlot"
+            v-else-if="slot.blocks.length === 0 && slot.type !== 'STATIC'"
+            @click="slot.type !== 'STATIC' && showDialog(slot.id)"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" />
+            </svg>
+          </div>
+          <BlockList
+            v-else
+            :mySlot="slot"
+            @deleteBlock="deleteBlock"
+            @editBlock="editBlock"
+            @moveLeft="moveLeftBlock"
+            @moveRight="moveRightBlock"
+          />
+          <SlotMenu
+            :mySlot="slot"
+            @create="createBlock"
+            @delete="deleteSlot"
+            @moveUp="moveUpSlot"
+            @moveDown="moveDownSlot"
+          />
         </div>
-        <BlockList
-          v-else
-          :mySlot="slot"
-          @deleteBlock="deleteBlock"
-          @editBlock="editBlock"
-          @moveLeft="moveLeftBlock"
-          @moveRight="moveRightBlock"
-        />
-        <SlotMenu
-          :mySlot="slot"
-          @create="createBlock"
-          @delete="deleteSlot"
-          @moveUp="moveUpSlot"
-          @moveDown="moveDownSlot"
-        />
-      </div>
-    </TransitionGroup>
-  </div>
-  <div v-show="loading">
-    <div
-      class="slot-placeholder placeholder-animate"
-      v-for="item in 3"
-      :style="{ animationDelay: `1.${item}s` }"
-      :key="item"
-    ></div>
+      </TransitionGroup>
+    </div>
+    <div v-show="loading">
+      <div
+        class="slot-placeholder placeholder-animate"
+        v-for="item in 3"
+        :style="{ animationDelay: `1.${item}s` }"
+        :key="item"
+      ></div>
+    </div>
   </div>
 </template>
 
@@ -185,5 +187,8 @@ export default defineComponent({
 .list-leave-to {
   opacity: 0;
   transform: scale(0.3);
+}
+.list-leave-active {
+  position: absolute;
 }
 </style>
