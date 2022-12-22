@@ -7,9 +7,12 @@
       <Draggable
         v-model="draggablePages"
         tag="transition-group"
-        @start="onDragStart"
-        @end="onDragEnd"
-        :component-data="{ name: 'pageList' }"
+        group="pages"
+        animation="200"
+        ghost-class="ghost"
+        :component-data="{
+          name: 'pageList',
+        }"
       >
         <template #item="{ element }">
           <div class="page">
@@ -124,19 +127,13 @@ export default defineComponent({
       this.$emit('edit', page);
       this.dialogVisible = false;
     },
-    onDragStart(e: any) {
-      e.target.classList.add('grabbing');
-    },
-    onDragEnd(e: any) {
-      e.target.classList.remove('grabbing');
-    },
   },
 });
 </script>
 
 <style scoped>
-.grabbing {
-  cursor: grabbing !important;
+.ghost {
+  opacity: 0.5;
 }
 .pagesContainer {
   grid-gap: 24px;
@@ -146,6 +143,7 @@ export default defineComponent({
   justify-content: center;
 }
 .page {
+  cursor: move;
   position: relative;
   background-color: white;
   outline: 1px solid rgba(188, 181, 185, 0.3);
@@ -217,9 +215,12 @@ export default defineComponent({
   animation-duration: 1s;
 }
 /* animations */
+.pageList-move {
+  transition: transform 0.5s;
+}
 .pageList-enter-active,
 .pageList-leave-active {
-  transition: all 0.5s ease;
+  transition: all 0.5s ease !important;
 }
 .pageList-enter-from,
 .pageList-leave-to {
