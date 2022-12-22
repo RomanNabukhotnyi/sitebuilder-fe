@@ -89,7 +89,6 @@ export default defineComponent({
 <style scoped lang="scss">
 .select {
   color: #fff;
-  background-color: #419bf9;
   cursor: pointer;
   border-radius: 5px;
 }
@@ -97,10 +96,14 @@ export default defineComponent({
   padding: 10px;
   display: flex;
   border-radius: 5px 5px 0 0;
+  background-color: #419bf9;
   justify-content: space-between;
   svg {
     align-self: center;
     margin: 0 0 0 10px;
+  }
+  &:first-child:last-child {
+    border-radius: 5px;
   }
 }
 .selected:hover {

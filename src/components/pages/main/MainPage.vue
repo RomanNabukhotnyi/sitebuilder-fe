@@ -14,7 +14,7 @@
         viewBox="0 0 8 5"
         width="8px"
         height="5px"
-        class="chevron"
+        class="arrow"
         fill="currentColor"
       >
         <g class="chevron__group">
@@ -88,7 +88,7 @@ header {
   font-size: 15px;
   color: #554d56;
 }
-.chevron {
+.arrow {
   width: 10px;
   height: 10px;
   transform: rotate(90deg);
