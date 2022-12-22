@@ -3,9 +3,8 @@
     <MyDialog v-model:show="dialogVisible">
       <EditPageForm :page="page" @edit="editPage" :pages="pages" />
     </MyDialog>
-    <div class="pagesContainer">
+    <div class="pagesContainer" v-show="!loading && pages.length !== 0">
       <Draggable
-        v-show="!loading && pages.length !== 0"
         v-model="draggablePages"
         tag="transition-group"
         @start="onDragStart"
