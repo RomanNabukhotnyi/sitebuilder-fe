@@ -1,14 +1,17 @@
 <template>
   <header>
     <div class="icon">
-      <RouterLink to="/main/projects"
-        ><img
+      <RouterLink to="/main/projects">
+        <img
           width="36"
           height="29"
           src="https://static.thenounproject.com/png/2317669-200.png"
       /></RouterLink>
     </div>
-    <div>Workspace</div>
+    <div class="back" @click="goBack" v-if="$route.path !== '/projects'">
+      Back
+    </div>
+    <div class="title">Workspace</div>
     <div class="avatar" @click="logout">
       <img
         src="https://lh3.googleusercontent.com/a/ALm5wu1GtNGrAmCvrQInUoiVlcw1gc5hnOV9xdiTQib6=s96-c"
@@ -47,6 +50,9 @@ export default defineComponent({
         this.$router.push('/login');
       }
     },
+    goBack() {
+      this.$router.back();
+    },
   },
 });
 </script>
@@ -63,13 +69,19 @@ header {
   font-size: 15px;
   color: #554d56;
 }
-
+.back {
+  margin: 0 0 0 5px;
+  cursor: pointer;
+}
+.title {
+  margin-left: auto;
+}
 .avatar {
   width: 28px;
   height: 28px;
   cursor: pointer;
+  margin-left: auto;
 }
-
 .avatar img {
   border-radius: 50%;
 }
