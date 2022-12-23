@@ -159,7 +159,7 @@ export default defineComponent({
 }
 /* placeholders */
 .slot-placeholder {
-  background-color: #f7f7f7;
+  background-color: #eeeeee;
   height: 100px;
 }
 @keyframes loading {

@@ -88,9 +88,9 @@ export const routeConfig = createRouter({
 routeConfig.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
   if (to.meta.requiredAuth) {
-    if (!authStore.user.email) {
+    if (!authStore.user?.email) {
       await authStore.getUser();
-      if (!authStore.user.email) {
+      if (!authStore.user?.email) {
         return next({ path: '/login' });
       }
     }

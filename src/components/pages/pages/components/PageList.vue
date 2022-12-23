@@ -194,7 +194,7 @@ export default defineComponent({
 }
 /* placeholders */
 .page-placeholder {
-  background-color: #f7f7f7;
+  background-color: #eeeeee;
   width: 240px;
   height: 590px;
   border-radius: 2px;

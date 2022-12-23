@@ -28,7 +28,7 @@ export default defineComponent({
   },
   methods: {
     filter() {
-      this.$emit('filter', this.search);
+      this.$emit('update:search', this.search);
     },
   },
 });
@@ -60,7 +60,7 @@ export default defineComponent({
   font-size: 15px;
   padding: 0 5px 0 34px;
   color: #554d56;
-  background-color: #f7f7f7;
+  background-color: #eeeeee;
   caret-color: #419bf9;
 }
 </style>

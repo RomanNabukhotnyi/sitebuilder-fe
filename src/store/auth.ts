@@ -2,11 +2,14 @@ import { defineStore } from 'pinia';
 import { IError } from '@/interfaces/IError';
 import axios from 'axios';
 
+interface State {
+  user: { email: string } | null;
+  loading: boolean;
+}
+
 export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: {
-      email: '',
-    },
+  state: (): State => ({
+    user: null,
     loading: false,
   }),
   getters: {
@@ -14,8 +17,8 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async login(payload: { email: string; password: string }) {
-      this.loading = true;
       try {
+        this.loading = true;
         const response = await axios.post('/auth/login', payload);
         const tokens = response.data.data;
         localStorage.setItem('accessToken', tokens.accessToken);
@@ -27,8 +30,8 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async signUp(payload: { email: string; password: string }) {
-      this.loading = true;
       try {
+        this.loading = true;
         await axios.post('/auth/sign-up', payload);
       } catch (error) {
         throw new IError(error);

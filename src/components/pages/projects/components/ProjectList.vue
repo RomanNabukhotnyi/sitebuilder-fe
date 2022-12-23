@@ -2,16 +2,23 @@
   <div>
     <MyDialog v-model:show="dialogVisible">
       <EditProjectForm
-        :project="project"
+        :project="project!"
         @edit="editProject"
         :projects="projects"
       />
     </MyDialog>
-    <div class="projectsContainer" v-show="!loading && projects.length !== 0">
+    <div
+      class="projectsContainer"
+      v-show="!loadingGetProjects && projects.length !== 0"
+    >
       <TransitionGroup name="list">
         <div
-          class="project"
           v-for="project in projects"
+          :class="{
+            project: true,
+            deleteProject: loadingDeleteProject && project.id === deleteId,
+          }"
+          :disabled="loadingDeleteProject && project.id === deleteId"
           :key="project.id"
           @click="openProject(project.id)"
         >
@@ -42,10 +49,13 @@
         </div>
       </TransitionGroup>
     </div>
-    <div v-show="!loading && projects.length === 0" class="noProjects">
+    <div
+      v-show="!loadingGetProjects && projects.length === 0"
+      class="noProjects"
+    >
       <h3>No projects</h3>
     </div>
-    <div v-show="loading" class="projectsContainer">
+    <div v-show="loadingGetProjects" class="projectsContainer">
       <div
         class="project-placeholder placeholder-animate"
         v-for="item in 3"
@@ -64,6 +74,12 @@ import MyDialog from '../../../common/MyDialog.vue';
 
 import type { Project } from '@/interfaces/Project';
 
+interface Data {
+  dialogVisible: boolean;
+  project: Project | null;
+  deleteId: number | null;
+}
+
 export default defineComponent({
   name: 'ProjectList',
   components: {
@@ -76,7 +92,19 @@ export default defineComponent({
       type: Array<Project>,
       required: true,
     },
-    loading: {
+    loadingGetProjects: {
+      type: Boolean,
+      required: true,
+    },
+    loadingCreateProject: {
+      type: Boolean,
+      required: true,
+    },
+    loadingEditProject: {
+      type: Boolean,
+      required: true,
+    },
+    loadingDeleteProject: {
       type: Boolean,
       required: true,
     },
@@ -84,10 +112,11 @@ export default defineComponent({
   setup() {
     return {};
   },
-  data() {
+  data(): Data {
     return {
       dialogVisible: false,
-      project: {},
+      project: null,
+      deleteId: null,
     };
   },
   methods: {
@@ -99,6 +128,7 @@ export default defineComponent({
       this.dialogVisible = true;
     },
     deleteProject(id: number) {
+      this.deleteId = id;
       this.$emit('delete', id);
     },
     editProject(project: { id: number; name: string }) {
@@ -137,6 +167,9 @@ export default defineComponent({
 .project__body {
   padding: 18px 12px 12px;
   background-color: #fff;
+}
+.deleteProject {
+  opacity: 0.5;
 }
 .project__body .projectName {
   margin-bottom: 18px;
@@ -178,7 +211,7 @@ export default defineComponent({
 
 /* placeholders */
 .project-placeholder {
-  background-color: #f7f7f7;
+  background-color: #eeeeee;
   width: 272px;
   height: 191px;
   border-radius: 2px;
