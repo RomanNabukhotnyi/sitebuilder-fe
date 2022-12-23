@@ -20,7 +20,11 @@
           }"
           :disabled="loadingDeleteProject && project.id === deleteId"
           :key="project.id"
-          @click="openProject(project.id)"
+          @click="
+            loadingDeleteProject &&
+              project.id === deleteId &&
+              openProject(project.id)
+          "
         >
           <div class="imageContainer">
             <img
