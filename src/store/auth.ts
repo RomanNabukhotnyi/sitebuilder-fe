@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('auth', {
         const tokens = response.data.data;
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);
-        this.getUser();
+        await this.getUser();
       } catch (error) {
         throw new IError(error);
       } finally {
