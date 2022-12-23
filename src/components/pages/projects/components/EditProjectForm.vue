@@ -47,6 +47,13 @@ export default defineComponent({
       nameError: '',
     };
   },
+  created() {
+    window.addEventListener('keyup', (event) => {
+      if (event.code === 'Enter') {
+        this.editProject();
+      }
+    });
+  },
   computed: {
     validation(): boolean {
       return !!this.nameError;
@@ -97,6 +104,7 @@ export default defineComponent({
 }
 .button {
   align-self: flex-end;
+  width: 50%;
 }
 .button:disabled {
   background-color: #a9b5c2;

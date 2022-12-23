@@ -9,7 +9,7 @@
       <h1>Great to have you here!</h1>
       <p>You can login to access your workspace.</p>
       <hr />
-      <LoginForm @login="login" />
+      <LoginForm :loading="loading" @login="login" />
       <hr />
       <div class="footer">
         <span class="footer"
@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { useAuthStore } from '../../../store/auth';
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import LoginForm from './components/LoginForm.vue';
 
 export default defineComponent({
@@ -32,14 +32,16 @@ export default defineComponent({
   },
   setup() {
     const authStore = useAuthStore();
+    const loading = computed(() => authStore.loading);
     return {
       authStore,
+      loading,
     };
   },
   methods: {
     async login(payload: { email: string; password: string }) {
-      await this.authStore.loginApi(payload);
-      if (this.authStore.getLoginApiStatus == 'success') {
+      await this.authStore.login(payload);
+      if (this.authStore.isLoggedIn) {
         this.$router.push('main/projects');
       }
     },
@@ -54,9 +56,8 @@ export default defineComponent({
 }
 .illustration {
   display: flex;
-  justify-content: flex-end;
-  max-width: 50%;
-  padding-right: 68px;
+  width: 50%;
+  justify-content: end;
 
   & img {
     height: min-content;

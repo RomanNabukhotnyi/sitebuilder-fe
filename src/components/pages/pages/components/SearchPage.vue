@@ -58,7 +58,7 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   font-size: 15px;
-  padding: 0 0 0 34px;
+  padding: 0 5px 0 34px;
   color: #554d56;
   background-color: #f7f7f7;
   caret-color: #419bf9;

@@ -1,1 +1,5 @@
 @import 'normalize.css';
+
+.toastBody {
+    font-size: 15px;
+}

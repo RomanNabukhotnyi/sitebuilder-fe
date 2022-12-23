@@ -85,6 +85,13 @@ export default defineComponent({
       ],
     };
   },
+  created() {
+    window.addEventListener('keyup', (event) => {
+      if (event.code === 'Enter') {
+        this.createBlock();
+      }
+    });
+  },
   computed: {
     validation(): boolean {
       return !!this.urlError && !!this.textError;
@@ -156,6 +163,7 @@ export default defineComponent({
 .button {
   margin: 15px 0 0;
   align-self: flex-end;
+  width: 50%;
 }
 .button:disabled {
   background-color: #a9b5c2;

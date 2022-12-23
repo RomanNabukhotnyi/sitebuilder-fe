@@ -9,7 +9,7 @@
       <h1>Welcome to SiteBuilder!</h1>
       <p>We're so happy you're here, let’s start by signing up.</p>
       <hr />
-      <SignUpForm @signUp="signUp" />
+      <SignUpForm :loading="loading" @signUp="signUp" />
       <hr />
       <div class="footer">
         <span
@@ -22,8 +22,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { useAuthStore } from '../../../store/auth';
+import { useToast } from 'vue-toastification';
 import SignUpForm from './components/SignUpForm.vue';
 
 export default defineComponent({
@@ -33,16 +34,19 @@ export default defineComponent({
   },
   setup() {
     const authStore = useAuthStore();
+    const toast = useToast();
+    const loading = computed(() => authStore.loading);
     return {
       authStore,
+      toast,
+      loading,
     };
   },
   methods: {
     async signUp(payload: { email: string; password: string }) {
-      await this.authStore.signUpApi(payload);
-      if (this.authStore.getSignUpApiStatus == 'success') {
-        this.$router.push('/login');
-      }
+      await this.authStore.signUp(payload);
+      this.toast.success('Sign up is successful!');
+      this.$router.push('/login');
     },
   },
 });
@@ -55,9 +59,8 @@ export default defineComponent({
 }
 .illustration {
   display: flex;
-  justify-content: flex-end;
-  max-width: 50%;
-  padding-right: 68px;
+  width: 50%;
+  justify-content: end;
 }
 .illustration img {
   height: min-content;

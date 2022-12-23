@@ -59,15 +59,8 @@ export default defineComponent({
   },
   methods: {
     async logout() {
-      await this.authStore.userLogout();
-      if (this.authStore.getLogout) {
-        const resetUser = {
-          email: '',
-        };
-        this.authStore.setUserProfile(resetUser);
-        this.authStore.setLogout(false);
-        this.$router.push('/login');
-      }
+      await this.authStore.logout();
+      this.$router.push('/login');
     },
     goBack() {
       this.$router.back();

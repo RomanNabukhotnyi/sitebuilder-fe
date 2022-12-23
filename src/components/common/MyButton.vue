@@ -18,13 +18,12 @@ export default defineComponent({
   display: flex;
   background-color: #419bf9;
   color: #fff;
-  height: 28px;
   border-radius: 2px;
   font-size: 15px;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  padding: 10px;
+  padding: 5px 10px;
 }
 .btn:hover {
   opacity: 0.9;

@@ -1,12 +1,14 @@
 <template>
-  <Transition name="fade">
-    <div class="modal-overlay" v-if="show" @click="hideDialog"></div>
-  </Transition>
-  <Transition name="pop">
-    <div class="modal" v-if="show">
-      <slot></slot>
-    </div>
-  </Transition>
+  <div>
+    <Transition name="fade">
+      <div class="modal-overlay" v-if="show" @click="hideDialog"></div>
+    </Transition>
+    <Transition name="pop">
+      <div class="modal" v-if="show">
+        <slot></slot>
+      </div>
+    </Transition>
+  </div>
 </template>
 
 <script lang="ts">
@@ -19,6 +21,13 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+  },
+  created() {
+    window.addEventListener('keyup', (event) => {
+      if (event.code === 'Escape') {
+        this.hideDialog();
+      }
+    });
   },
   methods: {
     hideDialog() {
@@ -61,23 +70,19 @@ export default defineComponent({
 }
 
 /* ---------------------------------- */
-.fade-enter-active,
-.fade-leave-active {
+.fade-enter-active {
   transition: opacity 0.4s linear;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.fade-enter-from {
   opacity: 0;
 }
 
-.pop-enter-active,
-.pop-leave-active {
+.pop-enter-active {
   transition: transform 0.4s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.4s linear;
 }
 
-.pop-enter-from,
-.pop-leave-to {
+.pop-enter-from {
   opacity: 0;
   transform: scale(0.3);
 }

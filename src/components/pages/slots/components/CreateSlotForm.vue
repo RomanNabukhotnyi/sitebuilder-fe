@@ -35,6 +35,13 @@ export default defineComponent({
       ],
     };
   },
+  created() {
+    window.addEventListener('keyup', (event) => {
+      if (event.code === 'Enter') {
+        this.createSlot();
+      }
+    });
+  },
   methods: {
     createSlot() {
       this.$emit('create', this.slot);
@@ -57,5 +64,6 @@ export default defineComponent({
 }
 .button {
   align-self: flex-end;
+  width: 50%;
 }
 </style>

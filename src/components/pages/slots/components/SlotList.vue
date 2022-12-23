@@ -188,7 +188,4 @@ export default defineComponent({
   opacity: 0;
   transform: scale(0.3);
 }
-.list-leave-active {
-  position: absolute;
-}
 </style>

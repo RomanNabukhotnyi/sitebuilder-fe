@@ -88,14 +88,18 @@ export const routeConfig = createRouter({
 routeConfig.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
   if (to.meta.requiredAuth) {
-    if (!authStore.getUserProfile.email) {
-      await authStore.userProfileApi();
-      if (!authStore.getUserProfile.email) {
+    if (!authStore.user.email) {
+      await authStore.getUser();
+      if (!authStore.user.email) {
         return next({ path: '/login' });
-      } else {
-        return next();
       }
     }
+  }
+  if (
+    (to.path === '/login' || to.path === '/sign-up') &&
+    localStorage.getItem('accessToken')
+  ) {
+    return next({ path: '/projects' });
   }
   return next();
 });

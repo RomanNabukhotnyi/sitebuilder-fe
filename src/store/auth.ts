@@ -1,73 +1,57 @@
 import { defineStore } from 'pinia';
+import { IError } from '@/interfaces/IError';
 import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    loginApiStatus: '',
-    signUpApiStatus: '',
-    userProfile: {
+    user: {
       email: '',
     },
-    logOut: false,
+    loading: false,
   }),
   getters: {
-    getLoginApiStatus: (state) => state.loginApiStatus,
-    getSignUpApiStatus: (state) => state.signUpApiStatus,
-    getUserProfile: (state) => state.userProfile,
-    getLogout: (state) => state.logOut,
+    isLoggedIn: (state) => state.user !== null,
   },
   actions: {
-    setLoginApiStatus(data: string) {
-      this.loginApiStatus = data;
-    },
-    setSignUpApiStatus(data: string) {
-      this.signUpApiStatus = data;
-    },
-    async loginApi(payload: { email: string; password: string }) {
-      const response = await axios.post('/auth/login', payload);
-      const tokens = response.data.data;
-      if (response && response.data) {
+    async login(payload: { email: string; password: string }) {
+      this.loading = true;
+      try {
+        const response = await axios.post('/auth/login', payload);
+        const tokens = response.data.data;
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);
-        this.setLoginApiStatus('success');
-      } else {
-        this.setLoginApiStatus('failed');
+      } catch (error) {
+        throw new IError(error);
+      } finally {
+        this.loading = false;
       }
     },
-    setUserProfile(data: { email: string }) {
-      const userProfile = {
-        email: data.email,
-      };
-      this.userProfile = userProfile;
-    },
-    async signUpApi(payload: { email: string; password: string }) {
-      const response = await axios.post('/auth/sign-up', payload);
-
-      if (response && response.data) {
-        this.setSignUpApiStatus('success');
-      } else {
-        this.setSignUpApiStatus('failed');
+    async signUp(payload: { email: string; password: string }) {
+      this.loading = true;
+      try {
+        await axios.post('/auth/sign-up', payload);
+      } catch (error) {
+        throw new IError(error);
+      } finally {
+        this.loading = false;
       }
     },
-    async userProfileApi() {
-      const response = await axios.get('/users');
-
-      if (response && response.data) {
-        this.setUserProfile(response.data.data);
+    async getUser() {
+      try {
+        const response = await axios.get('/users');
+        this.user = { email: response.data.data.email };
+      } catch (error) {
+        throw new IError(error);
       }
     },
-    setLogout(payload: boolean) {
-      this.logOut = payload;
-    },
-    async userLogout() {
-      // const response = await axios.get('/auth/sign-out');
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      // if (response && response.data) {
-      this.setLogout(true);
-      // } else {
-      //   this.setLogout(false);
-      // }
+    async logout() {
+      try {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        this.$reset();
+      } catch (error) {
+        throw new IError(error);
+      }
     },
   },
 });
