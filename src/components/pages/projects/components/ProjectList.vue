@@ -21,8 +21,7 @@
           :disabled="loadingDeleteProject && project.id === deleteId"
           :key="project.id"
           @click="
-            loadingDeleteProject &&
-              project.id === deleteId &&
+            !(loadingDeleteProject && project.id === deleteId) &&
               openProject(project.id)
           "
         >
