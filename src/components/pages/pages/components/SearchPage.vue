@@ -28,7 +28,7 @@ export default defineComponent({
   },
   methods: {
     filter() {
-      this.$emit('filter', this.search);
+      this.$emit('update:search', this.search);
     },
   },
 });

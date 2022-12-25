@@ -1,12 +1,5 @@
 <template>
   <div>
-    <MyDialog v-model:show="dialogVisible">
-      <EditProjectForm
-        :project="project!"
-        @edit="editProject"
-        :projects="projects"
-      />
-    </MyDialog>
     <div
       class="projectsContainer"
       v-show="!loadingGetProjects && projects.length !== 0"
@@ -18,7 +11,6 @@
             project: true,
             deleteProject: loadingDeleteProject && project.id === deleteId,
           }"
-          :disabled="loadingDeleteProject && project.id === deleteId"
           :key="project.id"
           @click="
             !(loadingDeleteProject && project.id === deleteId) &&
@@ -38,12 +30,21 @@
               {{ project.name }}
             </div>
             <div class="actions">
-              <MyButton class="button__edit" @click.stop="showDialog(project)">
+              <MyButton
+                class="button__edit"
+                @click.stop="
+                  !(loadingDeleteProject && project.id === deleteId) &&
+                    showEditDialog(project)
+                "
+              >
                 Edit
               </MyButton>
               <MyButton
                 class="button__delete"
-                @click.stop="deleteProject(project.id)"
+                @click.stop="
+                  !(loadingDeleteProject && project.id === deleteId) &&
+                    deleteProject(project.id)
+                "
               >
                 Delete
               </MyButton>
@@ -72,14 +73,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import MyButton from '../../../common/MyButton.vue';
-import EditProjectForm from './EditProjectForm.vue';
-import MyDialog from '../../../common/MyDialog.vue';
 
 import type { Project } from '@/interfaces/Project';
 
 interface Data {
-  dialogVisible: boolean;
-  project: Project | null;
   deleteId: number | null;
 }
 
@@ -87,8 +84,6 @@ export default defineComponent({
   name: 'ProjectList',
   components: {
     MyButton,
-    EditProjectForm,
-    MyDialog,
   },
   props: {
     projects: {
@@ -96,14 +91,6 @@ export default defineComponent({
       required: true,
     },
     loadingGetProjects: {
-      type: Boolean,
-      required: true,
-    },
-    loadingCreateProject: {
-      type: Boolean,
-      required: true,
-    },
-    loadingEditProject: {
       type: Boolean,
       required: true,
     },
@@ -117,8 +104,6 @@ export default defineComponent({
   },
   data(): Data {
     return {
-      dialogVisible: false,
-      project: null,
       deleteId: null,
     };
   },
@@ -126,17 +111,12 @@ export default defineComponent({
     openProject(projectId: number) {
       this.$router.push(`/projects/${projectId}`);
     },
-    showDialog(project: Project) {
-      this.project = project;
-      this.dialogVisible = true;
+    showEditDialog(project: Project) {
+      this.$emit('showEditDialog', project);
     },
     deleteProject(id: number) {
       this.deleteId = id;
       this.$emit('delete', id);
-    },
-    editProject(project: { id: number; name: string }) {
-      this.$emit('edit', project);
-      this.dialogVisible = false;
     },
   },
 });

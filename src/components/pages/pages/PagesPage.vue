@@ -1,21 +1,35 @@
 <template>
   <div>
+    <MyDialog v-model:show="dialogCreateVisible">
+      <CreatePageForm
+        @create="createPage"
+        :loadingCreatePage="loadingCreatePage"
+        :pages="pages"
+      />
+    </MyDialog>
+    <MyDialog v-model:show="dialogEditVisible">
+      <EditPageForm
+        :page="page!"
+        @edit="editPage"
+        :loadingEditPage="loadingEditPage"
+        :pages="pages"
+      />
+    </MyDialog>
     <div class="panel">
       <div class="panel__sort">
         <!-- SORT -->
       </div>
-      <SearchPage @filter="filter" />
-      <MyDialog v-model:show="dialogVisible">
-        <CreatePageForm @create="createPage" :pages="getAllPages" />
-      </MyDialog>
-      <MyButton class="button__create" @click="showDialog">
+      <SearchPage v-model:search="search" />
+      <MyButton class="button__create" @click="showCreateDialog">
         Create Page
       </MyButton>
     </div>
     <div>
       <PageList
-        :loading="loading"
-        :pages="getAllPages"
+        :loadingGetPages="loadingGetPages"
+        :loadingDeletePage="loadingDeletePage"
+        @showEditDialog="showEditDialog"
+        :pages="filterPages"
         @edit="editPage"
         @delete="deletePage"
         @updateOrders="updateOrders"
@@ -25,9 +39,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { usePagesStore } from '../../../store/pages';
 import CreatePageForm from './components/CreatePageForm.vue';
+import EditPageForm from './components/EditPageForm.vue';
 import PageList from './components/PageList.vue';
 import MyDialog from '@/components/common/MyDialog.vue';
 import MyButton from '@/components/common/MyButton.vue';
@@ -35,23 +50,17 @@ import SearchPage from './components/SearchPage.vue';
 import type { Page } from '@/interfaces/Page';
 
 interface Data {
-  loading: boolean;
-  dialogVisible: boolean;
+  dialogCreateVisible: boolean;
+  dialogEditVisible: boolean;
+  page: Page | null;
   search: string;
-  orderTemp: number;
-  pageTemp: {
-    id?: number;
-    name?: string;
-    meta?: {
-      url?: string;
-    };
-  };
 }
 
 export default defineComponent({
   name: 'PagesPage',
   components: {
     CreatePageForm,
+    EditPageForm,
     MyDialog,
     MyButton,
     PageList,
@@ -59,70 +68,69 @@ export default defineComponent({
   },
   setup() {
     const pagesStore = usePagesStore();
+    const pages = computed(() => pagesStore.pages);
+    const loadingGetPages = computed(() => pagesStore.loadingGetPages);
+    const loadingCreatePage = computed(() => pagesStore.loadingCreatePage);
+    const loadingEditPage = computed(() => pagesStore.loadingEditPage);
+    const loadingDeletePage = computed(() => pagesStore.loadingDeletePage);
     return {
       pagesStore,
+      pages,
+      loadingGetPages,
+      loadingCreatePage,
+      loadingEditPage,
+      loadingDeletePage,
     };
   },
   data(): Data {
     return {
-      loading: true,
-      dialogVisible: false,
+      dialogCreateVisible: false,
+      dialogEditVisible: false,
+      page: null,
       search: '',
-      orderTemp: 0,
-      pageTemp: {
-        meta: {
-          url: undefined,
-        },
-      },
     };
   },
   mounted() {
-    this.pagesStore.getAllPagesApi(+this.$route.params.projectId).then(() => {
-      this.loading = false;
-    });
+    this.pagesStore.getPages(+this.$route.params.projectId);
   },
   computed: {
-    getAllPages() {
-      return this.pagesStore.getAllPages;
+    filterPages() {
+      return this.pages.filter((project) =>
+        project.name.toLowerCase().includes(this.search.toLowerCase())
+      );
     },
   },
   methods: {
-    showDialog() {
-      this.dialogVisible = true;
+    showCreateDialog() {
+      this.dialogCreateVisible = true;
     },
-    async filter(search: string) {
-      await this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
-      this.pagesStore.setPages(
-        this.getAllPages.filter((page) =>
-          page.name.toLowerCase().includes(search.toLowerCase())
-        )
-      );
+    showEditDialog(page: Page) {
+      this.page = page;
+      this.dialogEditVisible = true;
     },
     async createPage(page: Page) {
       await this.pagesStore.createPage({
         projectId: +this.$route.params.projectId,
         ...page,
       });
-      await this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
-      this.dialogVisible = false;
+      this.dialogCreateVisible = false;
     },
     async updateOrders(pages: Page[]) {
       await this.pagesStore.updateOrders(
         +this.$route.params.projectId,
         pages.map((page, index) => ({ id: page.id, order: index + 1 }))
       );
-      this.pagesStore.setPages(pages);
+      this.pagesStore.pages = pages;
     },
     async editPage(page: Page) {
       await this.pagesStore.editPage(page.id, {
         name: page.name,
         meta: page.meta,
       });
-      await this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
+      this.dialogEditVisible = false;
     },
     async deletePage(id: number) {
       await this.pagesStore.deletePage(id);
-      await this.pagesStore.getAllPagesApi(+this.$route.params.projectId);
     },
   },
 });

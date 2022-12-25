@@ -1,7 +1,14 @@
 <template>
   <div class="blocks">
     <TransitionGroup name="blockList">
-      <div class="block" v-for="block in mySlot.blocks" :key="block.id">
+      <div
+        :class="{
+          block: true,
+          deleteBlock: loadingDeleteBlock && block.id === deleteId,
+        }"
+        v-for="block in mySlot.blocks"
+        :key="block.id"
+      >
         <div class="type__image" v-if="block.type === 'IMAGE'">
           <img :src="block.content.url" />
         </div>
@@ -12,10 +19,10 @@
           :block="block"
           :blocks="mySlot.blocks"
           :mySlot="mySlot"
-          @delete="deleteBlock"
-          @editBlock="editBlock"
-          @moveLeft="moveLeftBlock"
-          @moveRight="moveRightBlock"
+          @showEditBlockDialog="showEditBlockDialog"
+          @moveLeftBlock="moveLeftBlock"
+          @moveRightBlock="moveRightBlock"
+          @deleteBlock="deleteBlock"
         />
       </div>
     </TransitionGroup>
@@ -23,9 +30,13 @@
 </template>
 
 <script lang="ts">
+import type { Block } from '@/interfaces/Block';
 import { defineComponent } from 'vue';
 import BlockMenu from './BlockMenu.vue';
-import type { Block } from '@/interfaces/Block';
+
+interface Data {
+  deleteId: number | null;
+}
 
 export default defineComponent({
   name: 'SlotList',
@@ -37,24 +48,29 @@ export default defineComponent({
       type: Object,
       required: true,
     },
+    loadingDeleteBlock: {
+      type: Boolean,
+      required: true,
+    },
   },
-  data() {
+  data(): Data {
     return {
-      dialogVisible: false,
+      deleteId: null,
     };
   },
   methods: {
-    deleteBlock(id: number) {
-      this.$emit('deleteBlock', id);
+    showEditBlockDialog(slotId: number, block: Block) {
+      this.$emit('showEditBlockDialog', slotId, block);
     },
-    moveLeftBlock(blockId: number, slotId: number) {
-      this.$emit('moveLeft', blockId, slotId);
+    moveLeftBlock(slotId: number, blockId: number) {
+      this.$emit('moveLeftBlock', slotId, blockId);
     },
-    moveRightBlock(blockId: number, slotId: number) {
-      this.$emit('moveRight', blockId, slotId);
+    moveRightBlock(slotId: number, blockId: number) {
+      this.$emit('moveRightBlock', slotId, blockId);
     },
-    editBlock(block: Block) {
-      this.$emit('editBlock', block);
+    deleteBlock(slotId: number, blockId: number) {
+      this.deleteId = blockId;
+      this.$emit('deleteBlock', slotId, blockId);
     },
   },
 });
@@ -70,6 +86,9 @@ export default defineComponent({
   display: block;
   flex: 1;
   position: relative;
+}
+.deleteBlock {
+  opacity: 0.5;
 }
 .blocks .type__text {
   height: 100%;

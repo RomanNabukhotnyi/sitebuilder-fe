@@ -2,12 +2,6 @@
   <div class="form">
     <h4>Edit block</h4>
     <div v-if="block.type === 'TEXT'" class="field">
-      <!-- <MyInput
-        class="input"
-        placeholder="Text"
-        v-model="content.text"
-        @input="textValidation"
-      /> -->
       <MyTextarea
         class="textarea"
         placeholder="Text"
@@ -28,8 +22,21 @@
     <div class="field">
       <MyInput class="input" placeholder="Subtext" v-model="content.subtext" />
     </div>
-    <MyButton class="button" :disabled="!validation" @click="editBlock">
-      Edit
+    <MyButton
+      class="button"
+      :disabled="!validation || loadingEditBlock"
+      @click="editBlock"
+    >
+      <p v-if="!loadingEditBlock">Edit</p>
+      <div v-else class="loadingio-spinner-ellipsis-yg3d79y87xd">
+        <div class="ldio-bzxhjz25vr">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
     </MyButton>
   </div>
 </template>
@@ -48,8 +55,16 @@ export default defineComponent({
     MyTextarea,
   },
   props: {
+    slotId: {
+      type: Number,
+      required: true,
+    },
     block: {
       type: Object,
+      required: true,
+    },
+    loadingEditBlock: {
+      type: Boolean,
       required: true,
     },
   },
@@ -108,6 +123,7 @@ export default defineComponent({
 
         this.$emit(
           'editBlock',
+          this.slotId,
           Object.assign(this.block, { content: this.content })
         );
       }
@@ -144,5 +160,72 @@ export default defineComponent({
 .button:disabled:hover {
   opacity: 1;
   cursor: default;
+}
+/* loading */
+@keyframes ldio-bzxhjz25vr {
+  0% {
+    transform: translate(1.2px, 8px) scale(0);
+  }
+  25% {
+    transform: translate(1.2px, 8px) scale(0);
+  }
+  50% {
+    transform: translate(1.2px, 8px) scale(1);
+  }
+  75% {
+    transform: translate(8px, 8px) scale(1);
+  }
+  100% {
+    transform: translate(14.8px, 8px) scale(1);
+  }
+}
+@keyframes ldio-bzxhjz25vr-r {
+  0% {
+    transform: translate(14.8px, 8px) scale(1);
+  }
+  100% {
+    transform: translate(14.8px, 8px) scale(0);
+  }
+}
+.ldio-bzxhjz25vr div {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  transform: translate(8px, 8px) scale(1);
+  background: white;
+  animation: ldio-bzxhjz25vr 1s infinite cubic-bezier(0, 0.5, 0.5, 1);
+}
+.ldio-bzxhjz25vr div:nth-child(1) {
+  transform: translate(14.8px, 8px) scale(1);
+  animation: ldio-bzxhjz25vr-r 0.25s infinite cubic-bezier(0, 0.5, 0.5, 1);
+}
+.ldio-bzxhjz25vr div:nth-child(2) {
+  animation-delay: -0.25s;
+}
+.ldio-bzxhjz25vr div:nth-child(3) {
+  animation-delay: -0.5s;
+}
+.ldio-bzxhjz25vr div:nth-child(4) {
+  animation-delay: -0.75s;
+}
+.ldio-bzxhjz25vr div:nth-child(5) {
+  animation-delay: -1s;
+}
+.loadingio-spinner-ellipsis-yg3d79y87xd {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+.ldio-bzxhjz25vr {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform: translateZ(0) scale(1);
+  backface-visibility: hidden;
+  transform-origin: 0 0;
+}
+.ldio-bzxhjz25vr div {
+  box-sizing: content-box;
 }
 </style>

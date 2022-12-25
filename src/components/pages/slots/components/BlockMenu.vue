@@ -1,7 +1,4 @@
 <template>
-  <MyDialog v-model:show="dialogVisible">
-    <EditBlockForm :block="block" @editBlock="editBlock" />
-  </MyDialog>
   <div class="blockMenu">
     <div class="menuAction moveAction" @click="moveLeftBlock">
       <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
@@ -17,7 +14,7 @@
         ></path>
       </svg>
     </div>
-    <div @click="showDialog" class="menuAction">
+    <div @click="showEditBlockDialog" class="menuAction">
       <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
         <path
           fill-rule="evenodd"
@@ -39,15 +36,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { Block } from '@/interfaces/Block';
-import MyDialog from '@/components/common/MyDialog.vue';
-import EditBlockForm from './EditBlockForm.vue';
 
 export default defineComponent({
   name: 'BlockMenu',
-  components: {
-    MyDialog,
-    EditBlockForm,
-  },
   props: {
     block: {
       type: Object,
@@ -62,40 +53,25 @@ export default defineComponent({
       required: true,
     },
   },
-  data() {
-    return {
-      dialogVisible: false,
-    };
-  },
   methods: {
-    showDialog() {
-      this.dialogVisible = true;
+    showEditBlockDialog() {
+      this.$emit('showEditBlockDialog', this.mySlot.id, this.block);
     },
     moveLeftBlock() {
-      if (
-        this.$props.blocks.findIndex(
-          (block) => block.id === this.$props.block.id
-        ) !== 0
-      ) {
-        this.$emit('moveLeft', this.$props.block.id, this.$props.mySlot.id);
+      if (this.blocks.findIndex((block) => block.id === this.block.id) !== 0) {
+        this.$emit('moveLeftBlock', this.mySlot.id, this.block.id);
       }
     },
     moveRightBlock() {
       if (
-        this.$props.blocks.findIndex(
-          (block) => block.id === this.$props.block.id
-        ) !==
-        this.$props.blocks.length - 1
+        this.blocks.findIndex((block) => block.id === this.block.id) !==
+        this.blocks.length - 1
       ) {
-        this.$emit('moveRight', this.$props.block.id, this.$props.mySlot.id);
+        this.$emit('moveRightBlock', this.mySlot.id, this.block.id);
       }
     },
     deleteBlock() {
-      this.$emit('delete', this.$props.block.id);
-    },
-    editBlock(block: Block) {
-      this.$emit('editBlock', block);
-      this.dialogVisible = false;
+      this.$emit('deleteBlock', this.mySlot.id, this.block.id);
     },
   },
 });

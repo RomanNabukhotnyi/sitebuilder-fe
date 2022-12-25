@@ -21,7 +21,7 @@
       />
       <p v-if="passwordError" class="error">{{ passwordError }}</p>
     </div>
-    <MyButton class="button" @click="signUp" :disabled="validation">
+    <MyButton class="button" @click="signUp" :disabled="validation || loading">
       <p v-if="!loading">Sign Up</p>
       <div v-else class="loadingio-spinner-ellipsis-yg3d79y87xd">
         <div class="ldio-bzxhjz25vr">

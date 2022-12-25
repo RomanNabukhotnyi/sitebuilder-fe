@@ -1,7 +1,4 @@
 <template>
-  <MyDialog v-model:show="dialogVisible">
-    <CreateBlockForm :slotId="mySlot.id" @create="createBlock" />
-  </MyDialog>
   <div class="slotMenu">
     <div class="menuAction moveAction" @click="moveUpSlot">
       <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
@@ -19,7 +16,7 @@
     </div>
     <div
       :class="mySlot.type === 'STATIC' ? 'disabled' : 'menuAction'"
-      @click="mySlot.type !== 'STATIC' && showDialog()"
+      @click="mySlot.type !== 'STATIC' && showCreateBlockDialog(mySlot.id)"
     >
       <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
         <path
@@ -41,43 +38,28 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { Block } from '@/interfaces/Block';
-import MyDialog from '@/components/common/MyDialog.vue';
-import CreateBlockForm from './CreateBlockForm.vue';
 
 export default defineComponent({
   name: 'SlotMenu',
-  components: {
-    MyDialog,
-    CreateBlockForm,
-  },
   props: {
     mySlot: {
       type: Object,
       required: true,
     },
   },
-  data() {
-    return {
-      dialogVisible: false,
-    };
-  },
+  emits: ['showCreateBlockDialog', 'moveUpSlot', 'moveDownSlot', 'deleteSlot'],
   methods: {
-    showDialog() {
-      this.dialogVisible = true;
+    showCreateBlockDialog(slotId: number) {
+      this.$emit('showCreateBlockDialog', slotId);
     },
     moveUpSlot() {
-      this.$emit('moveUp', this.$props.mySlot.id);
+      this.$emit('moveUpSlot', this.mySlot.id);
     },
     moveDownSlot() {
-      this.$emit('moveDown', this.$props.mySlot.id);
+      this.$emit('moveDownSlot', this.mySlot.id);
     },
     deleteSlot() {
-      this.$emit('delete', this.$props.mySlot.id);
-    },
-    createBlock(slotId: number, block: Block) {
-      this.$emit('create', slotId, block);
-      this.dialogVisible = false;
+      this.$emit('deleteSlot', this.mySlot.id);
     },
   },
 });

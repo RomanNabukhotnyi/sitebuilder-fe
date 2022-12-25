@@ -1,16 +1,20 @@
 <template>
   <div>
-    <MyDialog v-model:show="dialogVisible">
-      <CreateBlockForm :slotId="slotId" @create="createBlock" />
-    </MyDialog>
-    <div class="slots" v-show="!loading && slots.length !== 0">
+    <div class="slots" v-show="!loadingGetSlots && slots.length !== 0">
       <TransitionGroup name="list">
-        <div class="slot" v-for="slot in slots" :key="slot.id">
+        <div
+          :class="{
+            slot: true,
+            deleteSlot: loadingDeleteSlot && slot.id === deleteId,
+          }"
+          v-for="slot in slots"
+          :key="slot.id"
+        >
           <div v-if="slot.type === 'STATIC'" class="staticSlot">STATIC</div>
           <div
             class="emptySlot"
             v-else-if="slot.blocks.length === 0 && slot.type !== 'STATIC'"
-            @click="slot.type !== 'STATIC' && showDialog(slot.id)"
+            @click="slot.type !== 'STATIC' && showCreateBlockDialog(slot.id)"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" />
@@ -19,22 +23,23 @@
           <BlockList
             v-else
             :mySlot="slot"
+            :loadingDeleteBlock="loadingDeleteBlock"
+            @showEditBlockDialog="showEditBlockDialog"
+            @moveLeftBlock="moveLeftBlock"
+            @moveRightBlock="moveRightBlock"
             @deleteBlock="deleteBlock"
-            @editBlock="editBlock"
-            @moveLeft="moveLeftBlock"
-            @moveRight="moveRightBlock"
           />
           <SlotMenu
             :mySlot="slot"
-            @create="createBlock"
-            @delete="deleteSlot"
-            @moveUp="moveUpSlot"
-            @moveDown="moveDownSlot"
+            @showCreateBlockDialog="showCreateBlockDialog"
+            @moveUpSlot="moveUpSlot"
+            @moveDownSlot="moveDownSlot"
+            @deleteSlot="deleteSlot"
           />
         </div>
       </TransitionGroup>
     </div>
-    <div v-show="loading">
+    <div v-show="loadingGetSlots">
       <div
         class="slot-placeholder placeholder-animate"
         v-for="item in 3"
@@ -47,8 +52,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import MyDialog from '@/components/common/MyDialog.vue';
-import CreateBlockForm from './CreateBlockForm.vue';
 import SlotMenu from './SlotMenu.vue';
 import BlockList from './BlockList.vue';
 
@@ -59,42 +62,60 @@ interface ISlot extends Slot {
   blocks: Block[];
 }
 
+interface Data {
+  deleteId: number | null;
+}
+
 export default defineComponent({
   name: 'SlotList',
   components: {
-    MyDialog,
-    CreateBlockForm,
     SlotMenu,
     BlockList,
   },
+  emits: [
+    'moveUpSlot',
+    'moveDownSlot',
+    'deleteSlot',
+    'showCreateBlockDialog',
+    'showEditBlockDialog',
+    'editBlock',
+    'deleteBlock',
+    'moveLeftBlock',
+    'moveRightBlock',
+  ],
   props: {
     slots: {
       type: Array<ISlot>,
       required: true,
     },
-    loading: {
+    loadingGetSlots: {
+      type: Boolean,
+      required: true,
+    },
+    loadingDeleteSlot: {
+      type: Boolean,
+      required: true,
+    },
+    loadingDeleteBlock: {
       type: Boolean,
       required: true,
     },
   },
-  data() {
+  data(): Data {
     return {
-      dialogVisible: false,
-      slotId: 0,
+      deleteId: null,
     };
   },
   methods: {
-    showDialog(slotId: number) {
-      this.slotId = slotId;
-      this.dialogVisible = true;
+    showCreateBlockDialog(slotId: number) {
+      this.$emit('showCreateBlockDialog', slotId);
     },
-    createBlock(slotId: number, block: Block) {
-      this.$emit('create', slotId, block);
-      this.dialogVisible = false;
+    showEditBlockDialog(slotId: number, block: Block) {
+      this.$emit('showEditBlockDialog', slotId, block);
     },
     moveUpSlot(slotId: number) {
       if (this.$props.slots.findIndex((slot) => slot.id === slotId) !== 0) {
-        this.$emit('moveUp', slotId);
+        this.$emit('moveUpSlot', slotId);
       }
     },
     moveDownSlot(slotId: number) {
@@ -102,23 +123,21 @@ export default defineComponent({
         this.$props.slots.findIndex((slot) => slot.id === slotId) !==
         this.$props.slots.length - 1
       ) {
-        this.$emit('moveDown', slotId);
+        this.$emit('moveDownSlot', slotId);
       }
     },
     deleteSlot(id: number) {
+      this.deleteId = id;
       this.$emit('deleteSlot', id);
     },
-    editBlock(block: Block) {
-      this.$emit('editBlock', block);
+    moveLeftBlock(slotId: number, blockId: number) {
+      this.$emit('moveLeftBlock', slotId, blockId);
     },
-    deleteBlock(id: number) {
-      this.$emit('deleteBlock', id);
+    moveRightBlock(slotId: number, blockId: number) {
+      this.$emit('moveRightBlock', slotId, blockId);
     },
-    moveLeftBlock(blockId: number, slotId: number) {
-      this.$emit('moveLeft', blockId, slotId);
-    },
-    moveRightBlock(blockId: number, slotId: number) {
-      this.$emit('moveRight', blockId, slotId);
+    deleteBlock(slotId: number, blockId: number) {
+      this.$emit('deleteBlock', slotId, blockId);
     },
   },
 });
@@ -136,6 +155,9 @@ export default defineComponent({
 }
 .slot:hover {
   border: 1px solid #419bf9;
+}
+.deleteSlot {
+  opacity: 0.5;
 }
 .emptySlot {
   margin: 5px;

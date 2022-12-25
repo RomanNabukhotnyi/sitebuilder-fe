@@ -8,12 +8,6 @@
       @select="selectOption"
     />
     <div v-if="selected === 'text'" class="field">
-      <!-- <MyInput
-        class="input"
-        placeholder="Text"
-        v-model="block.content.text"
-        @input="textValidation"
-      /> -->
       <MyTextarea
         class="textarea"
         placeholder="Text"
@@ -38,8 +32,21 @@
         v-model="block.content.subtext"
       />
     </div>
-    <MyButton class="button" :disabled="validation" @click="createBlock">
-      Create
+    <MyButton
+      class="button"
+      :disabled="validation || loadingCreateBlock"
+      @click="createBlock"
+    >
+      <p v-if="!loadingCreateBlock">Create</p>
+      <div v-else class="loadingio-spinner-ellipsis-yg3d79y87xd">
+        <div class="ldio-bzxhjz25vr">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
     </MyButton>
   </div>
 </template>
@@ -63,6 +70,10 @@ export default defineComponent({
   props: {
     slotId: {
       type: Number,
+      required: true,
+    },
+    loadingCreateBlock: {
+      type: Boolean,
       required: true,
     },
   },
@@ -132,7 +143,7 @@ export default defineComponent({
           type === 'TEXT'
             ? { text, subtext: subtext === '' ? undefined : subtext }
             : { url, subtext: subtext === '' ? undefined : subtext };
-        this.$emit('create', this.$props.slotId, { type, content });
+        this.$emit('createBlock', this.slotId, { type, content });
       }
     },
     selectOption(option: Option) {
@@ -171,5 +182,72 @@ export default defineComponent({
 .button:disabled:hover {
   opacity: 1;
   cursor: default;
+}
+/* loading */
+@keyframes ldio-bzxhjz25vr {
+  0% {
+    transform: translate(1.2px, 8px) scale(0);
+  }
+  25% {
+    transform: translate(1.2px, 8px) scale(0);
+  }
+  50% {
+    transform: translate(1.2px, 8px) scale(1);
+  }
+  75% {
+    transform: translate(8px, 8px) scale(1);
+  }
+  100% {
+    transform: translate(14.8px, 8px) scale(1);
+  }
+}
+@keyframes ldio-bzxhjz25vr-r {
+  0% {
+    transform: translate(14.8px, 8px) scale(1);
+  }
+  100% {
+    transform: translate(14.8px, 8px) scale(0);
+  }
+}
+.ldio-bzxhjz25vr div {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  transform: translate(8px, 8px) scale(1);
+  background: white;
+  animation: ldio-bzxhjz25vr 1s infinite cubic-bezier(0, 0.5, 0.5, 1);
+}
+.ldio-bzxhjz25vr div:nth-child(1) {
+  transform: translate(14.8px, 8px) scale(1);
+  animation: ldio-bzxhjz25vr-r 0.25s infinite cubic-bezier(0, 0.5, 0.5, 1);
+}
+.ldio-bzxhjz25vr div:nth-child(2) {
+  animation-delay: -0.25s;
+}
+.ldio-bzxhjz25vr div:nth-child(3) {
+  animation-delay: -0.5s;
+}
+.ldio-bzxhjz25vr div:nth-child(4) {
+  animation-delay: -0.75s;
+}
+.ldio-bzxhjz25vr div:nth-child(5) {
+  animation-delay: -1s;
+}
+.loadingio-spinner-ellipsis-yg3d79y87xd {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+.ldio-bzxhjz25vr {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform: translateZ(0) scale(1);
+  backface-visibility: hidden;
+  transform-origin: 0 0;
+}
+.ldio-bzxhjz25vr div {
+  box-sizing: content-box;
 }
 </style>

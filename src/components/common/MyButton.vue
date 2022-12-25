@@ -18,6 +18,7 @@ export default defineComponent({
   display: flex;
   background-color: #419bf9;
   color: #fff;
+  min-height: 30px;
   border-radius: 2px;
   font-size: 15px;
   align-items: center;

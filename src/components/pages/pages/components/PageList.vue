@@ -1,9 +1,6 @@
 <template>
   <div>
-    <MyDialog v-model:show="dialogVisible">
-      <EditPageForm :page="page" @edit="editPage" :pages="pages" />
-    </MyDialog>
-    <div class="pagesContainer" v-show="!loading && pages.length !== 0">
+    <div class="pagesContainer" v-show="!loadingGetPages && pages.length !== 0">
       <Draggable
         v-model="draggablePages"
         tag="transition-group"
@@ -15,8 +12,18 @@
         }"
       >
         <template #item="{ element }">
-          <div class="page">
-            <div @click="openPage(element.id)">
+          <div
+            :class="{
+              page: true,
+              deletePage: loadingDeletePage && element.id === deleteId,
+            }"
+          >
+            <div
+              @click="
+                !(loadingDeletePage && element.id === deleteId) &&
+                  openPage(element.id)
+              "
+            >
               <img
                 class="pageImage"
                 width="240"
@@ -35,13 +42,19 @@
               <div class="actions">
                 <MyButton
                   class="button__edit"
-                  @click.stop="showDialog(element)"
+                  @click.stop="
+                    !(loadingDeletePage && element.id === deleteId) &&
+                      showEditDialog(element)
+                  "
                 >
                   Edit
                 </MyButton>
                 <MyButton
                   class="button__delete"
-                  @click.stop="deletePage(element.id)"
+                  @click.stop="
+                    !(loadingDeletePage && element.id === deleteId) &&
+                      deletePage(element.id)
+                  "
                 >
                   Delete
                 </MyButton>
@@ -51,10 +64,10 @@
         </template>
       </Draggable>
     </div>
-    <div v-show="!loading && pages.length === 0" class="noPages">
+    <div v-show="!loadingGetPages && pages.length === 0" class="noPages">
       <h3>No pages</h3>
     </div>
-    <div v-show="loading" class="pagesContainer">
+    <div v-show="loadingGetPages" class="pagesContainer">
       <div
         class="page-placeholder placeholder-animate"
         v-for="item in 3"
@@ -68,18 +81,19 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import MyButton from '@/components/common/MyButton.vue';
-import MyDialog from '@/components/common/MyDialog.vue';
-import EditPageForm from './EditPageForm.vue';
 import Draggable from 'vuedraggable';
 
 import type { Page } from '@/interfaces/Page';
+
+interface Data {
+  page: Page | null;
+  deleteId: number | null;
+}
 
 export default defineComponent({
   name: 'PageList',
   components: {
     MyButton,
-    MyDialog,
-    EditPageForm,
     Draggable,
   },
   props: {
@@ -87,16 +101,19 @@ export default defineComponent({
       type: Array<Page>,
       required: true,
     },
-    loading: {
+    loadingGetPages: {
+      type: Boolean,
+      required: true,
+    },
+    loadingDeletePage: {
       type: Boolean,
       required: true,
     },
   },
-  emits: ['delete', 'edit', 'updateOrders'],
-  data() {
+  data(): Data {
     return {
-      dialogVisible: false,
-      page: {},
+      page: null,
+      deleteId: null,
     };
   },
   computed: {
@@ -116,22 +133,24 @@ export default defineComponent({
     openPage(pageId: number): void {
       this.$router.push(`/pages/${pageId}`);
     },
-    showDialog(page: Page): void {
-      this.dialogVisible = true;
-      this.page = page;
+    showEditDialog(page: Page) {
+      this.$emit('showEditDialog', page);
     },
     deletePage(id: number): void {
+      this.deleteId = id;
       this.$emit('delete', id);
     },
     editPage(page: Page): void {
       this.$emit('edit', page);
-      this.dialogVisible = false;
     },
   },
 });
 </script>
 
 <style scoped>
+.deletePage {
+  opacity: 0.5;
+}
 .ghost {
   opacity: 0.5;
 }
