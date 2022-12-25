@@ -57,8 +57,7 @@ axios.interceptors.response.use(
       error.response.config.url === '/auth/refresh'
     ) {
       console.log('LOGIN');
-      routeConfig.push('/login');
-      return Promise.reject(error);
+      return routeConfig.push('/login');;
     } else if (error.response && error.response.status === 401) {
       console.log('REFRESH');
       const response = await axios.post('/auth/refresh', {
