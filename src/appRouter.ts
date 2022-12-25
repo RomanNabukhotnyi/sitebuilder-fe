@@ -56,10 +56,11 @@ axios.interceptors.response.use(
       error.response.status === 401 &&
       error.response.config.url === '/auth/refresh'
     ) {
-      console.log('LOGIN');
-      return routeConfig.push('/login');;
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      routeConfig.push('/login');
+      return Promise.reject(error);
     } else if (error.response && error.response.status === 401) {
-      console.log('REFRESH');
       const response = await axios.post('/auth/refresh', {
         refreshToken: localStorage.getItem('refreshToken'),
       });
@@ -76,8 +77,6 @@ axios.interceptors.response.use(
         },
       });
     } else {
-      console.log('ERROR');
-
       return Promise.reject(error);
     }
   }
