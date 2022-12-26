@@ -8,6 +8,7 @@
         placeholder="Name"
         @input="nameValidation"
         v-model="editedProject.name"
+        ref="focus"
       />
       <p v-if="nameError" class="error">{{ nameError }}</p>
     </div>
@@ -78,6 +79,7 @@ export default defineComponent({
   },
   mounted() {
     this.editedProject = Object.create(this.$props.project);
+    this.$nextTick(() => (this.$refs['focus'] as any).$el.focus());
   },
   methods: {
     nameValidation(): boolean {

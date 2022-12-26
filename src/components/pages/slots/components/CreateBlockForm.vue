@@ -13,6 +13,7 @@
         placeholder="Text"
         v-model="block.content.text"
         @input="textValidation"
+        ref="focus"
       />
       <p v-if="textError" class="error">{{ textError }}</p>
     </div>
@@ -22,6 +23,7 @@
         placeholder="Url"
         v-model="block.content.url"
         @input="urlValidation"
+        ref="focus"
       />
       <p v-if="urlError" class="error">{{ urlError }}</p>
     </div>
@@ -107,6 +109,9 @@ export default defineComponent({
     validation(): boolean {
       return !!this.urlError && !!this.textError;
     },
+  },
+  mounted() {
+    this.$nextTick(() => (this.$refs['focus'] as any).$el.focus());
   },
   methods: {
     urlValidation(): boolean {
