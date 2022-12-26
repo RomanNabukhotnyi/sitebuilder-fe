@@ -63,6 +63,13 @@ export default defineComponent({
       passwordError: '',
     };
   },
+  created() {
+    window.addEventListener('keyup', (event) => {
+      if (event.code === 'Enter') {
+        this.signUp();
+      }
+    });
+  },
   computed: {
     validation(): boolean {
       return !!this.emailError || !!this.passwordError;

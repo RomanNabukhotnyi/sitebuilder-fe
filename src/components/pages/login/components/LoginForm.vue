@@ -53,8 +53,12 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
-    return {};
+  created() {
+    window.addEventListener('keyup', (event) => {
+      if (event.code === 'Enter') {
+        this.login();
+      }
+    });
   },
   data() {
     return {
