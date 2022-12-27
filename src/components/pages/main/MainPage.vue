@@ -31,13 +31,19 @@
       <p>Back</p>
     </div>
     <div class="title">Workspace</div>
-    <div class="avatar" @click="logout">
+    <div id="avatar" class="avatar" @click="menu">
       <img
         src="https://lh3.googleusercontent.com/a/ALm5wu1GtNGrAmCvrQInUoiVlcw1gc5hnOV9xdiTQib6=s96-c"
         width="28"
         height="28"
       />
     </div>
+    <Transition name="menu">
+      <div v-if="menuVisible" class="menu">
+        <div class="email">{{ user?.email }}</div>
+        <div class="action" @click="logout">Log out</div>
+      </div>
+    </Transition>
   </header>
 
   <div>
@@ -47,17 +53,43 @@
 
 <script lang="ts">
 import { useAuthStore } from '../../../store/auth';
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 
 export default defineComponent({
   name: 'MainPage',
   setup() {
     const authStore = useAuthStore();
+    const user = computed(() => authStore.user);
     return {
       authStore,
+      user,
     };
   },
+  data() {
+    return {
+      menuVisible: false,
+    };
+  },
+  // mounted() {
+  //   document.addEventListener('click', this.hideMenu);
+  // },
+  // beforeUnmount() {
+  //   document.removeEventListener('click', this.hideMenu);
+  // },
   methods: {
+    menu() {
+      this.menuVisible = !this.menuVisible;
+      if (this.menuVisible) {
+        window.addEventListener('click', this.hideMenu);
+      } else {
+        window.removeEventListener('click', this.hideMenu);
+      }
+    },
+    hideMenu(event: MouseEvent) {
+      if (!document.getElementById('avatar')!.contains(event.target as any)) {
+        this.menuVisible = false;
+      }
+    },
     async logout() {
       await this.authStore.logout();
       this.$router.push('/login');
@@ -80,6 +112,7 @@ header {
   background-color: #fbfbfb;
   font-size: 15px;
   color: #554d56;
+  position: relative;
 }
 .arrow {
   width: 10px;
@@ -103,5 +136,34 @@ header {
 }
 .avatar img {
   border-radius: 50%;
+}
+.menu {
+  position: absolute;
+  top: calc(100% - 10px);
+  right: 10px;
+  min-width: 150px;
+  background-color: white;
+  border: 1px solid #edeced;
+  z-index: 1;
+}
+.email {
+  margin: 10px;
+  text-align: center;
+}
+.action {
+  padding: 10px;
+  border-top: 1px solid #edeced;
+  cursor: pointer;
+}
+.action:hover {
+  background-color: #f2f2f2;
+}
+/* animations */
+.menu-enter-active {
+  transition: all 0.5s ease;
+}
+.menu-enter-from {
+  opacity: 0.9;
+  transform: scale(0.9);
 }
 </style>

@@ -33,11 +33,7 @@
             </div>
             <div class="page__body">
               <div class="page__name">
-                <input
-                  type="text"
-                  v-model="element.name"
-                  @change="editPage(element)"
-                />
+                <p>{{ element.name }}</p>
               </div>
               <div class="actions">
                 <MyButton
@@ -86,7 +82,6 @@ import Draggable from 'vuedraggable';
 import type { Page } from '@/interfaces/Page';
 
 interface Data {
-  page: Page | null;
   deleteId: number | null;
 }
 
@@ -112,7 +107,6 @@ export default defineComponent({
   },
   data(): Data {
     return {
-      page: null,
       deleteId: null,
     };
   },
@@ -139,9 +133,6 @@ export default defineComponent({
     deletePage(id: number): void {
       this.deleteId = id;
       this.$emit('delete', id);
-    },
-    editPage(page: Page): void {
-      this.$emit('edit', page);
     },
   },
 });

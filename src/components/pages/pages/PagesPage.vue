@@ -30,7 +30,6 @@
         :loadingDeletePage="loadingDeletePage"
         @showEditDialog="showEditDialog"
         :pages="filterPages"
-        @edit="editPage"
         @delete="deletePage"
         @updateOrders="updateOrders"
       />

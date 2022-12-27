@@ -61,26 +61,26 @@ export default defineComponent({
     };
   },
   mounted() {
-    var selected = document.querySelector('.selected')!;
+    var select = document.querySelector('.select')!;
     var chevron = document.querySelector('.chevron')!;
 
-    selected.addEventListener('click', function () {
+    select.addEventListener('click', function () {
       chevron.classList.toggle('chevron--flip');
     });
+    document.addEventListener('click', this.hideOptions);
   },
-  //   mounted() {
-  //     document.addEventListener('click', this.hideOptions.bind(this), true);
-  //   },
-  //   beforeUnmount() {
-  //     document.removeEventListener('click', this.hideOptions);
-  //   },
+  beforeUnmount() {
+    document.removeEventListener('click', this.hideOptions);
+  },
   methods: {
     selectOption(option: Option) {
       this.$emit('select', option);
-      this.hideOptions();
-    },
-    hideOptions() {
       this.optionsVisible = false;
+    },
+    hideOptions(event: MouseEvent) {
+      if (!this.$el.contains(event.target)) {
+        this.optionsVisible = false;
+      }
     },
   },
 });
@@ -91,6 +91,7 @@ export default defineComponent({
   color: #fff;
   cursor: pointer;
   border-radius: 5px;
+  position: relative;
 }
 .selected {
   padding: 10px;
@@ -111,6 +112,9 @@ export default defineComponent({
 }
 .options {
   background-color: #fff;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
 }
 .option {
   padding: 10px;
