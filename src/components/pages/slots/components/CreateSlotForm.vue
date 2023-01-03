@@ -40,6 +40,7 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: ['createSlot'],
   data() {
     return {
       slot: {

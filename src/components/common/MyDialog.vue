@@ -22,6 +22,7 @@ export default defineComponent({
       default: false,
     },
   },
+  emits: ['update:show'],
   created() {
     window.addEventListener('keyup', (event) => {
       if (event.code === 'Escape') {

@@ -12,6 +12,7 @@ export default defineComponent({
       type: [String, Number],
     },
   },
+  emits: ['update:modelValue'],
   methods: {
     updateInput(event: any) {
       this.$emit('update:modelValue', event.target.value);

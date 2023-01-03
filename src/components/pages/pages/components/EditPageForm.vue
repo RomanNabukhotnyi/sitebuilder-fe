@@ -57,6 +57,7 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: ['edit'],
   data() {
     return {
       editedPage: {

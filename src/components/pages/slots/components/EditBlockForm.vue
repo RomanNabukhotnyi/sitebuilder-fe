@@ -70,6 +70,7 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: ['editBlock'],
   data() {
     return {
       content: Object.assign({}, this.block.content),

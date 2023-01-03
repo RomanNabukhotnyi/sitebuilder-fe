@@ -21,6 +21,7 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'SearchPage',
+  emits: ['update:search'],
   data() {
     return {
       search: '',

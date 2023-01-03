@@ -53,6 +53,12 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: [
+    'showEditBlockDialog',
+    'moveLeftBlock',
+    'moveRightBlock',
+    'deleteBlock',
+  ],
   methods: {
     showEditBlockDialog() {
       this.$emit('showEditBlockDialog', this.mySlot.id, this.block);

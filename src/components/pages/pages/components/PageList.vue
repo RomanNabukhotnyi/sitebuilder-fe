@@ -105,6 +105,7 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: ['updateOrders', 'showEditDialog', 'delete'],
   data(): Data {
     return {
       deleteId: null,

@@ -53,6 +53,7 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: ['login'],
   created() {
     window.addEventListener('keyup', (event) => {
       if (event.code === 'Enter') {

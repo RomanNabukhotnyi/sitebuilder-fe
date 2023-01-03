@@ -53,6 +53,7 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: ['create'],
   data() {
     return {
       page: {

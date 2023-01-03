@@ -70,12 +70,6 @@ export default defineComponent({
       menuVisible: false,
     };
   },
-  // mounted() {
-  //   document.addEventListener('click', this.hideMenu);
-  // },
-  // beforeUnmount() {
-  //   document.removeEventListener('click', this.hideMenu);
-  // },
   methods: {
     menu() {
       this.menuVisible = !this.menuVisible;

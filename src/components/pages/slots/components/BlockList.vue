@@ -53,6 +53,12 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: [
+    'showEditBlockDialog',
+    'moveLeftBlock',
+    'moveRightBlock',
+    'deleteBlock',
+  ],
   data(): Data {
     return {
       deleteId: null,

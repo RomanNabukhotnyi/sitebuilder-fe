@@ -78,10 +78,9 @@ export default defineComponent({
     'deleteSlot',
     'showCreateBlockDialog',
     'showEditBlockDialog',
-    'editBlock',
-    'deleteBlock',
     'moveLeftBlock',
     'moveRightBlock',
+    'deleteBlock',
   ],
   props: {
     slots: {

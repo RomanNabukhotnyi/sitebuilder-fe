@@ -99,6 +99,7 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: ['showEditDialog', 'delete'],
   setup() {
     return {};
   },

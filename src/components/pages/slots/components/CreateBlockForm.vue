@@ -79,6 +79,7 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: ['createBlock'],
   data() {
     return {
       block: {

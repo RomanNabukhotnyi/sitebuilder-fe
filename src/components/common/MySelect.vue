@@ -55,6 +55,7 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: ['select'],
   data() {
     return {
       optionsVisible: false,
