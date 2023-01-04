@@ -22,54 +22,37 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import MyButton from '@/components/common/MyButton.vue';
 import MySelect from '@/components/common/MySelect.vue';
-import { defineComponent } from 'vue';
+import { ref } from 'vue';
 import type { Option } from '@/interfaces/Option';
-
-export default defineComponent({
-  name: 'CreateSlotForm',
-  components: {
-    MyButton,
-    MySelect,
-  },
-  props: {
-    loadingCreateSlot: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['createSlot'],
-  data() {
-    return {
-      slot: {
-        type: 'DYNAMIC',
-      },
-      selected: 'dynamic',
-      options: [
-        { name: 'static', value: 'STATIC' },
-        { name: 'dynamic', value: 'DYNAMIC' },
-      ],
-    };
-  },
-  created() {
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'Enter') {
-        this.createSlot();
-      }
-    });
-  },
-  methods: {
-    createSlot() {
-      this.$emit('createSlot', this.slot);
-    },
-    selectOption(option: Option) {
-      this.slot.type = option.value;
-      this.selected = option.name;
-    },
-  },
+defineProps<{
+  loadingCreateSlot: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'createSlot', value: { type: string }): void;
+}>();
+const type = ref('DYNAMIC');
+const selected = ref('dynamic');
+const options = [
+  { name: 'static', value: 'STATIC' },
+  { name: 'dynamic', value: 'DYNAMIC' },
+];
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'Enter') {
+    createSlot();
+  }
 });
+const createSlot = () => {
+  emit('createSlot', {
+    type: type.value,
+  });
+};
+const selectOption = (option: Option) => {
+  type.value = option.value;
+  selected.value = option.name;
+};
 </script>
 
 <style scoped>

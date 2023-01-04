@@ -6,7 +6,7 @@
         name="Email"
         placeholder="Work email"
         @input="emailValidation"
-        v-model="payload.email"
+        v-model="email"
       />
       <p v-if="emailError" class="error">{{ emailError }}</p>
     </div>
@@ -17,11 +17,11 @@
         type="password"
         placeholder="Password"
         @input="passwordValidation"
-        v-model="payload.password"
+        v-model="password"
       />
       <p v-if="passwordError" class="error">{{ passwordError }}</p>
     </div>
-    <MyButton class="button" @click="signUp" :disabled="validation || loading">
+    <MyButton class="button" @click="signUp" :disabled="isValid || loading">
       <p v-if="!loading">Sign Up</p>
       <div v-else class="loadingio-spinner-ellipsis-yg3d79y87xd">
         <div class="ldio-bzxhjz25vr">
@@ -36,78 +36,58 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import MyButton from '@/components/common/MyButton.vue';
 import MyInput from '@/components/common/MyInput.vue';
-
-export default defineComponent({
-  name: 'SignUpForm',
-  components: {
-    MyButton,
-    MyInput,
-  },
-  props: {
-    loading: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['signUp'],
-  data() {
-    return {
-      payload: {
-        email: '',
-        password: '',
-      },
-      emailError: '',
-      passwordError: '',
-    };
-  },
-  created() {
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'Enter') {
-        this.signUp();
-      }
-    });
-  },
-  computed: {
-    validation(): boolean {
-      return !!this.emailError || !!this.passwordError;
-    },
-  },
-  methods: {
-    emailValidation(): boolean {
-      if (this.payload.email === '') {
-        this.emailError = 'Field is required';
-        return false;
-      }
-      if (!this.payload.email.match(/^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-        this.emailError = 'That’s not a valid email';
-        return false;
-      }
-      this.emailError = '';
-      return true;
-    },
-    passwordValidation(): boolean {
-      if (this.payload.password === '') {
-        this.passwordError = 'Field is required';
-        return false;
-      }
-      if (this.payload.password.length < 8) {
-        this.passwordError = 'Your password must have at least 8 characters.';
-        return false;
-      }
-      this.passwordError = '';
-      return true;
-    },
-    signUp() {
-      if (this.emailValidation() && this.passwordValidation()) {
-        this.$emit('signUp', this.payload);
-      }
-    },
-  },
+defineProps<{
+  loading: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'signUp', payload: { email: string; password: string }): void;
+}>();
+const email = ref('');
+const password = ref('');
+const emailError = ref('');
+const passwordError = ref('');
+const isValid = computed(() => !!emailError.value || !!passwordError.value);
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'Enter') {
+    signUp();
+  }
 });
+const emailValidation = (): boolean => {
+  if (email.value === '') {
+    emailError.value = 'Field is required';
+    return false;
+  }
+  if (!email.value.match(/^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+    emailError.value = 'That’s not a valid email';
+    return false;
+  }
+  emailError.value = '';
+  return true;
+};
+const passwordValidation = (): boolean => {
+  if (password.value === '') {
+    passwordError.value = 'Field is required';
+    return false;
+  }
+  if (password.value.length < 8) {
+    passwordError.value = 'Your password must have at least 8 characters.';
+    return false;
+  }
+  passwordError.value = '';
+  return true;
+};
+const signUp = () => {
+  if (emailValidation() && passwordValidation()) {
+    emit('signUp', {
+      email: email.value,
+      password: password.value,
+    });
+  }
+};
 </script>
 
 <style scoped>

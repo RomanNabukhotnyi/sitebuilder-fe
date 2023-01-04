@@ -1,28 +1,27 @@
 <template>
-  <textarea :value="modelValue" @input="updateTextarea" class="input" />
+  <textarea v-model="value" class="textarea" />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  name: 'MyTextarea',
-  props: {
-    modelValue: {
-      type: [String, Number],
-    },
+<script setup lang="ts">
+import { computed } from 'vue';
+const props = defineProps<{
+  modelValue: string;
+}>();
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void;
+}>();
+const value = computed({
+  get() {
+    return props.modelValue;
   },
-  emits: ['update:modelValue'],
-  methods: {
-    updateTextarea(event: any) {
-      this.$emit('update:modelValue', event.target.value);
-    },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>
 
 <style scoped>
-.input {
+.textarea {
   padding: 10px;
   border-radius: 2px;
   border: 0;

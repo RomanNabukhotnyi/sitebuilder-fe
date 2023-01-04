@@ -7,7 +7,7 @@ import Projects from './components/pages/projects/ProjectsPage.vue';
 import Pages from './components/pages/pages/PagesPage.vue';
 import Slots from './components/pages/slots/SlotsPage.vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthStore } from './store/auth';
+import { useAuthStore } from './stores/auth';
 
 const routes = [
   { path: '/sign-up', component: SignUp, meta: { requiredAuth: false } },

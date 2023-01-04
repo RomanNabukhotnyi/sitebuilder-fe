@@ -31,7 +31,7 @@
       <p>Back</p>
     </div>
     <div class="title">Workspace</div>
-    <div id="avatar" class="avatar" @click="menu">
+    <div id="avatar" class="avatar" @click="openMenu">
       <img
         src="https://lh3.googleusercontent.com/a/ALm5wu1GtNGrAmCvrQInUoiVlcw1gc5hnOV9xdiTQib6=s96-c"
         width="28"
@@ -39,7 +39,7 @@
       />
     </div>
     <Transition name="menu">
-      <div v-if="menuVisible" class="menu">
+      <div v-if="menuVisible" class="menu" ref="el">
         <div class="email">{{ user?.email }}</div>
         <div class="action" @click="logout">Log out</div>
       </div>
@@ -51,48 +51,38 @@
   </div>
 </template>
 
-<script lang="ts">
-import { useAuthStore } from '../../../store/auth';
-import { defineComponent, computed } from 'vue';
-
-export default defineComponent({
-  name: 'MainPage',
-  setup() {
-    const authStore = useAuthStore();
-    const user = computed(() => authStore.user);
-    return {
-      authStore,
-      user,
-    };
-  },
-  data() {
-    return {
-      menuVisible: false,
-    };
-  },
-  methods: {
-    menu() {
-      this.menuVisible = !this.menuVisible;
-      if (this.menuVisible) {
-        window.addEventListener('click', this.hideMenu);
-      } else {
-        window.removeEventListener('click', this.hideMenu);
-      }
-    },
-    hideMenu(event: MouseEvent) {
-      if (!document.getElementById('avatar')!.contains(event.target as any)) {
-        this.menuVisible = false;
-      }
-    },
-    async logout() {
-      await this.authStore.logout();
-      this.$router.push('/login');
-    },
-    goBack() {
-      this.$router.back();
-    },
-  },
-});
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+const authStore = useAuthStore();
+const router = useRouter();
+const user = computed(() => authStore.user);
+const menuVisible = ref(false);
+const el = ref<HTMLElement | null>(null);
+const openMenu = () => {
+  menuVisible.value = !menuVisible.value;
+  if (menuVisible.value) {
+    window.addEventListener('click', hideMenu);
+  } else {
+    window.removeEventListener('click', hideMenu);
+  }
+};
+const hideMenu = (event: Event) => {
+  if (
+    !document.getElementById('avatar')!.contains(event.target as Node) &&
+    !el.value?.contains(event.target as Node)
+  ) {
+    menuVisible.value = false;
+  }
+};
+const logout = async () => {
+  await authStore.logout();
+  router.push('/login');
+};
+const goBack = () => {
+  router.back();
+};
 </script>
 
 <style scoped>

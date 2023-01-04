@@ -29,57 +29,38 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { Block } from '@/interfaces/Block';
-import { defineComponent } from 'vue';
+import type { Slot } from '@/interfaces/Slot';
+import { ref } from 'vue';
 import BlockMenu from './BlockMenu.vue';
-
-interface Data {
-  deleteId: number | null;
+interface ISlot extends Slot {
+  blocks: Block[];
 }
-
-export default defineComponent({
-  name: 'SlotList',
-  components: {
-    BlockMenu,
-  },
-  props: {
-    mySlot: {
-      type: Object,
-      required: true,
-    },
-    loadingDeleteBlock: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: [
-    'showEditBlockDialog',
-    'moveLeftBlock',
-    'moveRightBlock',
-    'deleteBlock',
-  ],
-  data(): Data {
-    return {
-      deleteId: null,
-    };
-  },
-  methods: {
-    showEditBlockDialog(slotId: number, block: Block) {
-      this.$emit('showEditBlockDialog', slotId, block);
-    },
-    moveLeftBlock(slotId: number, blockId: number) {
-      this.$emit('moveLeftBlock', slotId, blockId);
-    },
-    moveRightBlock(slotId: number, blockId: number) {
-      this.$emit('moveRightBlock', slotId, blockId);
-    },
-    deleteBlock(slotId: number, blockId: number) {
-      this.deleteId = blockId;
-      this.$emit('deleteBlock', slotId, blockId);
-    },
-  },
-});
+defineProps<{
+  mySlot: ISlot;
+  loadingDeleteBlock: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'showEditBlockDialog', slotId: number, block: Block): void;
+  (e: 'moveLeftBlock', slotId: number, blockId: number): void;
+  (e: 'moveRightBlock', slotId: number, blockId: number): void;
+  (e: 'deleteBlock', slotId: number, blockId: number): void;
+}>();
+const deleteId = ref<number | null>(null);
+const showEditBlockDialog = (slotId: number, block: Block) => {
+  emit('showEditBlockDialog', slotId, block);
+};
+const moveLeftBlock = (slotId: number, blockId: number) => {
+  emit('moveLeftBlock', slotId, blockId);
+};
+const moveRightBlock = (slotId: number, blockId: number) => {
+  emit('moveRightBlock', slotId, blockId);
+};
+const deleteBlock = (slotId: number, blockId: number) => {
+  deleteId.value = blockId;
+  emit('deleteBlock', slotId, blockId);
+};
 </script>
 
 <style scoped>

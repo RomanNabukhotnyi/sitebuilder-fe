@@ -11,30 +11,25 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  name: 'MyDialog',
-  props: {
-    show: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ['update:show'],
-  created() {
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'Escape') {
-        this.hideDialog();
-      }
-    });
-  },
-  methods: {
-    hideDialog() {
-      this.$emit('update:show', false);
-    },
-  },
+<script setup lang="ts">
+withDefaults(
+  defineProps<{
+    show: boolean;
+  }>(),
+  {
+    show: false,
+  }
+);
+const emit = defineEmits<{
+  (e: 'update:show', value: boolean): void;
+}>();
+const hideDialog = () => {
+  emit('update:show', false);
+};
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'Escape') {
+    hideDialog();
+  }
 });
 </script>
 
