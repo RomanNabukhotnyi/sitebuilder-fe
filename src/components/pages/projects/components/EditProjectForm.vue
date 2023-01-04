@@ -3,18 +3,18 @@
     <h4>Edit project</h4>
     <div class="field">
       <MyInput
+        v-focus
         class="input"
         type="text"
         placeholder="Name"
         @input="nameValidation"
-        v-model="editedProject.name"
-        ref="focus"
+        v-model="name"
       />
       <p v-if="nameError" class="error">{{ nameError }}</p>
     </div>
     <MyButton
       class="button"
-      :disabled="validation || loadingEditProject"
+      :disabled="isValid || loadingEditProject"
       @click="editProject"
     >
       <p v-if="!loadingEditProject">Edit</p>
@@ -31,83 +31,55 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import MyButton from '../../../common/MyButton.vue';
 import MyInput from '../../../common/MyInput.vue';
-import { defineComponent } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import type { Project } from '@/interfaces/Project';
-
-export default defineComponent({
-  name: 'EditProjectForm',
-  components: {
-    MyButton,
-    MyInput,
-  },
-  props: {
-    project: {
-      type: Object,
-      required: true,
-    },
-    projects: {
-      type: Array<Project>,
-      required: true,
-    },
-    loadingEditProject: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['edit'],
-  data() {
-    return {
-      editedProject: {
-        name: '',
-      },
-      nameError: '',
-    };
-  },
-  created() {
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'Enter') {
-        this.editProject();
-      }
-    });
-  },
-  computed: {
-    validation(): boolean {
-      return !!this.nameError;
-    },
-  },
-  mounted() {
-    this.editedProject = Object.create(this.$props.project);
-    this.$nextTick(() => (this.$refs['focus'] as any).$el.focus());
-  },
-  methods: {
-    nameValidation(): boolean {
-      if (this.editedProject.name === '') {
-        this.nameError = 'Field is required';
-        return false;
-      }
-      if (
-        this.$props.projects.find(
-          (project) =>
-            project.name === this.editedProject.name &&
-            project.name !== this.$props.project.name
-        )
-      ) {
-        this.nameError = 'A project with that name exists';
-        return false;
-      }
-      this.nameError = '';
-      return true;
-    },
-    editProject() {
-      if (this.nameValidation()) {
-        this.$emit('edit', this.editedProject);
-      }
-    },
-  },
+const props = defineProps<{
+  project: Project;
+  projects: Project[];
+  loadingEditProject: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'edit', project: Project): void;
+}>();
+const name = ref('');
+const nameError = ref('');
+const isValid = computed(() => !!nameError.value);
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'Enter') {
+    editProject();
+  }
 });
+onMounted(() => {
+  name.value = props.project.name;
+});
+const nameValidation = (): boolean => {
+  if (name.value === '') {
+    nameError.value = 'Field is required';
+    return false;
+  }
+  if (
+    props.projects.find(
+      (project) =>
+        project.name === name.value && project.name !== props.project.name
+    )
+  ) {
+    nameError.value = 'A project with that name exists';
+    return false;
+  }
+  nameError.value = '';
+  return true;
+};
+const editProject = () => {
+  if (nameValidation()) {
+    emit('edit', {
+      ...props.project,
+      name: name.value,
+    });
+  }
+};
 </script>
 
 <style scoped>

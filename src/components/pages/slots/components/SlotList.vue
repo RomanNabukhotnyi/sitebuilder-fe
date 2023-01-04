@@ -50,96 +50,64 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue';
 import SlotMenu from './SlotMenu.vue';
 import BlockList from './BlockList.vue';
-
 import type { Slot } from '@/interfaces/Slot';
 import type { Block } from '@/interfaces/Block';
-
 interface ISlot extends Slot {
   blocks: Block[];
 }
-
-interface Data {
-  deleteId: number | null;
-}
-
-export default defineComponent({
-  name: 'SlotList',
-  components: {
-    SlotMenu,
-    BlockList,
-  },
-  emits: [
-    'moveUpSlot',
-    'moveDownSlot',
-    'deleteSlot',
-    'showCreateBlockDialog',
-    'showEditBlockDialog',
-    'moveLeftBlock',
-    'moveRightBlock',
-    'deleteBlock',
-  ],
-  props: {
-    slots: {
-      type: Array<ISlot>,
-      required: true,
-    },
-    loadingGetSlots: {
-      type: Boolean,
-      required: true,
-    },
-    loadingDeleteSlot: {
-      type: Boolean,
-      required: true,
-    },
-    loadingDeleteBlock: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  data(): Data {
-    return {
-      deleteId: null,
-    };
-  },
-  methods: {
-    showCreateBlockDialog(slotId: number) {
-      this.$emit('showCreateBlockDialog', slotId);
-    },
-    showEditBlockDialog(slotId: number, block: Block) {
-      this.$emit('showEditBlockDialog', slotId, block);
-    },
-    moveUpSlot(slotId: number) {
-      if (this.$props.slots.findIndex((slot) => slot.id === slotId) !== 0) {
-        this.$emit('moveUpSlot', slotId);
-      }
-    },
-    moveDownSlot(slotId: number) {
-      if (
-        this.$props.slots.findIndex((slot) => slot.id === slotId) !==
-        this.$props.slots.length - 1
-      ) {
-        this.$emit('moveDownSlot', slotId);
-      }
-    },
-    deleteSlot(id: number) {
-      this.deleteId = id;
-      this.$emit('deleteSlot', id);
-    },
-    moveLeftBlock(slotId: number, blockId: number) {
-      this.$emit('moveLeftBlock', slotId, blockId);
-    },
-    moveRightBlock(slotId: number, blockId: number) {
-      this.$emit('moveRightBlock', slotId, blockId);
-    },
-    deleteBlock(slotId: number, blockId: number) {
-      this.$emit('deleteBlock', slotId, blockId);
-    },
-  },
-});
+const props = defineProps<{
+  slots: ISlot[];
+  loadingGetSlots: boolean;
+  loadingDeleteSlot: boolean;
+  loadingDeleteBlock: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'moveUpSlot', slotId: number): void;
+  (e: 'moveDownSlot', slotId: number): void;
+  (e: 'deleteSlot', slotId: number): void;
+  (e: 'showCreateBlockDialog', slotId: number): void;
+  (e: 'showEditBlockDialog', slotId: number, block: Block): void;
+  (e: 'moveLeftBlock', slotId: number, blockId: number): void;
+  (e: 'moveRightBlock', slotId: number, blockId: number): void;
+  (e: 'deleteBlock', slotId: number, blockId: number): void;
+}>();
+const deleteId = ref<number | null>(null);
+const showCreateBlockDialog = (slotId: number) => {
+  emit('showCreateBlockDialog', slotId);
+};
+const showEditBlockDialog = (slotId: number, block: Block) => {
+  emit('showEditBlockDialog', slotId, block);
+};
+const moveUpSlot = (slotId: number) => {
+  if (props.slots.findIndex((slot) => slot.id === slotId) !== 0) {
+    emit('moveUpSlot', slotId);
+  }
+};
+const moveDownSlot = (slotId: number) => {
+  if (
+    props.slots.findIndex((slot) => slot.id === slotId) !==
+    props.slots.length - 1
+  ) {
+    emit('moveDownSlot', slotId);
+  }
+};
+const deleteSlot = (id: number) => {
+  deleteId.value = id;
+  emit('deleteSlot', id);
+};
+const moveLeftBlock = (slotId: number, blockId: number) => {
+  emit('moveLeftBlock', slotId, blockId);
+};
+const moveRightBlock = (slotId: number, blockId: number) => {
+  emit('moveRightBlock', slotId, blockId);
+};
+const deleteBlock = (slotId: number, blockId: number) => {
+  emit('deleteBlock', slotId, blockId);
+};
 </script>
 
 <style scoped>

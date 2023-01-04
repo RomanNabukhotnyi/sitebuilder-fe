@@ -1,5 +1,5 @@
 <template>
-  <div class="select">
+  <div class="select" ref="el">
     <div class="selected" @click="optionsVisible = !optionsVisible">
       <div>
         {{ selected }}
@@ -9,7 +9,10 @@
         viewBox="0 0 8 5"
         width="8px"
         height="5px"
-        class="chevron"
+        :class="{
+          chevron: true,
+          'chevron--flip': optionsVisible,
+        }"
         fill="currentColor"
       >
         <g class="chevron__group">
@@ -39,51 +42,32 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
 import type { Option } from '@/interfaces/Option';
-
-export default defineComponent({
-  name: 'MySelect',
-  props: {
-    options: {
-      type: Array<Option>,
-      required: true,
-    },
-    selected: {
-      type: String,
-      required: true,
-    },
-  },
-  emits: ['select'],
-  data() {
-    return {
-      optionsVisible: false,
-    };
-  },
-  mounted() {
-    var select = document.querySelector('.select')!;
-    var chevron = document.querySelector('.chevron')!;
-
-    select.addEventListener('click', function () {
-      chevron.classList.toggle('chevron--flip');
-    });
-    document.addEventListener('click', this.hideOptions);
-  },
-  beforeUnmount() {
-    document.removeEventListener('click', this.hideOptions);
-  },
-  methods: {
-    selectOption(option: Option) {
-      this.$emit('select', option);
-      this.optionsVisible = false;
-    },
-    hideOptions(event: MouseEvent) {
-      if (!this.$el.contains(event.target)) {
-        this.optionsVisible = false;
-      }
-    },
-  },
+defineProps<{
+  selected: string;
+  options: Option[];
+}>();
+const emit = defineEmits<{
+  (e: 'select', option: Option): void;
+}>();
+const optionsVisible = ref(false);
+const selectOption = (option: Option) => {
+  emit('select', option);
+  optionsVisible.value = false;
+};
+const el = ref<HTMLElement | null>(null);
+const hideOptions = (event: Event) => {
+  if (!el.value?.contains(event.target as Node)) {
+    optionsVisible.value = false;
+  }
+};
+onMounted(() => {
+  document.addEventListener('click', hideOptions);
+});
+onUnmounted(() => {
+  document.removeEventListener('click', hideOptions);
 });
 </script>
 

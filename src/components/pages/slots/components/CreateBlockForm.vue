@@ -9,34 +9,30 @@
     />
     <div v-if="selected === 'text'" class="field">
       <MyTextarea
+        v-focus
         class="textarea"
         placeholder="Text"
-        v-model="block.content.text"
+        v-model="contentText"
         @input="textValidation"
-        ref="focus"
       />
       <p v-if="textError" class="error">{{ textError }}</p>
     </div>
     <div v-else class="field">
       <MyInput
+        v-focus
         class="input"
         placeholder="Url"
-        v-model="block.content.url"
+        v-model="contentUrl"
         @input="urlValidation"
-        ref="focus"
       />
       <p v-if="urlError" class="error">{{ urlError }}</p>
     </div>
     <div class="field">
-      <MyInput
-        class="input"
-        placeholder="Subtext"
-        v-model="block.content.subtext"
-      />
+      <MyInput class="input" placeholder="Subtext" v-model="contentSubtext" />
     </div>
     <MyButton
       class="button"
-      :disabled="validation || loadingCreateBlock"
+      :disabled="isValid || loadingCreateBlock"
       @click="createBlock"
     >
       <p v-if="!loadingCreateBlock">Create</p>
@@ -53,111 +49,82 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import MyButton from '../../../common/MyButton.vue';
 import MySelect from '../../../common/MySelect.vue';
 import MyInput from '@/components/common/MyInput.vue';
 import MyTextarea from '@/components/common/MyTextarea.vue';
-import { defineComponent } from 'vue';
 import type { Option } from '@/interfaces/Option';
-
-export default defineComponent({
-  name: 'CreateBlockForm',
-  components: {
-    MyButton,
-    MySelect,
-    MyInput,
-    MyTextarea,
-  },
-  props: {
-    slotId: {
-      type: Number,
-      required: true,
-    },
-    loadingCreateBlock: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['createBlock'],
-  data() {
-    return {
-      block: {
-        type: 'TEXT',
-        content: {
-          text: '',
-          url: '',
-          subtext: '',
-        },
-      },
-      urlError: '',
-      textError: '',
-      selected: 'text',
-      options: [
-        { name: 'text', value: 'TEXT' },
-        { name: 'image', value: 'IMAGE' },
-      ],
-    };
-  },
-  created() {
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'Enter') {
-        this.createBlock();
-      }
-    });
-  },
-  computed: {
-    validation(): boolean {
-      return !!this.urlError && !!this.textError;
-    },
-  },
-  mounted() {
-    this.$nextTick(() => (this.$refs['focus'] as any).$el.focus());
-  },
-  methods: {
-    urlValidation(): boolean {
-      if (this.block.content.url === '') {
-        this.urlError = 'Field is required';
-        return false;
-      }
-      if (
-        !this.block.content.url.match(
-          /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/
-        )
-      ) {
-        this.urlError = 'That’s not a valid url';
-        return false;
-      }
-      this.urlError = '';
-      return true;
-    },
-    textValidation(): boolean {
-      if (this.block.content.text === '') {
-        this.textError = 'Field is required';
-        return false;
-      }
-      this.textError = '';
-      return true;
-    },
-    createBlock() {
-      if (this.urlValidation() || this.textValidation()) {
-        const {
-          type,
-          content: { text, url, subtext },
-        } = this.block;
-        const content =
-          type === 'TEXT'
-            ? { text, subtext: subtext === '' ? undefined : subtext }
-            : { url, subtext: subtext === '' ? undefined : subtext };
-        this.$emit('createBlock', this.slotId, { type, content });
-      }
-    },
-    selectOption(option: Option) {
-      this.block.type = option.value;
-      this.selected = option.name;
-    },
-  },
+const props = defineProps<{
+  slotId: number;
+  loadingCreateBlock: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'createBlock', slotId: number, value: any): void;
+}>();
+const type = ref('TEXT');
+const contentText = ref('');
+const contentUrl = ref('');
+const contentSubtext = ref('');
+const textError = ref('');
+const urlError = ref('');
+const selected = ref('text');
+const options = [
+  { name: 'text', value: 'TEXT' },
+  { name: 'image', value: 'IMAGE' },
+];
+const isValid = computed(() => !!urlError.value && !!textError.value);
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'Enter') {
+    createBlock();
+  }
 });
+const urlValidation = (): boolean => {
+  if (contentUrl.value === '') {
+    urlError.value = 'Field is required';
+    return false;
+  }
+  if (
+    !contentUrl.value.match(
+      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/
+    )
+  ) {
+    urlError.value = 'That’s not a valid url';
+    return false;
+  }
+  urlError.value = '';
+  return true;
+};
+const textValidation = (): boolean => {
+  if (contentText.value === '') {
+    textError.value = 'Field is required';
+    return false;
+  }
+  textError.value = '';
+  return true;
+};
+const createBlock = () => {
+  if (urlValidation() || textValidation()) {
+    const content =
+      type.value === 'TEXT'
+        ? {
+            text: contentText.value,
+            subtext:
+              contentSubtext.value === '' ? undefined : contentSubtext.value,
+          }
+        : {
+            url: contentUrl.value,
+            subtext:
+              contentSubtext.value === '' ? undefined : contentSubtext.value,
+          };
+    emit('createBlock', props.slotId, { type: type.value, content });
+  }
+};
+const selectOption = (option: Option) => {
+  type.value = option.value;
+  selected.value = option.name;
+};
 </script>
 
 <style scoped>

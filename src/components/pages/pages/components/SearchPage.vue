@@ -10,29 +10,21 @@
     <input
       type="text"
       placeholder="Filter by name"
-      v-model="search"
+      v-model="searchQuery"
       @input="filter"
     />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  name: 'SearchPage',
-  emits: ['update:search'],
-  data() {
-    return {
-      search: '',
-    };
-  },
-  methods: {
-    filter() {
-      this.$emit('update:search', this.search);
-    },
-  },
-});
+<script setup lang="ts">
+import { ref } from 'vue';
+const emit = defineEmits<{
+  (e: 'update:search', searchQuery: string): void;
+}>();
+const searchQuery = ref('');
+const filter = () => {
+  emit('update:search', searchQuery.value);
+};
 </script>
 
 <style scoped>

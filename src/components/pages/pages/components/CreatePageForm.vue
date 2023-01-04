@@ -3,19 +3,19 @@
     <h4>Create page</h4>
     <div class="field">
       <MyInput
+        v-focus
         class="input"
         type="text"
         placeholder="Name"
         @input="nameValidation"
-        v-model="page.name"
-        ref="focus"
+        v-model="name"
       />
       <p v-if="nameError" class="error">{{ nameError }}</p>
     </div>
     <MyButton
       class="button"
       @click="createPage"
-      :disabled="validation || loadingCreatePage"
+      :disabled="isValid || loadingCreatePage"
     >
       <p v-if="!loadingCreatePage">Create</p>
       <div v-else class="loadingio-spinner-ellipsis-yg3d79y87xd">
@@ -31,73 +31,46 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import MyButton from '@/components/common/MyButton.vue';
 import MyInput from '@/components/common/MyInput.vue';
-import { defineComponent } from 'vue';
 import type { Page } from '@/interfaces/Page';
-
-export default defineComponent({
-  name: 'CreatePageForm',
-  components: {
-    MyButton,
-    MyInput,
-  },
-  props: {
-    pages: {
-      type: Array<Page>,
-      required: true,
-    },
-    loadingCreatePage: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['create'],
-  data() {
-    return {
-      page: {
-        name: '',
-        meta: {},
-      },
-      nameError: '',
-    };
-  },
-  created() {
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'Enter') {
-        this.createPage();
-      }
-    });
-  },
-  computed: {
-    validation(): boolean {
-      return !!this.nameError;
-    },
-  },
-  mounted() {
-    this.$nextTick(() => (this.$refs['focus'] as any).$el.focus());
-  },
-  methods: {
-    nameValidation(): boolean {
-      if (this.page.name === '') {
-        this.nameError = 'Field is required';
-        return false;
-      }
-      if (this.$props.pages.find((page) => page.name === this.page.name)) {
-        this.nameError = 'A page with that name exists';
-        return false;
-      }
-      this.nameError = '';
-      return true;
-    },
-    createPage() {
-      if (this.nameValidation()) {
-        this.$emit('create', this.page);
-      }
-    },
-  },
+const props = defineProps<{
+  pages: Page[];
+  loadingCreatePage: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'create', page: Omit<Page, 'id' | 'order'>): void;
+}>();
+const name = ref('');
+const nameError = ref('');
+const isValid = computed(() => !!nameError.value);
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'Enter') {
+    createPage();
+  }
 });
+const nameValidation = (): boolean => {
+  if (name.value === '') {
+    nameError.value = 'Field is required';
+    return false;
+  }
+  if (props.pages.find((page) => page.name === name.value)) {
+    nameError.value = 'A page with that name exists';
+    return false;
+  }
+  nameError.value = '';
+  return true;
+};
+const createPage = () => {
+  if (nameValidation()) {
+    emit('create', {
+      name: name.value,
+      meta: {},
+    });
+  }
+};
 </script>
 
 <style scoped>

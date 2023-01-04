@@ -36,33 +36,33 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  name: 'SlotMenu',
-  props: {
-    mySlot: {
-      type: Object,
-      required: true,
-    },
-  },
-  emits: ['showCreateBlockDialog', 'moveUpSlot', 'moveDownSlot', 'deleteSlot'],
-  methods: {
-    showCreateBlockDialog(slotId: number) {
-      this.$emit('showCreateBlockDialog', slotId);
-    },
-    moveUpSlot() {
-      this.$emit('moveUpSlot', this.mySlot.id);
-    },
-    moveDownSlot() {
-      this.$emit('moveDownSlot', this.mySlot.id);
-    },
-    deleteSlot() {
-      this.$emit('deleteSlot', this.mySlot.id);
-    },
-  },
-});
+<script setup lang="ts">
+import type { Slot } from '@/interfaces/Slot';
+import type { Block } from '@/interfaces/Block';
+interface ISlot extends Slot {
+  blocks: Block[];
+}
+const props = defineProps<{
+  mySlot: ISlot;
+}>();
+const emit = defineEmits<{
+  (e: 'moveUpSlot', slotId: number): void;
+  (e: 'moveDownSlot', slotId: number): void;
+  (e: 'deleteSlot', slotId: number): void;
+  (e: 'showCreateBlockDialog', slotId: number): void;
+}>();
+const showCreateBlockDialog = (slotId: number) => {
+  emit('showCreateBlockDialog', slotId);
+};
+const moveUpSlot = () => {
+  emit('moveUpSlot', props.mySlot.id);
+};
+const moveDownSlot = () => {
+  emit('moveDownSlot', props.mySlot.id);
+};
+const deleteSlot = () => {
+  emit('deleteSlot', props.mySlot.id);
+};
 </script>
 
 <style scoped>

@@ -1,22 +1,21 @@
 <template>
-  <input :value="modelValue" @input="updateInput" class="input" type="text" />
+  <input v-model="value" class="input" type="text" />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  name: 'MyInput',
-  props: {
-    modelValue: {
-      type: [String, Number],
-    },
+<script setup lang="ts">
+import { computed } from 'vue';
+const props = defineProps<{
+  modelValue: string;
+}>();
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void;
+}>();
+const value = computed({
+  get() {
+    return props.modelValue;
   },
-  emits: ['update:modelValue'],
-  methods: {
-    updateInput(event: any) {
-      this.$emit('update:modelValue', event.target.value);
-    },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>

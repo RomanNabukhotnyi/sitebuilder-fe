@@ -21,35 +21,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { useAuthStore } from '../../../store/auth';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import { useToast } from 'vue-toastification';
 import SignUpForm from './components/SignUpForm.vue';
-
-export default defineComponent({
-  name: 'SignUpPage',
-  components: {
-    SignUpForm,
-  },
-  setup() {
-    const authStore = useAuthStore();
-    const toast = useToast();
-    const loading = computed(() => authStore.loading);
-    return {
-      authStore,
-      toast,
-      loading,
-    };
-  },
-  methods: {
-    async signUp(payload: { email: string; password: string }) {
-      await this.authStore.signUp(payload);
-      this.toast.success('Sign up is successful!');
-      this.$router.push('/login');
-    },
-  },
-});
+const authStore = useAuthStore();
+const router = useRouter();
+const toast = useToast();
+const loading = computed(() => authStore.loading);
+const signUp = async (payload: { email: string; password: string }) => {
+  await authStore.signUp(payload);
+  toast.success('Sign up is successful!');
+  router.push('/login');
+};
 </script>
 
 <style scoped>
