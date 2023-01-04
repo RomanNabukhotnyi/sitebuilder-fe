@@ -3,18 +3,18 @@
     <h4>Create project</h4>
     <div class="field">
       <MyInput
+        v-focus
         class="input"
         type="text"
         placeholder="Name"
         @input="nameValidation"
-        v-model="project.name"
-        ref="focus"
+        v-model="name"
       />
       <p v-if="nameError" class="error">{{ nameError }}</p>
     </div>
     <MyButton
       class="button"
-      :disabled="validation || loadingCreateProject"
+      :disabled="isValid || loadingCreateProject"
       @click="createProject"
     >
       <p v-if="!loadingCreateProject">Create</p>
@@ -31,76 +31,45 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import MyButton from '../../../common/MyButton.vue';
 import MyInput from '../../../common/MyInput.vue';
-import { defineComponent } from 'vue';
 import type { Project } from '@/interfaces/Project';
-
-export default defineComponent({
-  name: 'CreateProjectForm',
-  components: {
-    MyButton,
-    MyInput,
-  },
-  props: {
-    projects: {
-      type: Array<Project>,
-      required: true,
-    },
-    loadingCreateProject: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['create'],
-  data() {
-    return {
-      project: {
-        name: '',
-      },
-      nameError: '',
-    };
-  },
-  created() {
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'Enter') {
-        this.createProject();
-      }
-    });
-  },
-  computed: {
-    validation(): boolean {
-      return !!this.nameError;
-    },
-  },
-  mounted() {
-    this.$nextTick(() => (this.$refs['focus'] as any).$el.focus());
-  },
-  methods: {
-    nameValidation(): boolean {
-      if (this.project.name === '') {
-        this.nameError = 'Field is required';
-        return false;
-      }
-      if (
-        this.$props.projects.find(
-          (project) => project.name === this.project.name
-        )
-      ) {
-        this.nameError = 'A project with that name exists';
-        return false;
-      }
-      this.nameError = '';
-      return true;
-    },
-    createProject() {
-      if (this.nameValidation()) {
-        this.$emit('create', this.project);
-      }
-    },
-  },
+const props = defineProps<{
+  projects: Project[];
+  loadingCreateProject: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'create', project: Pick<Project, 'name'>): void;
+}>();
+const name = ref('');
+const nameError = ref('');
+const isValid = computed(() => !!nameError.value);
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'Enter') {
+    createProject();
+  }
 });
+const nameValidation = (): boolean => {
+  if (name.value === '') {
+    nameError.value = 'Field is required';
+    return false;
+  }
+  if (props.projects.find((project) => project.name === name.value)) {
+    nameError.value = 'A project with that name exists';
+    return false;
+  }
+  nameError.value = '';
+  return true;
+};
+const createProject = () => {
+  if (nameValidation()) {
+    emit('create', {
+      name: name.value,
+    });
+  }
+};
 </script>
 
 <style scoped>

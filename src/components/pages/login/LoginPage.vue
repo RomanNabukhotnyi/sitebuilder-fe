@@ -20,33 +20,20 @@
   </div>
 </template>
 
-<script lang="ts">
-import { useAuthStore } from '../../../store/auth';
-import { defineComponent, computed } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import LoginForm from './components/LoginForm.vue';
-
-export default defineComponent({
-  name: 'LoginPage',
-  components: {
-    LoginForm,
-  },
-  setup() {
-    const authStore = useAuthStore();
-    const loading = computed(() => authStore.loading);
-    return {
-      authStore,
-      loading,
-    };
-  },
-  methods: {
-    async login(payload: { email: string; password: string }) {
-      await this.authStore.login(payload);
-      if (this.authStore.isLoggedIn) {
-        this.$router.push('main/projects');
-      }
-    },
-  },
-});
+import { useAuthStore } from '@/stores/auth';
+const authStore = useAuthStore();
+const router = useRouter();
+const loading = computed(() => authStore.loading);
+const login = async (payload: { email: string; password: string }) => {
+  await authStore.login(payload);
+  if (authStore.isLoggedIn) {
+    router.push('main/projects');
+  }
+};
 </script>
 
 <style scoped lang="scss">

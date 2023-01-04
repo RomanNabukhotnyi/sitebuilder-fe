@@ -16,7 +16,7 @@
     <MyDialog v-model:show="dialogEditBlockVisible">
       <EditBlockForm
         :slotId="slotId!"
-        :block="block!"
+        :block="editingBlock!"
         :loadingEditBlock="loadingEditBlock"
         @editBlock="editBlock"
       />
@@ -47,9 +47,10 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { useSlotsStore } from '../../../store/slots';
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useSlotsStore } from '@/stores/slots';
 import MyButton from '@/components/common/MyButton.vue';
 import MyDialog from '@/components/common/MyDialog.vue';
 import CreateSlotForm from './components/CreateSlotForm.vue';
@@ -57,180 +58,141 @@ import CreateBlockForm from './components/CreateBlockForm.vue';
 import EditBlockForm from './components/EditBlockForm.vue';
 import SlotList from './components/SlotList.vue';
 import type { Block } from '@/interfaces/Block';
-
-interface Data {
-  loading: boolean;
-  dialogCreateSlotVisible: boolean;
-  dialogCreateBlockVisible: boolean;
-  dialogEditBlockVisible: boolean;
-  slotId: number | null;
-  block: Block | null;
-}
-
-export default defineComponent({
-  name: 'SlotsPage',
-  components: {
-    MyButton,
-    MyDialog,
-    CreateSlotForm,
-    CreateBlockForm,
-    EditBlockForm,
-    SlotList,
-  },
-  setup() {
-    const slotsStore = useSlotsStore();
-    const slots = computed(() => slotsStore.slots);
-    const loadingGetSlots = computed(() => slotsStore.loadingGetSlots);
-    const loadingCreateSlot = computed(() => slotsStore.loadingCreateSlot);
-    const loadingDeleteSlot = computed(() => slotsStore.loadingDeleteSlot);
-    const loadingCreateBlock = computed(() => slotsStore.loadingCreateBlock);
-    const loadingEditBlock = computed(() => slotsStore.loadingEditBlock);
-    const loadingDeleteBlock = computed(() => slotsStore.loadingDeleteBlock);
-    return {
-      slotsStore,
-      slots,
-      loadingGetSlots,
-      loadingCreateSlot,
-      loadingDeleteSlot,
-      loadingCreateBlock,
-      loadingEditBlock,
-      loadingDeleteBlock,
-    };
-  },
-  data(): Data {
-    return {
-      loading: true,
-      dialogCreateSlotVisible: false,
-      dialogCreateBlockVisible: false,
-      dialogEditBlockVisible: false,
-      slotId: null,
-      block: null,
-    };
-  },
-  mounted() {
-    this.slotsStore.getSlots(+this.$route.params.pageId);
-  },
-  methods: {
-    showCreateSlotDialog() {
-      this.dialogCreateSlotVisible = true;
-    },
-    showCreateBlockDialog(slotId: number) {
-      this.slotId = slotId;
-      this.dialogCreateBlockVisible = true;
-    },
-    showEditBlockDialog(slotId: number, block: Block) {
-      this.slotId = slotId;
-      this.block = block;
-      this.dialogEditBlockVisible = true;
-    },
-    openSlot(slotId: number) {
-      this.$router.push(`/slots/${slotId}`);
-    },
-    async createSlot(slot: any) {
-      await this.slotsStore.createSlot({
-        pageId: +this.$route.params.pageId,
-        type: slot.type,
-      });
-      this.dialogCreateSlotVisible = false;
-    },
-    async deleteSlot(id: number) {
-      await this.slotsStore.deleteSlot(id);
-    },
-    async createBlock(slotId: number, block: Block) {
-      await this.slotsStore.createBlock({
-        slotId,
-        type: block.type,
-        content: block.content,
-      });
-      this.dialogCreateBlockVisible = false;
-    },
-    async editBlock(slotId: number, block: Block) {
-      await this.slotsStore.editBlock(slotId, block.id, {
-        type: block.type,
-        content: block.content,
-      });
-      this.dialogEditBlockVisible = false;
-    },
-    async deleteBlock(slotId: number, blockId: number) {
-      await this.slotsStore.deleteBlock(slotId, blockId);
-    },
-    async moveUpSlot(slotId: number) {
-      const index = this.slots.findIndex((slot) => slot.id === slotId);
-      if (index === 0) {
-        return;
-      }
-      [this.slots[index - 1], this.slots[index]] = [
-        this.slots[index],
-        this.slots[index - 1],
-      ];
-      this.updateOrderSlots();
-    },
-    async moveDownSlot(slotId: number) {
-      const index = this.slots.findIndex((slot) => slot.id === slotId);
-      if (index === this.slots.length - 1) {
-        return;
-      }
-      [this.slots[index + 1], this.slots[index]] = [
-        this.slots[index],
-        this.slots[index + 1],
-      ];
-      this.updateOrderSlots();
-    },
-    async moveLeftBlock(slotId: number, blockId: number) {
-      const indexSlot = this.slots.findIndex((slot) => slot.id === slotId);
-      const indexBlock = this.slots[indexSlot].blocks.findIndex(
-        (block) => block.id === blockId
-      );
-      if (indexBlock === 0) {
-        return;
-      }
-      [
-        this.slots[indexSlot].blocks[indexBlock - 1],
-        this.slots[indexSlot].blocks[indexBlock],
-      ] = [
-        this.slots[indexSlot].blocks[indexBlock],
-        this.slots[indexSlot].blocks[indexBlock - 1],
-      ];
-      this.updateOrderBlocks(slotId);
-    },
-    async moveRightBlock(slotId: number, blockId: number) {
-      const indexSlot = this.slots.findIndex((slot) => slot.id === slotId);
-      const indexBlock = this.slots[indexSlot].blocks.findIndex(
-        (block) => block.id === blockId
-      );
-      if (indexBlock === this.slots[indexSlot].blocks.length - 1) {
-        return;
-      }
-      [
-        this.slots[indexSlot].blocks[indexBlock + 1],
-        this.slots[indexSlot].blocks[indexBlock],
-      ] = [
-        this.slots[indexSlot].blocks[indexBlock],
-        this.slots[indexSlot].blocks[indexBlock + 1],
-      ];
-      this.updateOrderBlocks(slotId);
-    },
-    async updateOrderSlots() {
-      await this.slotsStore.updateOrderSlots(
-        +this.$route.params.pageId,
-        this.slots.map((slot, index) => ({
-          id: slot.id,
-          order: index + 1,
-        }))
-      );
-    },
-    async updateOrderBlocks(slotId: number) {
-      const indexSlot = this.slots.findIndex((slot) => slot.id === slotId);
-      await this.slotsStore.updateOrderBlocks(
-        slotId,
-        this.slots[indexSlot].blocks.map((block, index) => ({
-          id: block.id,
-          order: index + 1,
-        }))
-      );
-    },
-  },
+const slotsStore = useSlotsStore();
+const route = useRoute();
+const slots = computed(() => slotsStore.slots);
+const loadingGetSlots = computed(() => slotsStore.loadingGetSlots);
+const loadingCreateSlot = computed(() => slotsStore.loadingCreateSlot);
+const loadingDeleteSlot = computed(() => slotsStore.loadingDeleteSlot);
+const loadingCreateBlock = computed(() => slotsStore.loadingCreateBlock);
+const loadingEditBlock = computed(() => slotsStore.loadingEditBlock);
+const loadingDeleteBlock = computed(() => slotsStore.loadingDeleteBlock);
+const dialogCreateSlotVisible = ref(false);
+const dialogCreateBlockVisible = ref(false);
+const dialogEditBlockVisible = ref(false);
+const slotId = ref<number | null>(null);
+let editingBlock: Block | null = null;
+onMounted(() => {
+  slotsStore.getSlots(+route.params.pageId);
 });
+const showCreateSlotDialog = () => {
+  dialogCreateSlotVisible.value = true;
+};
+const showCreateBlockDialog = (id: number) => {
+  slotId.value = id;
+  dialogCreateBlockVisible.value = true;
+};
+const showEditBlockDialog = (id: number, block: Block) => {
+  slotId.value = id;
+  editingBlock = block;
+  dialogEditBlockVisible.value = true;
+};
+const createSlot = async (slot: any) => {
+  await slotsStore.createSlot({
+    pageId: +route.params.pageId,
+    type: slot.type,
+  });
+  dialogCreateSlotVisible.value = false;
+};
+const deleteSlot = async (id: number) => {
+  await slotsStore.deleteSlot(id);
+};
+const createBlock = async (slotId: number, block: Block) => {
+  await slotsStore.createBlock({
+    slotId,
+    type: block.type,
+    content: block.content,
+  });
+  dialogCreateBlockVisible.value = false;
+};
+const editBlock = async (
+  slotId: number,
+  block: Pick<Block, 'id' | 'type' | 'content'>
+) => {
+  await slotsStore.editBlock(slotId, block.id, {
+    type: block.type,
+    content: block.content,
+  });
+  dialogEditBlockVisible.value = false;
+};
+const deleteBlock = async (slotId: number, blockId: number) => {
+  await slotsStore.deleteBlock(slotId, blockId);
+};
+const moveUpSlot = async (slotId: number) => {
+  const index = slots.value.findIndex((slot) => slot.id === slotId);
+  if (index === 0) {
+    return;
+  }
+  [slots.value[index - 1], slots.value[index]] = [
+    slots.value[index],
+    slots.value[index - 1],
+  ];
+  updateOrderSlots();
+};
+const moveDownSlot = async (slotId: number) => {
+  const index = slots.value.findIndex((slot) => slot.id === slotId);
+  if (index === slots.value.length - 1) {
+    return;
+  }
+  [slots.value[index + 1], slots.value[index]] = [
+    slots.value[index],
+    slots.value[index + 1],
+  ];
+  updateOrderSlots();
+};
+const moveLeftBlock = async (slotId: number, blockId: number) => {
+  const indexSlot = slots.value.findIndex((slot) => slot.id === slotId);
+  const indexBlock = slots.value[indexSlot].blocks.findIndex(
+    (block) => block.id === blockId
+  );
+  if (indexBlock === 0) {
+    return;
+  }
+  [
+    slots.value[indexSlot].blocks[indexBlock - 1],
+    slots.value[indexSlot].blocks[indexBlock],
+  ] = [
+    slots.value[indexSlot].blocks[indexBlock],
+    slots.value[indexSlot].blocks[indexBlock - 1],
+  ];
+  updateOrderBlocks(slotId);
+};
+const moveRightBlock = async (slotId: number, blockId: number) => {
+  const indexSlot = slots.value.findIndex((slot) => slot.id === slotId);
+  const indexBlock = slots.value[indexSlot].blocks.findIndex(
+    (block) => block.id === blockId
+  );
+  if (indexBlock === slots.value[indexSlot].blocks.length - 1) {
+    return;
+  }
+  [
+    slots.value[indexSlot].blocks[indexBlock + 1],
+    slots.value[indexSlot].blocks[indexBlock],
+  ] = [
+    slots.value[indexSlot].blocks[indexBlock],
+    slots.value[indexSlot].blocks[indexBlock + 1],
+  ];
+  updateOrderBlocks(slotId);
+};
+const updateOrderSlots = async () => {
+  await slotsStore.updateOrderSlots(
+    +route.params.pageId,
+    slots.value.map((slot, index) => ({
+      id: slot.id,
+      order: index + 1,
+    }))
+  );
+};
+const updateOrderBlocks = async (slotId: number) => {
+  const indexSlot = slots.value.findIndex((slot) => slot.id === slotId);
+  await slotsStore.updateOrderBlocks(
+    slotId,
+    slots.value[indexSlot].blocks.map((block, index) => ({
+      id: block.id,
+      order: index + 1,
+    }))
+  );
+};
 </script>
 
 <style scoped>

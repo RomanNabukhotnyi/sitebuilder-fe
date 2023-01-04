@@ -9,7 +9,7 @@
     </MyDialog>
     <MyDialog v-model:show="dialogEditVisible">
       <EditPageForm
-        :page="page!"
+        :page="editingPage!"
         @edit="editPage"
         :loadingEditPage="loadingEditPage"
         :pages="pages"
@@ -19,7 +19,7 @@
       <div class="panel__sort">
         <!-- SORT -->
       </div>
-      <SearchPage v-model:search="search" />
+      <SearchPage v-model:search="searchQuery" />
       <MyButton class="button__create" @click="showCreateDialog">
         Create Page
       </MyButton>
@@ -37,9 +37,10 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { usePagesStore } from '../../../store/pages';
+<script setup lang="ts">
+import { computed, ref, onMounted } from 'vue';
+import { usePagesStore } from '@/stores/pages';
+import { useRoute } from 'vue-router';
 import CreatePageForm from './components/CreatePageForm.vue';
 import EditPageForm from './components/EditPageForm.vue';
 import PageList from './components/PageList.vue';
@@ -47,92 +48,56 @@ import MyDialog from '@/components/common/MyDialog.vue';
 import MyButton from '@/components/common/MyButton.vue';
 import SearchPage from './components/SearchPage.vue';
 import type { Page } from '@/interfaces/Page';
-
-interface Data {
-  dialogCreateVisible: boolean;
-  dialogEditVisible: boolean;
-  page: Page | null;
-  search: string;
-}
-
-export default defineComponent({
-  name: 'PagesPage',
-  components: {
-    CreatePageForm,
-    EditPageForm,
-    MyDialog,
-    MyButton,
-    PageList,
-    SearchPage,
-  },
-  setup() {
-    const pagesStore = usePagesStore();
-    const pages = computed(() => pagesStore.pages);
-    const loadingGetPages = computed(() => pagesStore.loadingGetPages);
-    const loadingCreatePage = computed(() => pagesStore.loadingCreatePage);
-    const loadingEditPage = computed(() => pagesStore.loadingEditPage);
-    const loadingDeletePage = computed(() => pagesStore.loadingDeletePage);
-    return {
-      pagesStore,
-      pages,
-      loadingGetPages,
-      loadingCreatePage,
-      loadingEditPage,
-      loadingDeletePage,
-    };
-  },
-  data(): Data {
-    return {
-      dialogCreateVisible: false,
-      dialogEditVisible: false,
-      page: null,
-      search: '',
-    };
-  },
-  mounted() {
-    this.pagesStore.getPages(+this.$route.params.projectId);
-  },
-  computed: {
-    filterPages() {
-      return this.pages.filter((project) =>
-        project.name.toLowerCase().includes(this.search.toLowerCase())
-      );
-    },
-  },
-  methods: {
-    showCreateDialog() {
-      this.dialogCreateVisible = true;
-    },
-    showEditDialog(page: Page) {
-      this.page = page;
-      this.dialogEditVisible = true;
-    },
-    async createPage(page: Page) {
-      await this.pagesStore.createPage({
-        projectId: +this.$route.params.projectId,
-        ...page,
-      });
-      this.dialogCreateVisible = false;
-    },
-    async updateOrders(pages: Page[]) {
-      await this.pagesStore.updateOrders(
-        +this.$route.params.projectId,
-        pages.map((page, index) => ({ id: page.id, order: index + 1 }))
-      );
-      this.pagesStore.pages = pages;
-    },
-    async editPage(page: Page) {
-      await this.pagesStore.editPage(page.id, {
-        name: page.name,
-        meta: page.meta,
-      });
-      this.dialogEditVisible = false;
-    },
-    async deletePage(id: number) {
-      await this.pagesStore.deletePage(id);
-    },
-  },
+const pagesStore = usePagesStore();
+const route = useRoute();
+const pages = computed(() => pagesStore.pages);
+const loadingGetPages = computed(() => pagesStore.loadingGetPages);
+const loadingCreatePage = computed(() => pagesStore.loadingCreatePage);
+const loadingEditPage = computed(() => pagesStore.loadingEditPage);
+const loadingDeletePage = computed(() => pagesStore.loadingDeletePage);
+const dialogCreateVisible = ref(false);
+const dialogEditVisible = ref(false);
+const searchQuery = ref('');
+const editingPage = ref<Page | null>(null);
+onMounted(() => {
+  pagesStore.getPages(+route.params.projectId);
 });
+const filterPages = computed(() =>
+  pages.value.filter((project) =>
+    project.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+);
+const showCreateDialog = () => {
+  dialogCreateVisible.value = true;
+};
+const showEditDialog = (page: Page) => {
+  editingPage.value = page;
+  dialogEditVisible.value = true;
+};
+const createPage = async (page: Omit<Page, 'id' | 'order'>) => {
+  await pagesStore.createPage({
+    projectId: +route.params.projectId,
+    ...page,
+  });
+  dialogCreateVisible.value = false;
+};
+const updateOrders = async (pages: Page[]) => {
+  await pagesStore.updateOrders(
+    +route.params.projectId,
+    pages.map((page, index) => ({ id: page.id, order: index + 1 }))
+  );
+  pagesStore.pages = pages;
+};
+const editPage = async (page: Page) => {
+  await pagesStore.editPage(page.id, {
+    name: page.name,
+    meta: page.meta,
+  });
+  dialogEditVisible.value = false;
+};
+const deletePage = async (id: number) => {
+  await pagesStore.deletePage(id);
+};
 </script>
 
 <style scoped>

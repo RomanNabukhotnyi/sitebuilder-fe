@@ -70,57 +70,32 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import MyButton from '../../../common/MyButton.vue';
-
 import type { Project } from '@/interfaces/Project';
-
-interface Data {
-  deleteId: number | null;
-}
-
-export default defineComponent({
-  name: 'ProjectList',
-  components: {
-    MyButton,
-  },
-  props: {
-    projects: {
-      type: Array<Project>,
-      required: true,
-    },
-    loadingGetProjects: {
-      type: Boolean,
-      required: true,
-    },
-    loadingDeleteProject: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['showEditDialog', 'delete'],
-  setup() {
-    return {};
-  },
-  data(): Data {
-    return {
-      deleteId: null,
-    };
-  },
-  methods: {
-    openProject(projectId: number) {
-      this.$router.push(`/projects/${projectId}`);
-    },
-    showEditDialog(project: Project) {
-      this.$emit('showEditDialog', project);
-    },
-    deleteProject(id: number) {
-      this.deleteId = id;
-      this.$emit('delete', id);
-    },
-  },
-});
+defineProps<{
+  projects: Project[];
+  loadingGetProjects: boolean;
+  loadingDeleteProject: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'showEditDialog', project: Project): void;
+  (e: 'delete', id: number): void;
+}>();
+const router = useRouter();
+const deleteId = ref<number | null>(null);
+const openProject = (projectId: number) => {
+  router.push(`/projects/${projectId}`);
+};
+const showEditDialog = (project: Project) => {
+  emit('showEditDialog', project);
+};
+const deleteProject = (id: number) => {
+  deleteId.value = id;
+  emit('delete', id);
+};
 </script>
 
 <style scoped lang="scss">

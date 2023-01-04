@@ -3,18 +3,18 @@
     <h4>Edit page</h4>
     <div class="field">
       <MyInput
+        v-focus
         class="input"
         type="text"
         placeholder="Name"
         @input="nameValidation"
-        v-model="editedPage.name"
-        ref="focus"
+        v-model="name"
       />
       <p v-if="nameError" class="error">{{ nameError }}</p>
     </div>
     <MyButton
       class="button"
-      :disabled="validation || loadingEditPage"
+      :disabled="isValid || loadingEditPage"
       @click="editProject"
     >
       <p v-if="!loadingEditPage">Edit</p>
@@ -31,82 +31,53 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
 import MyButton from '../../../common/MyButton.vue';
 import MyInput from '../../../common/MyInput.vue';
-import { defineComponent } from 'vue';
 import type { Page } from '@/interfaces/Page';
-
-export default defineComponent({
-  name: 'EditPageForm',
-  components: {
-    MyButton,
-    MyInput,
-  },
-  props: {
-    page: {
-      type: Object,
-      required: true,
-    },
-    pages: {
-      type: Array<Page>,
-      required: true,
-    },
-    loadingEditPage: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['edit'],
-  data() {
-    return {
-      editedPage: {
-        name: '',
-      },
-      nameError: '',
-    };
-  },
-  created() {
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'Enter') {
-        this.editProject();
-      }
+const props = defineProps<{
+  page: Page;
+  pages: Page[];
+  loadingEditPage: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'edit', page: Page): void;
+}>();
+const name = ref('');
+const nameError = ref('');
+const isValid = computed(() => !!nameError.value);
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'Enter') {
+    editProject();
+  }
+});
+const nameValidation = (): boolean => {
+  if (name.value === '') {
+    nameError.value = 'Field is required';
+    return false;
+  }
+  if (
+    props.pages.find(
+      (page) => page.name === name.value && page.name !== props.page.name
+    )
+  ) {
+    nameError.value = 'A page with that name exists';
+    return false;
+  }
+  nameError.value = '';
+  return true;
+};
+const editProject = () => {
+  if (nameValidation()) {
+    emit('edit', {
+      ...props.page,
+      name: name.value,
     });
-  },
-  computed: {
-    validation(): boolean {
-      return !!this.nameError;
-    },
-  },
-  mounted() {
-    this.editedPage = Object.create(this.$props.page);
-    this.$nextTick(() => (this.$refs['focus'] as any).$el.focus());
-  },
-  methods: {
-    nameValidation(): boolean {
-      if (this.editedPage.name === '') {
-        this.nameError = 'Field is required';
-        return false;
-      }
-      if (
-        this.$props.pages.find(
-          (page) =>
-            page.name === this.editedPage.name &&
-            page.name !== this.$props.page.name
-        )
-      ) {
-        this.nameError = 'A page with that name exists';
-        return false;
-      }
-      this.nameError = '';
-      return true;
-    },
-    editProject() {
-      if (this.nameValidation()) {
-        this.$emit('edit', this.editedPage);
-      }
-    },
-  },
+  }
+};
+onMounted(() => {
+  name.value = props.page.name;
 });
 </script>
 

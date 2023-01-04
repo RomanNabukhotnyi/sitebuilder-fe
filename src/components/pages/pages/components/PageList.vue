@@ -74,69 +74,42 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import MyButton from '@/components/common/MyButton.vue';
 import Draggable from 'vuedraggable';
-
 import type { Page } from '@/interfaces/Page';
-
-interface Data {
-  deleteId: number | null;
-}
-
-export default defineComponent({
-  name: 'PageList',
-  components: {
-    MyButton,
-    Draggable,
+const props = defineProps<{
+  pages: Page[];
+  loadingGetPages: boolean;
+  loadingDeletePage: boolean;
+}>();
+const emit = defineEmits<{
+  (e: 'updateOrders', orders: any): void;
+  (e: 'showEditDialog', page: Page): void;
+  (e: 'delete', id: number): void;
+}>();
+const deleteId = ref<number | null>(null);
+const router = useRouter();
+const draggablePages = computed({
+  get() {
+    return props.pages;
   },
-  props: {
-    pages: {
-      type: Array<Page>,
-      required: true,
-    },
-    loadingGetPages: {
-      type: Boolean,
-      required: true,
-    },
-    loadingDeletePage: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['updateOrders', 'showEditDialog', 'delete'],
-  data(): Data {
-    return {
-      deleteId: null,
-    };
-  },
-  computed: {
-    draggablePages: {
-      get() {
-        return this.pages;
-      },
-      set(value: any) {
-        this.$emit('updateOrders', value);
-      },
-    },
-  },
-  methods: {
-    sortedPages(): Page[] {
-      return this.$props.pages.sort((a, b) => (a.order > b.order ? 1 : -1));
-    },
-    openPage(pageId: number): void {
-      this.$router.push(`/pages/${pageId}`);
-    },
-    showEditDialog(page: Page) {
-      this.$emit('showEditDialog', page);
-    },
-    deletePage(id: number): void {
-      this.deleteId = id;
-      this.$emit('delete', id);
-    },
+  set(value: any) {
+    emit('updateOrders', value);
   },
 });
+const openPage = (pageId: number): void => {
+  router.push(`/pages/${pageId}`);
+};
+const showEditDialog = (page: Page) => {
+  emit('showEditDialog', page);
+};
+const deletePage = (id: number): void => {
+  deleteId.value = id;
+  emit('delete', id);
+};
 </script>
 
 <style scoped>

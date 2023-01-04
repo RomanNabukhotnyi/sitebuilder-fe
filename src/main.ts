@@ -28,6 +28,12 @@ app.use(Toast, options);
 app.use(createPinia());
 app.use(appRouter.routeConfig);
 
+app.directive('focus', {
+  mounted(el) {
+    el.focus();
+  },
+});
+
 const toast = useToast();
 
 app.config.errorHandler = (err) => {

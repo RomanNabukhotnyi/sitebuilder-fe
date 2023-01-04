@@ -11,7 +11,7 @@
       <EditProjectForm
         @edit="editProject"
         :loadingEditProject="loadingEditProject"
-        :project="project!"
+        :project="editingProject!"
         :projects="projects"
       />
     </MyDialog>
@@ -19,7 +19,7 @@
       <div class="panel__sort">
         <!-- SORT -->
       </div>
-      <SearchProject v-model:search="search" />
+      <SearchProject v-model:search="searchQuery" />
       <MyButton class="button__create" @click="showCreateDialog">
         Create Project
       </MyButton>
@@ -37,95 +37,54 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
 import ProjectList from './components/ProjectList.vue';
 import MyDialog from '../../common/MyDialog.vue';
 import CreateProjectForm from './components/CreateProjectForm.vue';
 import EditProjectForm from './components/EditProjectForm.vue';
 import MyButton from '../../common/MyButton.vue';
 import SearchProject from './components/SearchProject.vue';
-import { useProjectsStore } from '../../../store/projects';
+import { useProjectsStore } from '@/stores/projects';
 import type { Project } from '@/interfaces/Project';
-
-interface Data {
-  dialogCreateVisible: boolean;
-  dialogEditVisible: boolean;
-  project: Project | null;
-  search: string;
-}
-
-export default defineComponent({
-  name: 'ProjectsPage',
-  components: {
-    ProjectList,
-    MyDialog,
-    CreateProjectForm,
-    EditProjectForm,
-    MyButton,
-    SearchProject,
-  },
-  setup() {
-    const projectsStore = useProjectsStore();
-    const projects = computed(() => projectsStore.projects);
-    const loadingGetProjects = computed(() => projectsStore.loadingGetProjects);
-    const loadingCreateProject = computed(
-      () => projectsStore.loadingCreateProject
-    );
-    const loadingEditProject = computed(() => projectsStore.loadingEditProject);
-    const loadingDeleteProject = computed(
-      () => projectsStore.loadingDeleteProject
-    );
-    return {
-      projectsStore,
-      projects,
-      loadingGetProjects,
-      loadingCreateProject,
-      loadingEditProject,
-      loadingDeleteProject,
-    };
-  },
-  data(): Data {
-    return {
-      dialogCreateVisible: false,
-      dialogEditVisible: false,
-      project: null,
-      search: '',
-    };
-  },
-  mounted() {
-    this.projectsStore.getProjects();
-  },
-  computed: {
-    filterProjects() {
-      return this.projects.filter((project) =>
-        project.name.toLowerCase().includes(this.search.toLowerCase())
-      );
-    },
-  },
-  methods: {
-    showCreateDialog() {
-      this.dialogCreateVisible = true;
-    },
-    showEditDialog(project: Project) {
-      this.project = project;
-      this.dialogEditVisible = true;
-    },
-    async createProject(project: { name: string }) {
-      await this.projectsStore.createProject({ name: project.name });
-      this.dialogCreateVisible = false;
-    },
-    async editProject(project: { id: number; name: string }) {
-      await this.projectsStore.editProject(project.id, {
-        name: project.name,
-      });
-      this.dialogEditVisible = false;
-    },
-    async deleteProject(id: number) {
-      await this.projectsStore.deleteProject(id);
-    },
-  },
+const projectsStore = useProjectsStore();
+const projects = computed(() => projectsStore.projects);
+const loadingGetProjects = computed(() => projectsStore.loadingGetProjects);
+const loadingCreateProject = computed(() => projectsStore.loadingCreateProject);
+const loadingEditProject = computed(() => projectsStore.loadingEditProject);
+const loadingDeleteProject = computed(() => projectsStore.loadingDeleteProject);
+const dialogCreateVisible = ref(false);
+const dialogEditVisible = ref(false);
+const searchQuery = ref('');
+const editingProject = ref<Project | null>(null);
+const filterProjects = computed(() =>
+  projects.value.filter((project) =>
+    project.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+);
+onMounted(() => {
+  projectsStore.getProjects();
 });
+const showCreateDialog = () => {
+  dialogCreateVisible.value = true;
+};
+const showEditDialog = (project: Project) => {
+  editingProject.value = project;
+  dialogEditVisible.value = true;
+};
+const createProject = async (project: { name: string }) => {
+  await projectsStore.createProject({ name: project.name });
+  dialogCreateVisible.value = false;
+};
+const editProject = async (project: { id: number; name: string }) => {
+  await projectsStore.editProject(project.id, {
+    name: project.name,
+  });
+  dialogEditVisible.value = false;
+};
+const deleteProject = async (id: number) => {
+  await projectsStore.deleteProject(id);
+};
 </script>
 
 <style scoped>

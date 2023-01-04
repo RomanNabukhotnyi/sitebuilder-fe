@@ -33,54 +33,42 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 import type { Block } from '@/interfaces/Block';
-
-export default defineComponent({
-  name: 'BlockMenu',
-  props: {
-    block: {
-      type: Object,
-      required: true,
-    },
-    blocks: {
-      type: Array<Block>,
-      required: true,
-    },
-    mySlot: {
-      type: Object,
-      required: true,
-    },
-  },
-  emits: [
-    'showEditBlockDialog',
-    'moveLeftBlock',
-    'moveRightBlock',
-    'deleteBlock',
-  ],
-  methods: {
-    showEditBlockDialog() {
-      this.$emit('showEditBlockDialog', this.mySlot.id, this.block);
-    },
-    moveLeftBlock() {
-      if (this.blocks.findIndex((block) => block.id === this.block.id) !== 0) {
-        this.$emit('moveLeftBlock', this.mySlot.id, this.block.id);
-      }
-    },
-    moveRightBlock() {
-      if (
-        this.blocks.findIndex((block) => block.id === this.block.id) !==
-        this.blocks.length - 1
-      ) {
-        this.$emit('moveRightBlock', this.mySlot.id, this.block.id);
-      }
-    },
-    deleteBlock() {
-      this.$emit('deleteBlock', this.mySlot.id, this.block.id);
-    },
-  },
-});
+import type { Slot } from '@/interfaces/Slot';
+interface ISlot extends Slot {
+  blocks: Block[];
+}
+const props = defineProps<{
+  block: Block;
+  blocks: Block[];
+  mySlot: ISlot;
+}>();
+const emit = defineEmits<{
+  (e: 'showEditBlockDialog', slotId: number, block: Block): void;
+  (e: 'moveLeftBlock', slotId: number, blockId: number): void;
+  (e: 'moveRightBlock', slotId: number, blockId: number): void;
+  (e: 'deleteBlock', slotId: number, blockId: number): void;
+}>();
+const showEditBlockDialog = () => {
+  emit('showEditBlockDialog', props.mySlot.id, props.block);
+};
+const moveLeftBlock = () => {
+  if (props.blocks.findIndex((block) => block.id === props.block.id) !== 0) {
+    emit('moveLeftBlock', props.mySlot.id, props.block.id);
+  }
+};
+const moveRightBlock = () => {
+  if (
+    props.blocks.findIndex((block) => block.id === props.block.id) !==
+    props.blocks.length - 1
+  ) {
+    emit('moveRightBlock', props.mySlot.id, props.block.id);
+  }
+};
+const deleteBlock = () => {
+  emit('deleteBlock', props.mySlot.id, props.block.id);
+};
 </script>
 
 <style scoped>

@@ -3,30 +3,30 @@
     <h4>Edit block</h4>
     <div v-if="block.type === 'TEXT'" class="field">
       <MyTextarea
+        v-focus
         class="textarea"
         placeholder="Text"
-        v-model="content.text"
+        v-model="contentText"
         @input="textValidation"
-        ref="focus"
       />
       <p v-if="textError" class="error">{{ textError }}</p>
     </div>
     <div v-else class="field">
       <MyInput
+        v-focus
         class="input"
         placeholder="Url"
-        v-model="content.url"
+        v-model="contentUrl"
         @input="urlValidation"
-        ref="focus"
       />
       <p v-if="urlError" class="error">{{ urlError }}</p>
     </div>
     <div class="field">
-      <MyInput class="input" placeholder="Subtext" v-model="content.subtext" />
+      <MyInput class="input" placeholder="Subtext" v-model="contentSubtext" />
     </div>
     <MyButton
       class="button"
-      :disabled="!validation || loadingEditBlock"
+      :disabled="!isValid || loadingEditBlock"
       @click="editBlock"
     >
       <p v-if="!loadingEditBlock">Edit</p>
@@ -43,99 +43,81 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import MyButton from '../../../common/MyButton.vue';
 import MyInput from '@/components/common/MyInput.vue';
 import MyTextarea from '@/components/common/MyTextarea.vue';
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  name: 'CreateBlockForm',
-  components: {
-    MyButton,
-    MyInput,
-    MyTextarea,
-  },
-  props: {
-    slotId: {
-      type: Number,
-      required: true,
-    },
-    block: {
-      type: Object,
-      required: true,
-    },
-    loadingEditBlock: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['editBlock'],
-  data() {
-    return {
-      content: Object.assign({}, this.block.content),
-      urlError: '',
-      textError: '',
-    };
-  },
-  created() {
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'Enter') {
-        this.editBlock();
-      }
-    });
-  },
-  computed: {
-    validation(): boolean {
-      return (
-        (this.block.type === 'TEXT' && this.textValidation()) ||
-        (this.block.type === 'IMAGE' && this.urlValidation())
-      );
-    },
-  },
-  mounted() {
-    this.$nextTick(() => (this.$refs['focus'] as any).$el.focus());
-  },
-  methods: {
-    urlValidation(): boolean {
-      if (this.block.content.url === '') {
-        this.urlError = 'Field is required';
-        return false;
-      }
-      if (
-        this.block.content.url &&
-        !this.block.content.url.match(
-          /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/
-        )
-      ) {
-        this.urlError = 'That’s not a valid url';
-        return false;
-      }
-      this.urlError = '';
-      return true;
-    },
-    textValidation(): boolean {
-      if (this.block.content.text === '') {
-        this.textError = 'Field is required';
-        return false;
-      }
-      this.textError = '';
-      return true;
-    },
-    editBlock() {
-      if (this.validation) {
-        this.content.subtext =
-          this.content.subtext === '' ? undefined : this.content.subtext;
-
-        this.$emit(
-          'editBlock',
-          this.slotId,
-          Object.assign(this.block, { content: this.content })
-        );
-      }
-    },
-  },
+import { ref, computed, onMounted } from 'vue';
+import type { Block } from '@/interfaces/Block';
+const props = defineProps<{
+  slotId: number;
+  block: Block;
+  loadingEditBlock: boolean;
+}>();
+const emit = defineEmits<{
+  (
+    e: 'editBlock',
+    slotId: number,
+    block: Pick<Block, 'id' | 'type' | 'content'>
+  ): void;
+}>();
+const urlError = ref('');
+const textError = ref('');
+const contentUrl = ref('');
+const contentText = ref('');
+const contentSubtext = ref('');
+const isValid = computed(
+  () =>
+    (props.block.type === 'TEXT' && textValidation()) ||
+    (props.block.type === 'IMAGE' && urlValidation())
+);
+onMounted(() => {
+  contentUrl.value = props.block.content.url;
+  contentText.value = props.block.content.text;
+  contentSubtext.value = props.block.content.subtext ?? '';
 });
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'Enter') {
+    editBlock();
+  }
+});
+const urlValidation = (): boolean => {
+  if (contentUrl.value === '') {
+    urlError.value = 'Field is required';
+    return false;
+  }
+  if (
+    !contentUrl.value.match(
+      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/
+    )
+  ) {
+    urlError.value = 'That’s not a valid url';
+    return false;
+  }
+  urlError.value = '';
+  return true;
+};
+const textValidation = (): boolean => {
+  if (contentText.value === '') {
+    textError.value = 'Field is required';
+    return false;
+  }
+  textError.value = '';
+  return true;
+};
+const editBlock = () => {
+  if (isValid.value) {
+    emit('editBlock', props.slotId, {
+      id: props.block.id,
+      type: props.block.type,
+      content: {
+        text: contentText.value,
+        url: contentUrl.value,
+        subtext: contentSubtext.value,
+      },
+    });
+  }
+};
 </script>
 
 <style scoped>
