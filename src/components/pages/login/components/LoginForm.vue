@@ -5,10 +5,13 @@
         class="input"
         name="Email"
         placeholder="Work email"
-        @input="emailValidation"
-        v-model="email"
+        v-model="form.email.value"
       />
-      <p v-if="emailError" class="error">{{ emailError }}</p>
+      <div v-if="!form.email.errors.required">
+        <p v-if="form.email.errors.email" class="error">
+          That's not a valid email
+        </p>
+      </div>
     </div>
     <div class="field">
       <MyInput
@@ -16,12 +19,16 @@
         name="Password"
         type="password"
         placeholder="Password"
-        @input="passwordValidation"
-        v-model="password"
+        v-model="form.password.value"
       />
-      <p v-if="passwordError" class="error">{{ passwordError }}</p>
+      <div v-if="!form.password.errors.required">
+        <p v-if="form.password.errors.minLength" class="error">
+          Password length can't be less then 8. Now it is
+          {{ form.password.value.length }}.
+        </p>
+      </div>
     </div>
-    <MyButton class="button" @click="login" :disabled="isValid || loading">
+    <MyButton class="button" @click="login" :disabled="!form.valid || loading">
       <p v-if="!loading">Login</p>
       <div v-else class="loadingio-spinner-ellipsis-yg3d79y87xd">
         <div class="ldio-bzxhjz25vr">
@@ -37,9 +44,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import MyButton from '@/components/common/MyButton.vue';
 import MyInput from '@/components/common/MyInput.vue';
+import { useValidators } from '@/use/validators';
+import { useForm } from '@/use/form';
 defineProps<{
   loading: boolean;
 }>();
@@ -47,46 +55,32 @@ const emit = defineEmits<{
   (e: 'login', payload: { email: string; password: string }): void;
 }>();
 window.addEventListener('keyup', (event) => {
-  if (event.code === 'Enter') {
+  if (event.code === 'Enter' && form.valid) {
     login();
   }
 });
-const email = ref('');
-const password = ref('');
-const emailError = ref('');
-const passwordError = ref('');
-const isValid = computed(() => !!emailError.value || !!passwordError.value);
-const emailValidation = (): boolean => {
-  if (email.value === '') {
-    emailError.value = 'Field is required';
-    return false;
-  }
-  if (!email.value.match(/^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-    emailError.value = 'That’s not a valid email';
-    return false;
-  }
-  emailError.value = '';
-  return true;
-};
-const passwordValidation = (): boolean => {
-  if (password.value === '') {
-    passwordError.value = 'Field is required';
-    return false;
-  }
-  if (password.value.length < 8) {
-    passwordError.value = 'Your password must have at least 8 characters.';
-    return false;
-  }
-  passwordError.value = '';
-  return true;
-};
+const { required, minLength, email } = useValidators();
+const form = useForm({
+  email: {
+    value: '',
+    validators: {
+      required,
+      email,
+    },
+  },
+  password: {
+    value: '',
+    validators: {
+      required,
+      minLength: minLength(8),
+    },
+  },
+});
 const login = () => {
-  if (emailValidation() && passwordValidation()) {
-    emit('login', {
-      email: email.value,
-      password: password.value,
-    });
-  }
+  emit('login', {
+    email: form.email.value,
+    password: form.password.value,
+  });
 };
 </script>
 

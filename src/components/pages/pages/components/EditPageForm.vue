@@ -7,14 +7,17 @@
         class="input"
         type="text"
         placeholder="Name"
-        @input="nameValidation"
-        v-model="name"
+        v-model="form.name.value"
       />
-      <p v-if="nameError" class="error">{{ nameError }}</p>
+      <div v-if="!form.name.errors.required">
+        <p v-if="form.name.errors.exist" class="error">
+          A page with that name exist
+        </p>
+      </div>
     </div>
     <MyButton
       class="button"
-      :disabled="isValid || loadingEditPage"
+      :disabled="!form.valid || loadingEditPage"
       @click="editProject"
     >
       <p v-if="!loadingEditPage">Edit</p>
@@ -32,10 +35,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
 import MyButton from '../../../common/MyButton.vue';
 import MyInput from '../../../common/MyInput.vue';
 import type { Page } from '@/interfaces/Page';
+import { useValidators } from '@/use/validators';
+import { useForm } from '@/use/form';
 const props = defineProps<{
   page: Page;
   pages: Page[];
@@ -44,41 +48,31 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'edit', page: Page): void;
 }>();
-const name = ref('');
-const nameError = ref('');
-const isValid = computed(() => !!nameError.value);
+const { required, exist } = useValidators();
+const form = useForm({
+  name: {
+    value: props.page.name,
+    validators: {
+      required,
+      exist: exist(
+        props.pages
+          .map((p) => p.name)
+          .filter((name) => name !== props.page.name)
+      ),
+    },
+  },
+});
 window.addEventListener('keyup', (event) => {
-  if (event.code === 'Enter') {
+  if (event.code === 'Enter' && form.valid) {
     editProject();
   }
 });
-const nameValidation = (): boolean => {
-  if (name.value === '') {
-    nameError.value = 'Field is required';
-    return false;
-  }
-  if (
-    props.pages.find(
-      (page) => page.name === name.value && page.name !== props.page.name
-    )
-  ) {
-    nameError.value = 'A page with that name exists';
-    return false;
-  }
-  nameError.value = '';
-  return true;
-};
 const editProject = () => {
-  if (nameValidation()) {
-    emit('edit', {
-      ...props.page,
-      name: name.value,
-    });
-  }
+  emit('edit', {
+    ...props.page,
+    name: form.name.value,
+  });
 };
-onMounted(() => {
-  name.value = props.page.name;
-});
 </script>
 
 <style scoped>

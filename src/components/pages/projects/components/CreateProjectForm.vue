@@ -7,14 +7,17 @@
         class="input"
         type="text"
         placeholder="Name"
-        @input="nameValidation"
-        v-model="name"
+        v-model="form.name.value"
       />
-      <p v-if="nameError" class="error">{{ nameError }}</p>
+      <div v-if="!form.name.errors.required">
+        <p v-if="form.name.errors.exist" class="error">
+          A project with that name exist
+        </p>
+      </div>
     </div>
     <MyButton
       class="button"
-      :disabled="isValid || loadingCreateProject"
+      :disabled="!form.valid || loadingCreateProject"
       @click="createProject"
     >
       <p v-if="!loadingCreateProject">Create</p>
@@ -32,10 +35,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import MyButton from '../../../common/MyButton.vue';
 import MyInput from '../../../common/MyInput.vue';
 import type { Project } from '@/interfaces/Project';
+import { useValidators } from '@/use/validators';
+import { useForm } from '@/use/form';
 const props = defineProps<{
   projects: Project[];
   loadingCreateProject: boolean;
@@ -43,32 +47,25 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'create', project: Pick<Project, 'name'>): void;
 }>();
-const name = ref('');
-const nameError = ref('');
-const isValid = computed(() => !!nameError.value);
+const { required, exist } = useValidators();
+const form = useForm({
+  name: {
+    value: '',
+    validators: {
+      required,
+      exist: exist(props.projects.map((p) => p.name)),
+    },
+  },
+});
 window.addEventListener('keyup', (event) => {
-  if (event.code === 'Enter') {
+  if (event.code === 'Enter' && form.valid) {
     createProject();
   }
 });
-const nameValidation = (): boolean => {
-  if (name.value === '') {
-    nameError.value = 'Field is required';
-    return false;
-  }
-  if (props.projects.find((project) => project.name === name.value)) {
-    nameError.value = 'A project with that name exists';
-    return false;
-  }
-  nameError.value = '';
-  return true;
-};
 const createProject = () => {
-  if (nameValidation()) {
-    emit('create', {
-      name: name.value,
-    });
-  }
+  emit('create', {
+    name: form.name.value,
+  });
 };
 </script>
 
