@@ -7,14 +7,17 @@
         class="input"
         type="text"
         placeholder="Name"
-        @input="nameValidation"
-        v-model="name"
+        v-model="form.name.value"
       />
-      <p v-if="nameError" class="error">{{ nameError }}</p>
+      <div v-if="!form.name.errors.required">
+        <p v-if="form.name.errors.exist" class="error">
+          A project with that name exist
+        </p>
+      </div>
     </div>
     <MyButton
       class="button"
-      :disabled="isValid || loadingEditProject"
+      :disabled="!form.valid || loadingEditProject"
       @click="editProject"
     >
       <p v-if="!loadingEditProject">Edit</p>
@@ -34,8 +37,9 @@
 <script setup lang="ts">
 import MyButton from '../../../common/MyButton.vue';
 import MyInput from '../../../common/MyInput.vue';
-import { ref, computed, onMounted } from 'vue';
 import type { Project } from '@/interfaces/Project';
+import { useValidators } from '@/use/validators';
+import { useForm } from '@/use/form';
 const props = defineProps<{
   project: Project;
   projects: Project[];
@@ -44,41 +48,30 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'edit', project: Project): void;
 }>();
-const name = ref('');
-const nameError = ref('');
-const isValid = computed(() => !!nameError.value);
+const { required, exist } = useValidators();
+const form = useForm({
+  name: {
+    value: props.project.name,
+    validators: {
+      required,
+      exist: exist(
+        props.projects
+          .map((p) => p.name)
+          .filter((name) => name !== props.project.name)
+      ),
+    },
+  },
+});
 window.addEventListener('keyup', (event) => {
-  if (event.code === 'Enter') {
+  if (event.code === 'Enter' && form.valid) {
     editProject();
   }
 });
-onMounted(() => {
-  name.value = props.project.name;
-});
-const nameValidation = (): boolean => {
-  if (name.value === '') {
-    nameError.value = 'Field is required';
-    return false;
-  }
-  if (
-    props.projects.find(
-      (project) =>
-        project.name === name.value && project.name !== props.project.name
-    )
-  ) {
-    nameError.value = 'A project with that name exists';
-    return false;
-  }
-  nameError.value = '';
-  return true;
-};
 const editProject = () => {
-  if (nameValidation()) {
-    emit('edit', {
-      ...props.project,
-      name: name.value,
-    });
-  }
+  emit('edit', {
+    ...props.project,
+    name: form.name.value,
+  });
 };
 </script>
 
