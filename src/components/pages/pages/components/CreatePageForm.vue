@@ -7,15 +7,18 @@
         class="input"
         type="text"
         placeholder="Name"
-        @input="nameValidation"
-        v-model="name"
+        v-model="form.name.value"
       />
-      <p v-if="nameError" class="error">{{ nameError }}</p>
+      <div v-if="!form.name.errors.required">
+        <p v-if="form.name.errors.exist" class="error">
+          A page with that name exist
+        </p>
+      </div>
     </div>
     <MyButton
       class="button"
       @click="createPage"
-      :disabled="isValid || loadingCreatePage"
+      :disabled="!form.valid || loadingCreatePage"
     >
       <p v-if="!loadingCreatePage">Create</p>
       <div v-else class="loadingio-spinner-ellipsis-yg3d79y87xd">
@@ -32,10 +35,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import MyButton from '@/components/common/MyButton.vue';
 import MyInput from '@/components/common/MyInput.vue';
 import type { Page } from '@/interfaces/Page';
+import { useValidators } from '@/use/validators';
+import { useForm } from '@/use/form';
 const props = defineProps<{
   pages: Page[];
   loadingCreatePage: boolean;
@@ -43,33 +47,26 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'create', page: Omit<Page, 'id' | 'order'>): void;
 }>();
-const name = ref('');
-const nameError = ref('');
-const isValid = computed(() => !!nameError.value);
+const { required, exist } = useValidators();
+const form = useForm({
+  name: {
+    value: '',
+    validators: {
+      required,
+      exist: exist(props.pages.map((p) => p.name)),
+    },
+  },
+});
 window.addEventListener('keyup', (event) => {
-  if (event.code === 'Enter') {
+  if (event.code === 'Enter' && form.valid) {
     createPage();
   }
 });
-const nameValidation = (): boolean => {
-  if (name.value === '') {
-    nameError.value = 'Field is required';
-    return false;
-  }
-  if (props.pages.find((page) => page.name === name.value)) {
-    nameError.value = 'A page with that name exists';
-    return false;
-  }
-  nameError.value = '';
-  return true;
-};
 const createPage = () => {
-  if (nameValidation()) {
-    emit('create', {
-      name: name.value,
-      meta: {},
-    });
-  }
+  emit('create', {
+    name: form.name.value,
+    meta: {},
+  });
 };
 </script>
 

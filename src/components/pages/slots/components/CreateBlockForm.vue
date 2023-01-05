@@ -7,32 +7,49 @@
       :options="options"
       @select="selectOption"
     />
-    <div v-if="selected === 'text'" class="field">
-      <MyTextarea
-        v-focus
-        class="textarea"
-        placeholder="Text"
-        v-model="contentText"
-        @input="textValidation"
-      />
-      <p v-if="textError" class="error">{{ textError }}</p>
+    <div v-if="selected === 'text'">
+      <div class="field">
+        <MyTextarea
+          v-focus
+          class="textarea"
+          placeholder="Text"
+          v-model="formText.text.value"
+        />
+        <div v-if="!formText.text.errors.required"></div>
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Subtext"
+          v-model="formText.subtext.value"
+        />
+      </div>
     </div>
-    <div v-else class="field">
-      <MyInput
-        v-focus
-        class="input"
-        placeholder="Url"
-        v-model="contentUrl"
-        @input="urlValidation"
-      />
-      <p v-if="urlError" class="error">{{ urlError }}</p>
-    </div>
-    <div class="field">
-      <MyInput class="input" placeholder="Subtext" v-model="contentSubtext" />
+    <div v-else>
+      <div class="field">
+        <MyInput
+          v-focus
+          class="input"
+          placeholder="Url"
+          v-model="formImage.url.value"
+        />
+        <div v-if="!formImage.url.errors.required">
+          <p v-if="formImage.url.errors.url" class="error">
+            That’s not a valid url
+          </p>
+        </div>
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Subtext"
+          v-model="formImage.subtext.value"
+        />
+      </div>
     </div>
     <MyButton
       class="button"
-      :disabled="isValid || loadingCreateBlock"
+      :disabled="!formValid || loadingCreateBlock"
       @click="createBlock"
     >
       <p v-if="!loadingCreateBlock">Create</p>
@@ -56,6 +73,8 @@ import MySelect from '../../../common/MySelect.vue';
 import MyInput from '@/components/common/MyInput.vue';
 import MyTextarea from '@/components/common/MyTextarea.vue';
 import type { Option } from '@/interfaces/Option';
+import { useValidators } from '@/use/validators';
+import { useForm } from '@/use/form';
 const props = defineProps<{
   slotId: number;
   loadingCreateBlock: boolean;
@@ -63,63 +82,57 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'createBlock', slotId: number, value: any): void;
 }>();
+const { required, url } = useValidators();
+const formText = useForm({
+  text: {
+    value: '',
+    validators: {
+      required,
+    },
+  },
+  subtext: {
+    value: '',
+  },
+});
+const formImage = useForm({
+  url: {
+    value: '',
+    validators: {
+      required,
+      url,
+    },
+  },
+  subtext: {
+    value: '',
+  },
+});
 const type = ref('TEXT');
-const contentText = ref('');
-const contentUrl = ref('');
-const contentSubtext = ref('');
-const textError = ref('');
-const urlError = ref('');
 const selected = ref('text');
 const options = [
   { name: 'text', value: 'TEXT' },
   { name: 'image', value: 'IMAGE' },
 ];
-const isValid = computed(() => !!urlError.value && !!textError.value);
+const formValid = computed(() =>
+  type.value === 'TEXT' ? formText.valid : formImage.valid
+);
 window.addEventListener('keyup', (event) => {
-  if (event.code === 'Enter') {
+  if (event.code === 'Enter' && formValid.value) {
     createBlock();
   }
 });
-const urlValidation = (): boolean => {
-  if (contentUrl.value === '') {
-    urlError.value = 'Field is required';
-    return false;
-  }
-  if (
-    !contentUrl.value.match(
-      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/
-    )
-  ) {
-    urlError.value = 'That’s not a valid url';
-    return false;
-  }
-  urlError.value = '';
-  return true;
-};
-const textValidation = (): boolean => {
-  if (contentText.value === '') {
-    textError.value = 'Field is required';
-    return false;
-  }
-  textError.value = '';
-  return true;
-};
 const createBlock = () => {
-  if (urlValidation() || textValidation()) {
-    const content =
-      type.value === 'TEXT'
-        ? {
-            text: contentText.value,
-            subtext:
-              contentSubtext.value === '' ? undefined : contentSubtext.value,
-          }
-        : {
-            url: contentUrl.value,
-            subtext:
-              contentSubtext.value === '' ? undefined : contentSubtext.value,
-          };
-    emit('createBlock', props.slotId, { type: type.value, content });
-  }
+  const form = type.value === 'TEXT' ? formText : formImage;
+  const content =
+    type.value === 'TEXT'
+      ? {
+          text: form.text.value,
+          subtext: form.subtext.value === '' ? undefined : form.subtext.value,
+        }
+      : {
+          url: form.url.value,
+          subtext: form.subtext.value === '' ? undefined : form.subtext.value,
+        };
+  emit('createBlock', props.slotId, { type: type.value, content });
 };
 const selectOption = (option: Option) => {
   type.value = option.value;

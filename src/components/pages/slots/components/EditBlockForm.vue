@@ -1,32 +1,49 @@
 <template>
   <div class="form">
     <h4>Edit block</h4>
-    <div v-if="block.type === 'TEXT'" class="field">
-      <MyTextarea
-        v-focus
-        class="textarea"
-        placeholder="Text"
-        v-model="contentText"
-        @input="textValidation"
-      />
-      <p v-if="textError" class="error">{{ textError }}</p>
+    <div v-if="block.type === 'TEXT'">
+      <div class="field">
+        <MyTextarea
+          v-focus
+          class="textarea"
+          placeholder="Text"
+          v-model="formText.text.value"
+        />
+        <div v-if="!formText.text.errors.required"></div>
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Subtext"
+          v-model="formText.subtext.value"
+        />
+      </div>
     </div>
-    <div v-else class="field">
-      <MyInput
-        v-focus
-        class="input"
-        placeholder="Url"
-        v-model="contentUrl"
-        @input="urlValidation"
-      />
-      <p v-if="urlError" class="error">{{ urlError }}</p>
-    </div>
-    <div class="field">
-      <MyInput class="input" placeholder="Subtext" v-model="contentSubtext" />
+    <div v-else>
+      <div class="field">
+        <MyInput
+          v-focus
+          class="input"
+          placeholder="Url"
+          v-model="formImage.url.value"
+        />
+        <div v-if="!formImage.url.errors.required">
+          <p v-if="formImage.url.errors.url" class="error">
+            That’s not a valid url
+          </p>
+        </div>
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Subtext"
+          v-model="formImage.subtext.value"
+        />
+      </div>
     </div>
     <MyButton
       class="button"
-      :disabled="!isValid || loadingEditBlock"
+      :disabled="!formValid || loadingEditBlock"
       @click="editBlock"
     >
       <p v-if="!loadingEditBlock">Edit</p>
@@ -47,8 +64,10 @@
 import MyButton from '../../../common/MyButton.vue';
 import MyInput from '@/components/common/MyInput.vue';
 import MyTextarea from '@/components/common/MyTextarea.vue';
-import { ref, computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import type { Block } from '@/interfaces/Block';
+import { useValidators } from '@/use/validators';
+import { useForm } from '@/use/form';
 const props = defineProps<{
   slotId: number;
   block: Block;
@@ -61,62 +80,55 @@ const emit = defineEmits<{
     block: Pick<Block, 'id' | 'type' | 'content'>
   ): void;
 }>();
-const urlError = ref('');
-const textError = ref('');
-const contentUrl = ref('');
-const contentText = ref('');
-const contentSubtext = ref('');
-const isValid = computed(
-  () =>
-    (props.block.type === 'TEXT' && textValidation()) ||
-    (props.block.type === 'IMAGE' && urlValidation())
-);
-onMounted(() => {
-  contentUrl.value = props.block.content.url;
-  contentText.value = props.block.content.text;
-  contentSubtext.value = props.block.content.subtext ?? '';
+const { required, url } = useValidators();
+const formText = useForm({
+  text: {
+    value: props.block.type === 'TEXT' ? props.block.content.text : '',
+    validators: {
+      required,
+    },
+  },
+  subtext: {
+    value: props.block.content.subtext ?? '',
+  },
 });
+const formImage = useForm({
+  url: {
+    value: props.block.type === 'IMAGE' ? props.block.content.url : '',
+    validators: {
+      required,
+      url,
+    },
+  },
+  subtext: {
+    value: props.block.content.subtext ?? '',
+  },
+});
+const formValid = computed(() =>
+  props.block.type === 'TEXT' ? formText.valid : formImage.valid
+);
 window.addEventListener('keyup', (event) => {
-  if (event.code === 'Enter') {
+  if (event.code === 'Enter' && formValid.value) {
     editBlock();
   }
 });
-const urlValidation = (): boolean => {
-  if (contentUrl.value === '') {
-    urlError.value = 'Field is required';
-    return false;
-  }
-  if (
-    !contentUrl.value.match(
-      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/
-    )
-  ) {
-    urlError.value = 'That’s not a valid url';
-    return false;
-  }
-  urlError.value = '';
-  return true;
-};
-const textValidation = (): boolean => {
-  if (contentText.value === '') {
-    textError.value = 'Field is required';
-    return false;
-  }
-  textError.value = '';
-  return true;
-};
 const editBlock = () => {
-  if (isValid.value) {
-    emit('editBlock', props.slotId, {
-      id: props.block.id,
-      type: props.block.type,
-      content: {
-        text: contentText.value,
-        url: contentUrl.value,
-        subtext: contentSubtext.value,
-      },
-    });
-  }
+  const form = props.block.type === 'TEXT' ? formText : formImage;
+  const content: any =
+    props.block.type === 'TEXT'
+      ? {
+          text: form.text.value,
+          subtext: form.subtext.value === '' ? undefined : form.subtext.value,
+        }
+      : {
+          url: form.url.value,
+          subtext: form.subtext.value === '' ? undefined : form.subtext.value,
+        };
+  emit('editBlock', props.slotId, {
+    id: props.block.id,
+    type: props.block.type,
+    content,
+  });
 };
 </script>
 

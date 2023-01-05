@@ -22,6 +22,7 @@ const value = computed({
 
 <style scoped>
 .input {
+  width: 100%;
   padding: 10px;
   border-radius: 2px;
   border: 0;
