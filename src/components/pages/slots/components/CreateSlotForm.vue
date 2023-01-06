@@ -26,6 +26,7 @@
 import MyButton from '@/components/common/MyButton.vue';
 import MySelect from '@/components/common/MySelect.vue';
 import { ref } from 'vue';
+import { useEventListener } from '@/use/eventListener';
 import type { Option } from '@/interfaces/Option';
 defineProps<{
   loadingCreateSlot: boolean;
@@ -39,7 +40,7 @@ const options = [
   { name: 'static', value: 'STATIC' },
   { name: 'dynamic', value: 'DYNAMIC' },
 ];
-window.addEventListener('keyup', (event) => {
+useEventListener(window, 'keyup', (event) => {
   if (event.code === 'Enter') {
     createSlot();
   }

@@ -39,9 +39,7 @@
         @deleteBlock="deleteBlock"
       />
       <div class="createSlot">
-        <MyButton class="button__create" @click="showCreateSlotDialog">
-          Create Slot
-        </MyButton>
+        <MyButton @click="showCreateSlotDialog">Create Slot</MyButton>
       </div>
     </div>
   </div>
@@ -196,11 +194,17 @@ const updateOrderBlocks = async (slotId: number) => {
 </script>
 
 <style scoped>
-@import 'slots.css';
+.page {
+  width: 90%;
+  position: relative;
+  margin: 15px auto;
+  outline: 1px solid #bcb5b9;
+}
 .createSlot {
+  border: 1px dashed;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   height: 100px;
 }
 </style>
