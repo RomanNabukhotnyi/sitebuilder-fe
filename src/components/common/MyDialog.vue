@@ -12,6 +12,7 @@
 </template>
 
 <script setup lang="ts">
+import { useEventListener } from '@/use/eventListener';
 withDefaults(
   defineProps<{
     show: boolean;
@@ -26,7 +27,7 @@ const emit = defineEmits<{
 const hideDialog = () => {
   emit('update:show', false);
 };
-window.addEventListener('keyup', (event) => {
+useEventListener(window, 'keyup', (event) => {
   if (event.code === 'Escape') {
     hideDialog();
   }

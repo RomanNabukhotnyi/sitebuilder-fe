@@ -47,6 +47,7 @@
 import MyButton from '@/components/common/MyButton.vue';
 import MyInput from '@/components/common/MyInput.vue';
 import { useValidators } from '@/use/validators';
+import { useEventListener } from '@/use/eventListener';
 import { useForm } from '@/use/form';
 defineProps<{
   loading: boolean;
@@ -71,7 +72,7 @@ const form = useForm({
     },
   },
 });
-window.addEventListener('keyup', (event) => {
+useEventListener(window, 'keyup', (event) => {
   if (event.code === 'Enter' && form.valid) {
     signUp();
   }

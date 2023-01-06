@@ -31,19 +31,14 @@
       <p>Back</p>
     </div>
     <div class="title">Workspace</div>
-    <div id="avatar" class="avatar" @click="openMenu">
+    <div id="avatar" class="avatar" @click="menuVisible = !menuVisible">
       <img
         src="https://lh3.googleusercontent.com/a/ALm5wu1GtNGrAmCvrQInUoiVlcw1gc5hnOV9xdiTQib6=s96-c"
         width="28"
         height="28"
       />
     </div>
-    <Transition name="menu">
-      <div v-if="menuVisible" class="menu" ref="el">
-        <div class="email">{{ user?.email }}</div>
-        <div class="action" @click="logout">Log out</div>
-      </div>
-    </Transition>
+    <UserMenu v-model:show="menuVisible" :user="user" @logout="logout" />
   </header>
 
   <div>
@@ -55,27 +50,11 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import UserMenu from './components/UserMenu.vue';
 const authStore = useAuthStore();
 const router = useRouter();
 const user = computed(() => authStore.user);
 const menuVisible = ref(false);
-const el = ref<HTMLElement | null>(null);
-const openMenu = () => {
-  menuVisible.value = !menuVisible.value;
-  if (menuVisible.value) {
-    window.addEventListener('click', hideMenu);
-  } else {
-    window.removeEventListener('click', hideMenu);
-  }
-};
-const hideMenu = (event: Event) => {
-  if (
-    !document.getElementById('avatar')!.contains(event.target as Node) &&
-    !el.value?.contains(event.target as Node)
-  ) {
-    menuVisible.value = false;
-  }
-};
 const logout = async () => {
   await authStore.logout();
   router.push('/login');
@@ -120,34 +99,5 @@ header {
 }
 .avatar img {
   border-radius: 50%;
-}
-.menu {
-  position: absolute;
-  top: calc(100% - 10px);
-  right: 10px;
-  min-width: 150px;
-  background-color: white;
-  border: 1px solid #edeced;
-  z-index: 1;
-}
-.email {
-  margin: 10px;
-  text-align: center;
-}
-.action {
-  padding: 10px;
-  border-top: 1px solid #edeced;
-  cursor: pointer;
-}
-.action:hover {
-  background-color: #f2f2f2;
-}
-/* animations */
-.menu-enter-active {
-  transition: all 0.5s ease;
-}
-.menu-enter-from {
-  opacity: 0.9;
-  transform: scale(0.9);
 }
 </style>
