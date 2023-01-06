@@ -67,6 +67,7 @@ import MyTextarea from '@/components/common/MyTextarea.vue';
 import { computed } from 'vue';
 import type { Block } from '@/interfaces/Block';
 import { useValidators } from '@/use/validators';
+import { useEventListener } from '@/use/eventListener';
 import { useForm } from '@/use/form';
 const props = defineProps<{
   slotId: number;
@@ -107,7 +108,7 @@ const formImage = useForm({
 const formValid = computed(() =>
   props.block.type === 'TEXT' ? formText.valid : formImage.valid
 );
-window.addEventListener('keyup', (event) => {
+useEventListener(window, 'keyup', (event) => {
   if (event.code === 'Enter' && formValid.value) {
     editBlock();
   }

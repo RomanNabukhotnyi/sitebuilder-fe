@@ -39,6 +39,7 @@ import MyButton from '../../../common/MyButton.vue';
 import MyInput from '../../../common/MyInput.vue';
 import type { Project } from '@/interfaces/Project';
 import { useValidators } from '@/use/validators';
+import { useEventListener } from '@/use/eventListener';
 import { useForm } from '@/use/form';
 const props = defineProps<{
   project: Project;
@@ -62,7 +63,7 @@ const form = useForm({
     },
   },
 });
-window.addEventListener('keyup', (event) => {
+useEventListener(window, 'keyup', (event) => {
   if (event.code === 'Enter' && form.valid) {
     editProject();
   }

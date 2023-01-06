@@ -43,8 +43,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref } from 'vue';
 import type { Option } from '@/interfaces/Option';
+import { useEventListener } from '@/use/eventListener';
 defineProps<{
   selected: string;
   options: Option[];
@@ -63,12 +64,7 @@ const hideOptions = (event: Event) => {
     optionsVisible.value = false;
   }
 };
-onMounted(() => {
-  document.addEventListener('click', hideOptions);
-});
-onUnmounted(() => {
-  document.removeEventListener('click', hideOptions);
-});
+useEventListener(window, 'click', hideOptions);
 </script>
 
 <style scoped lang="scss">
