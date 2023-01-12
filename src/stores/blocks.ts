@@ -15,8 +15,8 @@ export const useBlocksStore = defineStore('blocks', {
     getAllBlocks: (state): Block[] => state.blocks,
   },
   actions: {
-    async getAllBlocksApi(slotId: number): Promise<void> {
-      const response = await axios.get('/blocks', {
+    async getAllBlocksApi(slotId: number, projectId: number): Promise<void> {
+      const response = await axios.get(`/projects/${projectId}/blocks`, {
         params: {
           slotId,
         },
@@ -25,8 +25,8 @@ export const useBlocksStore = defineStore('blocks', {
         this.setBlocks(response.data.data.blocks);
       }
     },
-    async isEmptySlot(slotId: number): Promise<boolean> {
-      const response = await axios.get('/blocks', {
+    async isEmptySlot(slotId: number, projectId: number): Promise<boolean> {
+      const response = await axios.get(`/projects/${projectId}/blocks`, {
         params: {
           slotId,
         },
@@ -45,24 +45,32 @@ export const useBlocksStore = defineStore('blocks', {
     setBlocks(blocks: Block[]): void {
       this.blocks = blocks;
     },
-    async createBlock(payload: {
-      slotId: number;
-      type: string;
-      content: any;
-    }): Promise<void> {
-      await axios.post('/blocks', payload);
+    async createBlock(
+      projectId: number,
+      payload: {
+        slotId: number;
+        type: string;
+        content: any;
+      }
+    ): Promise<void> {
+      await axios.post(`/projects/${projectId}/blocks`, payload);
     },
     async editBlock(
       id: number,
+      projectId: number,
       payload: { type: string; content: any }
     ): Promise<void> {
-      await axios.put(`/blocks/${id}`, payload);
+      await axios.put(`/projects/${projectId}/blocks/${id}`, payload);
     },
-    async deleteBlock(id: number): Promise<void> {
-      await axios.delete(`/blocks/${id}`);
+    async deleteBlock(id: number, projectId: number): Promise<void> {
+      await axios.delete(`/projects/${projectId}/blocks/${id}`);
     },
-    async updateOrders(slotId: number, orders: any[]): Promise<void> {
-      await axios.put('/blocks/order', {
+    async updateOrders(
+      slotId: number,
+      projectId: number,
+      orders: any[]
+    ): Promise<void> {
+      await axios.put(`/projects/${projectId}/blocks/order`, {
         slotId,
         orders,
       });
