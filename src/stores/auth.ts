@@ -21,10 +21,11 @@ export const useAuthStore = defineStore('auth', {
         this.loading = true;
         const response = await axios.post('/auth/login', payload);
         const tokens = response.data.data;
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);
+        axios.defaults.headers.common[
+          'Authorization'
+        ] = `Bearer ${localStorage.getItem('accessToken')}`;
         await this.getUser();
       } catch (error) {
         throw new IError(error);
