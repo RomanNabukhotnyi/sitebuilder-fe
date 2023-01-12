@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import MyButton from '@/components/common/MyButton.vue';
 import Draggable from 'vuedraggable';
 import type { Page } from '@/interfaces/Page';
@@ -92,6 +92,7 @@ const emit = defineEmits<{
 }>();
 const deleteId = ref<number | null>(null);
 const router = useRouter();
+const route = useRoute();
 const draggablePages = computed({
   get() {
     return props.pages;
@@ -101,7 +102,7 @@ const draggablePages = computed({
   },
 });
 const openPage = (pageId: number): void => {
-  router.push(`/pages/${pageId}`);
+  router.push(`/projects/${+route.params.projectId}/pages/${pageId}`);
 };
 const showEditDialog = (page: Page) => {
   emit('showEditDialog', page);

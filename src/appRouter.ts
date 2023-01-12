@@ -15,6 +15,7 @@ const routes = [
   {
     path: '/',
     component: Main,
+    redirect: '/projects',
     meta: { requiredAuth: true },
     children: [
       {
@@ -28,7 +29,7 @@ const routes = [
         meta: { requiredAuth: true },
       },
       {
-        path: 'pages/:pageId',
+        path: 'projects/:projectId/pages/:pageId',
         component: Slots,
         meta: { requiredAuth: true },
       },

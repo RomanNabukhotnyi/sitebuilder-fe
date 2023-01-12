@@ -24,11 +24,7 @@ export const usePagesStore = defineStore('pages', {
     async getPages(projectId: number): Promise<void> {
       try {
         this.loadingGetPages = true;
-        const response = await axios.get('/pages', {
-          params: {
-            projectId,
-          },
-        });
+        const response = await axios.get(`/projects/${projectId}/pages`);
         this.pages = (response.data.data as Page[]).sort((a, b) => {
           if (a.order === 0) {
             return 1;
@@ -41,14 +37,19 @@ export const usePagesStore = defineStore('pages', {
         this.loadingGetPages = false;
       }
     },
-    async createPage(payload: {
-      projectId: number;
-      name: string;
-      meta: any;
-    }): Promise<void> {
+    async createPage(
+      projectId: number,
+      payload: {
+        name: string;
+        meta: any;
+      }
+    ): Promise<void> {
       try {
         this.loadingCreatePage = true;
-        const respose = await axios.post('/pages', payload);
+        const respose = await axios.post(
+          `/projects/${projectId}/pages`,
+          payload
+        );
         this.pages.push(respose.data.data);
       } catch (error) {
         throw new IError(error);
@@ -58,11 +59,15 @@ export const usePagesStore = defineStore('pages', {
     },
     async editPage(
       id: number,
+      projectId: number,
       payload: { name: string; meta: any }
     ): Promise<void> {
       try {
         this.loadingEditPage = true;
-        const response = await axios.put(`/pages/${id}`, payload);
+        const response = await axios.put(
+          `/projects/${projectId}/pages/${id}`,
+          payload
+        );
         const index = this.pages.findIndex((page) => page.id === id);
         this.pages[index] = response.data.data;
       } catch (error) {
@@ -73,18 +78,17 @@ export const usePagesStore = defineStore('pages', {
     },
     async updateOrders(projectId: number, orders: any[]): Promise<void> {
       try {
-        await axios.put('/pages/order', {
-          projectId,
+        await axios.put(`/projects/${projectId}/pages/order`, {
           orders,
         });
       } catch (error) {
         throw new IError(error);
       }
     },
-    async deletePage(id: number): Promise<void> {
+    async deletePage(id: number, projectId: number): Promise<void> {
       try {
         this.loadingDeletePage = true;
-        await axios.delete(`/pages/${id}`);
+        await axios.delete(`/projects/${projectId}/pages/${id}`);
         const index = this.pages.findIndex((page) => page.id === id);
         this.pages.splice(index, 1);
       } catch (error) {

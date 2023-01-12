@@ -75,8 +75,7 @@ const showEditDialog = (page: Page) => {
   dialogEditVisible.value = true;
 };
 const createPage = async (page: Omit<Page, 'id' | 'order'>) => {
-  await pagesStore.createPage({
-    projectId: +route.params.projectId,
+  await pagesStore.createPage(+route.params.projectId, {
     ...page,
   });
   dialogCreateVisible.value = false;
@@ -89,14 +88,14 @@ const updateOrders = async (pages: Page[]) => {
   pagesStore.pages = pages;
 };
 const editPage = async (page: Page) => {
-  await pagesStore.editPage(page.id, {
+  await pagesStore.editPage(page.id, +route.params.projectId, {
     name: page.name,
     meta: page.meta,
   });
   dialogEditVisible.value = false;
 };
 const deletePage = async (id: number) => {
-  await pagesStore.deletePage(id);
+  await pagesStore.deletePage(id, +route.params.projectId);
 };
 </script>
 

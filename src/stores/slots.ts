@@ -30,10 +30,10 @@ export const useSlotsStore = defineStore('slots', {
     loadingDeleteBlock: false,
   }),
   actions: {
-    async getSlots(pageId: number): Promise<void> {
+    async getSlots(pageId: number, projectId: number): Promise<void> {
       try {
         this.loadingGetSlots = true;
-        const response = await axios.get('/slots', {
+        const response = await axios.get(`/projects/${projectId}/slots`, {
           params: {
             pageId,
           },
@@ -48,7 +48,7 @@ export const useSlotsStore = defineStore('slots', {
           sortedSlots.map(async (slot) => {
             const blocks = (
               (
-                await axios.get('/blocks', {
+                await axios.get(`/projects/${projectId}/blocks`, {
                   params: {
                     slotId: slot.id,
                   },
@@ -72,9 +72,13 @@ export const useSlotsStore = defineStore('slots', {
         this.loadingGetSlots = false;
       }
     },
-    async updateOrderSlots(pageId: number, orders: any[]): Promise<void> {
+    async updateOrderSlots(
+      pageId: number,
+      projectId: number,
+      orders: any[]
+    ): Promise<void> {
       try {
-        await axios.put('/slots/order', {
+        await axios.put(`/projects/${projectId}/slots/order`, {
           pageId,
           orders,
         });
@@ -82,10 +86,16 @@ export const useSlotsStore = defineStore('slots', {
         throw new IError(error);
       }
     },
-    async createSlot(payload: { pageId: number; type: string }): Promise<void> {
+    async createSlot(
+      projectId: number,
+      payload: { pageId: number; type: string }
+    ): Promise<void> {
       try {
         this.loadingCreateSlot = true;
-        const response = await axios.post('/slots', payload);
+        const response = await axios.post(
+          `/projects/${projectId}/slots`,
+          payload
+        );
         this.slots.push({ ...response.data.data, blocks: [] });
       } catch (error) {
         throw new IError(error);
@@ -93,10 +103,10 @@ export const useSlotsStore = defineStore('slots', {
         this.loadingCreateSlot = false;
       }
     },
-    async deleteSlot(id: number): Promise<void> {
+    async deleteSlot(id: number, projectId: number): Promise<void> {
       try {
         this.loadingDeleteSlot = true;
-        await axios.delete(`/slots/${id}`);
+        await axios.delete(`/projects/${projectId}/slots/${id}`);
         const index = this.slots.findIndex((slot) => slot.id === id);
         this.slots.splice(index, 1);
       } catch (error) {
@@ -105,14 +115,20 @@ export const useSlotsStore = defineStore('slots', {
         this.loadingDeleteSlot = false;
       }
     },
-    async createBlock(payload: {
-      slotId: number;
-      type: string;
-      content: any;
-    }): Promise<void> {
+    async createBlock(
+      projectId: number,
+      payload: {
+        slotId: number;
+        type: string;
+        content: any;
+      }
+    ): Promise<void> {
       try {
         this.loadingCreateBlock = true;
-        const response = await axios.post('/blocks', payload);
+        const response = await axios.post(
+          `/projects/${projectId}/blocks`,
+          payload
+        );
         const index = this.slots.findIndex(
           (slot) => slot.id === payload.slotId
         );
@@ -126,11 +142,15 @@ export const useSlotsStore = defineStore('slots', {
     async editBlock(
       slotId: number,
       blockId: number,
+      projectId: number,
       payload: { type: string; content: any }
     ): Promise<void> {
       try {
         this.loadingEditBlock = true;
-        const response = await axios.put(`/blocks/${blockId}`, payload);
+        const response = await axios.put(
+          `/projects/${projectId}/blocks/${blockId}`,
+          payload
+        );
         const indexSlot = this.slots.findIndex((slot) => slot.id === slotId);
         const indexBlock = this.slots[indexSlot].blocks.findIndex(
           (block) => block.id === blockId
@@ -142,10 +162,14 @@ export const useSlotsStore = defineStore('slots', {
         this.loadingEditBlock = false;
       }
     },
-    async deleteBlock(slotId: number, blockId: number): Promise<void> {
+    async deleteBlock(
+      slotId: number,
+      blockId: number,
+      projectId: number
+    ): Promise<void> {
       try {
         this.loadingDeleteBlock = true;
-        await axios.delete(`/blocks/${blockId}`);
+        await axios.delete(`/projects/${projectId}/blocks/${blockId}`);
         const indexSlot = this.slots.findIndex((slot) => slot.id === slotId);
         const indexBlock = this.slots[indexSlot].blocks.findIndex(
           (block) => block.id === blockId
@@ -157,9 +181,13 @@ export const useSlotsStore = defineStore('slots', {
         this.loadingDeleteBlock = false;
       }
     },
-    async updateOrderBlocks(slotId: number, orders: any[]): Promise<void> {
+    async updateOrderBlocks(
+      slotId: number,
+      projectId: number,
+      orders: any[]
+    ): Promise<void> {
       try {
-        await axios.put('/blocks/order', {
+        await axios.put(`/projects/${projectId}/blocks/order`, {
           slotId,
           orders,
         });

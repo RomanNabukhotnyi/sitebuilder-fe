@@ -71,7 +71,7 @@ const dialogEditBlockVisible = ref(false);
 const slotId = ref<number | null>(null);
 let editingBlock: Block | null = null;
 onMounted(() => {
-  slotsStore.getSlots(+route.params.pageId);
+  slotsStore.getSlots(+route.params.pageId, +route.params.projectId);
 });
 const showCreateSlotDialog = () => {
   dialogCreateSlotVisible.value = true;
@@ -86,17 +86,17 @@ const showEditBlockDialog = (id: number, block: Block) => {
   dialogEditBlockVisible.value = true;
 };
 const createSlot = async (slot: any) => {
-  await slotsStore.createSlot({
+  await slotsStore.createSlot(+route.params.projectId, {
     pageId: +route.params.pageId,
     type: slot.type,
   });
   dialogCreateSlotVisible.value = false;
 };
 const deleteSlot = async (id: number) => {
-  await slotsStore.deleteSlot(id);
+  await slotsStore.deleteSlot(id, +route.params.projectId);
 };
 const createBlock = async (slotId: number, block: Block) => {
-  await slotsStore.createBlock({
+  await slotsStore.createBlock(+route.params.projectId, {
     slotId,
     type: block.type,
     content: block.content,
@@ -107,14 +107,14 @@ const editBlock = async (
   slotId: number,
   block: Pick<Block, 'id' | 'type' | 'content'>
 ) => {
-  await slotsStore.editBlock(slotId, block.id, {
+  await slotsStore.editBlock(slotId, block.id, +route.params.projectId, {
     type: block.type,
     content: block.content,
   });
   dialogEditBlockVisible.value = false;
 };
 const deleteBlock = async (slotId: number, blockId: number) => {
-  await slotsStore.deleteBlock(slotId, blockId);
+  await slotsStore.deleteBlock(slotId, blockId, +route.params.projectId);
 };
 const moveUpSlot = async (slotId: number) => {
   const index = slots.value.findIndex((slot) => slot.id === slotId);
@@ -175,6 +175,7 @@ const moveRightBlock = async (slotId: number, blockId: number) => {
 const updateOrderSlots = async () => {
   await slotsStore.updateOrderSlots(
     +route.params.pageId,
+    +route.params.projectId,
     slots.value.map((slot, index) => ({
       id: slot.id,
       order: index + 1,
@@ -185,6 +186,7 @@ const updateOrderBlocks = async (slotId: number) => {
   const indexSlot = slots.value.findIndex((slot) => slot.id === slotId);
   await slotsStore.updateOrderBlocks(
     slotId,
+    +route.params.projectId,
     slots.value[indexSlot].blocks.map((block, index) => ({
       id: block.id,
       order: index + 1,
