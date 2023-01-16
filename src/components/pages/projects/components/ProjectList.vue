@@ -12,12 +12,40 @@
             deleteProject: loadingDeleteProject && project.id === deleteId,
           }"
           :key="project.id"
-          @click="
-            !(loadingDeleteProject && project.id === deleteId) &&
-              openProject(project.id)
-          "
         >
+          <ProjectMenu
+            v-if="project.id === menuProjectId"
+            :user="user"
+            :project="project"
+            v-model:show="menuVisible"
+            @showPermissions="showPermissions(project)"
+            @edit="showEditDialog(project)"
+            @delete="deleteProject(project.id)"
+          />
+          <div
+            :class="{
+              projectHover: !(loadingDeleteProject && project.id === deleteId),
+            }"
+            @click="
+              !(loadingDeleteProject && project.id === deleteId) &&
+                !menuVisible &&
+                openProject(project.id)
+            "
+          ></div>
           <div class="imageContainer">
+            <button
+              type="button"
+              class="btnProjectMenu"
+              @click.stop="showMenu(project.id)"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <path
+                  fill="#554d56"
+                  fill-rule="evenodd"
+                  d="M11.437 7.5a2 2 0 0 1-3.874 0H4.5a.5.5 0 0 1 0-1H7.563a2 2 0 0 1 3.874 0H19.5a.5.5 0 1 1 0 1h-8.063zm-1.07 0a.995.995 0 0 0 0-1 1 1 0 1 0 0 1zm3.196 4.5a2 2 0 0 1 3.874 0H19.5a.5.5 0 1 1 0 1h-2.063a2 2 0 0 1-3.874 0H4.5a.5.5 0 1 1 0-1h9.063zm1.07 0a.995.995 0 0 0 0 1 1 1 0 1 0 0-1zm-5.196 6a2 2 0 0 1-3.874 0H4.5a.5.5 0 1 1 0-1h1.063a2 2 0 0 1 3.874 0H19.5a.5.5 0 1 1 0 1H9.437zm-1.07 0a.995.995 0 0 0 0-1 1 1 0 1 0 0 1z"
+                ></path>
+              </svg>
+            </button>
             <img
               class="projectImage"
               width="270"
@@ -28,26 +56,6 @@
           <div class="project__body">
             <div class="projectName">
               {{ project.name }}
-            </div>
-            <div class="actions">
-              <MyButton
-                class="button__edit"
-                @click.stop="
-                  !(loadingDeleteProject && project.id === deleteId) &&
-                    showEditDialog(project)
-                "
-              >
-                Edit
-              </MyButton>
-              <MyButton
-                class="button__delete"
-                @click.stop="
-                  !(loadingDeleteProject && project.id === deleteId) &&
-                    deleteProject(project.id)
-                "
-              >
-                Delete
-              </MyButton>
             </div>
           </div>
         </div>
@@ -73,26 +81,46 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import MyButton from '../../../common/MyButton.vue';
+import ProjectMenu from './ProjectMenu.vue';
 import type { Project } from '@/interfaces/Project';
+import type { Permission } from '@/interfaces/Permission';
+
+interface IProject extends Project {
+  permissions: Permission[];
+}
+
 defineProps<{
-  projects: Project[];
+  user: { email: string } | null;
+  projects: IProject[];
   loadingGetProjects: boolean;
   loadingDeleteProject: boolean;
 }>();
 const emit = defineEmits<{
-  (e: 'showEditDialog', project: Project): void;
+  (e: 'showPermissions', project: IProject): void;
+  (e: 'showEditDialog', project: IProject): void;
   (e: 'delete', id: number): void;
 }>();
 const router = useRouter();
+const menuVisible = ref(false);
+const menuProjectId = ref<number | null>(null);
 const deleteId = ref<number | null>(null);
 const openProject = (projectId: number) => {
   router.push(`/projects/${projectId}`);
 };
-const showEditDialog = (project: Project) => {
+const showMenu = (projectId: number) => {
+  menuProjectId.value = projectId;
+  menuVisible.value = true;
+};
+const showPermissions = (project: IProject) => {
+  menuVisible.value = false;
+  emit('showPermissions', project);
+};
+const showEditDialog = (project: IProject) => {
+  menuVisible.value = false;
   emit('showEditDialog', project);
 };
 const deleteProject = (id: number) => {
+  menuVisible.value = false;
   deleteId.value = id;
   emit('delete', id);
 };
@@ -113,6 +141,38 @@ const deleteProject = (id: number) => {
   border: 1px solid #edeced;
   cursor: pointer;
 }
+.project:hover .projectHover {
+  border: 2px solid #419bf9;
+  top: -2px;
+  left: -2px;
+  position: absolute;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: rgba(65, 154, 249, 0.2);
+  border-radius: 4px;
+}
+.deleteProject .btnProjectMenu {
+  display: none;
+}
+.btnProjectMenu {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  cursor: pointer;
+  border-radius: 50%;
+  min-width: 28px;
+  min-height: 28px;
+  line-height: 0;
+}
+.project:not(:hover) .btnProjectMenu {
+  opacity: 0;
+  transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.project:hover .btnProjectMenu {
+  opacity: 1;
+  transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
 .imageContainer {
   width: 100%;
   height: 92px;
@@ -129,9 +189,9 @@ const deleteProject = (id: number) => {
 }
 .deleteProject {
   opacity: 0.5;
+  cursor: default;
 }
 .project__body .projectName {
-  margin-bottom: 18px;
   line-height: 21px;
   font-size: 18px;
   color: #554d56;
@@ -147,16 +207,6 @@ const deleteProject = (id: number) => {
   color: #554d56;
   margin-bottom: 12px;
 }
-.actions {
-  display: flex;
-  justify-content: end;
-}
-.button__edit {
-  background-color: #ffc038;
-}
-.button__delete {
-  background-color: #ff4747;
-}
 /* animations */
 .list-enter-active,
 .list-leave-active {
@@ -167,7 +217,6 @@ const deleteProject = (id: number) => {
   opacity: 0;
   transform: scale(0.3);
 }
-
 /* placeholders */
 .project-placeholder {
   background-color: #eeeeee;
