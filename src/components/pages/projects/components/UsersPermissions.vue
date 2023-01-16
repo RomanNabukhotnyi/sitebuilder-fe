@@ -134,6 +134,7 @@ const invite = () => {
     email: form.email.value,
     permission: permission.value,
   });
+  form.email.value = '';
 };
 const deletePermission = (permissionId: number, userId: number) => {
   deleteId.value = permissionId;
