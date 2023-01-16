@@ -24,7 +24,6 @@ const emit = defineEmits<{
   (e: 'update:show', value: boolean): void;
 }>();
 const hideDialog = () => {
-  console.log('HERE');
   emit('update:show', false);
 };
 const el = ref<HTMLElement | null>(null);
