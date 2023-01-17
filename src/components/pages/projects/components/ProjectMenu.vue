@@ -5,6 +5,9 @@
       <div class="action" @click="$emit('showPermissions', project)">
         Permissions
       </div>
+      <div v-if="isOwner" class="action" @click="$emit('showApiKey', project)">
+        Api key
+      </div>
       <div v-if="isOwner" class="action" @click="$emit('edit', project)">
         Edit
       </div>
@@ -33,6 +36,7 @@ const props = withDefaults(
 );
 const emit = defineEmits<{
   (e: 'showPermissions', project: IProject): void;
+  (e: 'showApiKey', project: IProject): void;
   (e: 'edit', project: IProject): void;
   (e: 'delete', projectId: number): void;
   (e: 'update:show', value: boolean): void;
