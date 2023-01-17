@@ -52,10 +52,14 @@ export const useProjectsStore = defineStore('projects', {
               permissions = (
                 await axios.get(`/projects/${project.id}/permissions`)
               ).data.data;
+            } catch (error) {
+              permissions = [];
+            }
+            try {
               apiKey = (await axios.get(`/projects/${project.id}/api-keys`))
                 .data.data;
             } catch (error) {
-              permissions = [];
+              apiKey = undefined;
             }
             return {
               ...project,
