@@ -19,6 +19,7 @@
             :project="project"
             v-model:show="menuVisible"
             @showPermissions="showPermissions(project)"
+            @showApiKey="showApiKey(project)"
             @edit="showEditDialog(project)"
             @delete="deleteProject(project.id)"
           />
@@ -97,6 +98,7 @@ defineProps<{
 }>();
 const emit = defineEmits<{
   (e: 'showPermissions', project: IProject): void;
+  (e: 'showApiKey', project: IProject): void;
   (e: 'showEditDialog', project: IProject): void;
   (e: 'delete', id: number): void;
 }>();
@@ -114,6 +116,10 @@ const showMenu = (projectId: number) => {
 const showPermissions = (project: IProject) => {
   menuVisible.value = false;
   emit('showPermissions', project);
+};
+const showApiKey = (project: IProject) => {
+  menuVisible.value = false;
+  emit('showApiKey', project);
 };
 const showEditDialog = (project: IProject) => {
   menuVisible.value = false;

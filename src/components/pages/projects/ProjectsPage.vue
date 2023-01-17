@@ -26,6 +26,18 @@
         @delete="deletePermission"
       />
     </MyDialog>
+    <MyDialog v-model:show="apiKeyVisible">
+      <ProjectApiKey
+        :project="apiKeyProject!"
+        :user="user"
+        :loadingCreateApiKey="loadingCreateApiKey"
+        :loadingRefreshApiKey="loadingRefreshApiKey"
+        :loadingDeleteApiKey="loadingDeleteApiKey"
+        @create="createApiKey"
+        @refresh="refreshApiKey"
+        @delete="deleteApiKey"
+      />
+    </MyDialog>
     <div class="panel">
       <div class="panel__sort">
         <!-- SORT -->
@@ -40,6 +52,7 @@
         :user="user"
         :projects="filterProjects"
         @showPermissions="showPermissions"
+        @showApiKey="showApiKey"
         @showEditDialog="showEditDialog"
         :loadingGetProjects="loadingGetProjects"
         :loadingEditProject="loadingEditProject"
@@ -57,16 +70,20 @@ import MyDialog from '../../common/MyDialog.vue';
 import CreateProjectForm from './components/CreateProjectForm.vue';
 import EditProjectForm from './components/EditProjectForm.vue';
 import UsersPermissions from './components/UsersPermissions.vue';
+import ProjectApiKey from './components/ApiKey.vue';
 import MyButton from '../../common/MyButton.vue';
 import SearchProject from './components/SearchProject.vue';
 import { useProjectsStore } from '@/stores/projects';
 import { useAuthStore } from '@/stores/auth';
 import type { Project } from '@/interfaces/Project';
 import type { Permission } from '@/interfaces/Permission';
+import type { ApiKey } from '@/interfaces/ApiKey';
 
 interface IProject extends Project {
   permissions: Permission[];
+  apiKey?: ApiKey;
 }
+
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
 const projectsStore = useProjectsStore();
@@ -79,11 +96,16 @@ const loadingAddPermission = computed(() => projectsStore.loadingAddPermission);
 const loadingDeletePermission = computed(
   () => projectsStore.loadingDeletePermission
 );
+const loadingCreateApiKey = computed(() => projectsStore.loadingCreateApiKey);
+const loadingRefreshApiKey = computed(() => projectsStore.loadingRefreshApiKey);
+const loadingDeleteApiKey = computed(() => projectsStore.loadingDeleteApiKey);
 const dialogCreateVisible = ref(false);
 const dialogEditVisible = ref(false);
 const permissionsVisible = ref(false);
+const apiKeyVisible = ref(false);
 const searchQuery = ref('');
 const permissionsProject = ref<IProject | null>(null);
+const apiKeyProject = ref<IProject | null>(null);
 const editingProject = ref<IProject | null>(null);
 const filterProjects = computed(() =>
   projects.value.filter((project) =>
@@ -99,6 +121,10 @@ const showCreateDialog = () => {
 const showPermissions = (project: IProject) => {
   permissionsProject.value = project;
   permissionsVisible.value = true;
+};
+const showApiKey = (project: IProject) => {
+  apiKeyProject.value = project;
+  apiKeyVisible.value = true;
 };
 const showEditDialog = (project: IProject) => {
   editingProject.value = project;
@@ -125,6 +151,15 @@ const addPermission = async (
 };
 const deletePermission = async (projectId: number, userId: number) => {
   await projectsStore.deletePermission(projectId, userId);
+};
+const createApiKey = async (projectId: number) => {
+  await projectsStore.createApiKey(projectId);
+};
+const refreshApiKey = async (id: number, projectId: number) => {
+  await projectsStore.refreshApiKey(id, projectId);
+};
+const deleteApiKey = async (id: number, projectId: number) => {
+  await projectsStore.deleteApiKey(id, projectId);
 };
 </script>
 
