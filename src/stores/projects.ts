@@ -4,10 +4,12 @@ import { computed } from 'vue';
 import { useAuthStore } from './auth';
 import type { Project } from '../interfaces/Project';
 import type { Permission } from '../interfaces/Permission';
+import type { ApiKey } from '../interfaces/ApiKey';
 import { IError } from '@/interfaces/IError';
 
 interface IProject extends Project {
   permissions: Permission[];
+  apiKey?: ApiKey;
 }
 
 interface State {
@@ -18,6 +20,9 @@ interface State {
   loadingDeleteProject: boolean;
   loadingAddPermission: boolean;
   loadingDeletePermission: boolean;
+  loadingCreateApiKey: boolean;
+  loadingRefreshApiKey: boolean;
+  loadingDeleteApiKey: boolean;
 }
 
 export const useProjectsStore = defineStore('projects', {
@@ -29,6 +34,9 @@ export const useProjectsStore = defineStore('projects', {
     loadingDeleteProject: false,
     loadingAddPermission: false,
     loadingDeletePermission: false,
+    loadingCreateApiKey: false,
+    loadingRefreshApiKey: false,
+    loadingDeleteApiKey: false,
   }),
   actions: {
     async getProjects(): Promise<void> {
@@ -39,16 +47,20 @@ export const useProjectsStore = defineStore('projects', {
         this.projects = await Promise.all(
           projects.map(async (project) => {
             let permissions: Permission[];
+            let apiKey: ApiKey | undefined;
             try {
               permissions = (
                 await axios.get(`/projects/${project.id}/permissions`)
               ).data.data;
+              apiKey = (await axios.get(`/projects/${project.id}/api-keys`))
+                .data.data;
             } catch (error) {
               permissions = [];
             }
             return {
               ...project,
               permissions,
+              apiKey,
             };
           })
         );
@@ -136,6 +148,50 @@ export const useProjectsStore = defineStore('projects', {
         throw new IError(error);
       } finally {
         this.loadingDeletePermission = false;
+      }
+    },
+    async createApiKey(projectId: number): Promise<void> {
+      try {
+        this.loadingCreateApiKey = true;
+        const response = await axios.post(`/projects/${projectId}/api-keys`);
+        const index = this.projects.findIndex(
+          (project) => project.id === projectId
+        );
+        this.projects[index].apiKey = response.data.data;
+      } catch (error) {
+        throw new IError(error);
+      } finally {
+        this.loadingCreateApiKey = false;
+      }
+    },
+    async refreshApiKey(id: number, projectId: number): Promise<void> {
+      try {
+        this.loadingRefreshApiKey = true;
+        const response = await axios.get(
+          `/projects/${projectId}/api-keys/${id}`
+        );
+        const index = this.projects.findIndex(
+          (project) => project.id === projectId
+        );
+        this.projects[index].apiKey = response.data.data;
+      } catch (error) {
+        throw new IError(error);
+      } finally {
+        this.loadingRefreshApiKey = false;
+      }
+    },
+    async deleteApiKey(id: number, projectId: number): Promise<void> {
+      try {
+        this.loadingDeleteApiKey = true;
+        await axios.delete(`/projects/${projectId}/api-keys/${id}`);
+        const index = this.projects.findIndex(
+          (project) => project.id === projectId
+        );
+        this.projects[index].apiKey = undefined;
+      } catch (error) {
+        throw new IError(error);
+      } finally {
+        this.loadingDeleteApiKey = false;
       }
     },
   },
