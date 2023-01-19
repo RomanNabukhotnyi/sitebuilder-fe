@@ -40,7 +40,7 @@ const emit = defineEmits<{
   min-width: 150px;
   background-color: white;
   border: 1px solid #edeced;
-  z-index: 1;
+  z-index: 999;
 }
 .email {
   margin: 10px;
