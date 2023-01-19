@@ -41,7 +41,6 @@ const emit = defineEmits<{
   (e: 'delete', projectId: number): void;
   (e: 'update:show', value: boolean): void;
 }>();
-console.log(props.project);
 const isOwner = !!props.project.permissions.find(
   (permission) =>
     permission.email === props.user?.email && permission.permission === 'OWNER'

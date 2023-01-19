@@ -9,7 +9,7 @@
       /></RouterLink>
     </div>
     <div class="title">Workspace</div>
-    <div id="avatar" class="avatar" @click="menuVisible = !menuVisible">
+    <div id="avatar" class="avatar" @click="menuVisible = true">
       <img
         src="https://lh3.googleusercontent.com/a/ALm5wu1GtNGrAmCvrQInUoiVlcw1gc5hnOV9xdiTQib6=s96-c"
         width="28"

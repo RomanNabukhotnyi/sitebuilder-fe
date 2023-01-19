@@ -62,8 +62,10 @@ axios.interceptors.response.use(
       routeConfig.push('/login');
       return Promise.reject(error);
     } else if (error.response && error.response.status === 401) {
-      const response = await axios.post('/auth/refresh', {
-        refreshToken: localStorage.getItem('refreshToken'),
+      const response = await axios.get('/auth/refresh', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('refreshToken')}`,
+        },
       });
       const accessToken = response.data.data.accessToken;
       localStorage.removeItem('accessToken');

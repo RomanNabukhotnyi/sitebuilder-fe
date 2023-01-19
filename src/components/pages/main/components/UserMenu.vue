@@ -1,4 +1,5 @@
 <template>
+  <div v-if="show" class="overlay" @click="emit('update:show', false)"></div>
   <Transition v-if="show" name="menu">
     <div class="menu" ref="el">
       <div class="email">{{ user?.email }}</div>
@@ -8,8 +9,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useEventListener } from '@/use/eventListener';
 withDefaults(
   defineProps<{
     user: { email: string } | null;
@@ -23,21 +22,17 @@ const emit = defineEmits<{
   (e: 'logout'): void;
   (e: 'update:show', value: boolean): void;
 }>();
-const hideDialog = () => {
-  emit('update:show', false);
-};
-const el = ref<HTMLElement | null>(null);
-useEventListener(window, 'click', (event) => {
-  if (
-    !document.getElementById('avatar')!.contains(event.target as Node) &&
-    !el.value?.contains(event.target as Node)
-  ) {
-    hideDialog();
-  }
-});
 </script>
 
 <style scoped>
+.overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 998;
+}
 .menu {
   position: absolute;
   top: calc(100% - 10px);
