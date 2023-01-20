@@ -1,10 +1,10 @@
 <template>
   <div>
     <Transition name="fade">
-      <div class="modal-overlay" v-if="show" @click="hideDialog"></div>
+      <div class="modal-overlay" v-if="showDialog()" @click="hideDialog"></div>
     </Transition>
     <Transition name="pop">
-      <div class="modal" v-if="show">
+      <div class="modal" v-if="showDialog()">
         <slot></slot>
       </div>
     </Transition>
@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { useEventListener } from '@/use/eventListener';
-withDefaults(
+const props = withDefaults(
   defineProps<{
     show: boolean;
   }>(),
@@ -24,8 +24,15 @@ withDefaults(
 const emit = defineEmits<{
   (e: 'update:show', value: boolean): void;
 }>();
+const showDialog = () => {
+  if (props.show) {
+    document.body.classList.add('modal-open');
+  }
+  return props.show;
+};
 const hideDialog = () => {
   emit('update:show', false);
+  document.body.classList.remove('modal-open');
 };
 useEventListener(window, 'keyup', (event) => {
   if (event.code === 'Escape') {

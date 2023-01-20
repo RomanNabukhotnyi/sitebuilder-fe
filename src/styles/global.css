@@ -1,5 +1,9 @@
 @import 'normalize.css';
 
 .toastBody {
-    font-size: 15px;
+  font-size: 15px;
+}
+
+.modal-open {
+  overflow: hidden;
 }
