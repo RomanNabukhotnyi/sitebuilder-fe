@@ -1,7 +1,7 @@
 <template>
   <div>
     <Transition name="fade">
-      <div class="modal-overlay" v-if="showDialog()" @click="hideDialog"></div>
+      <div class="modal-overlay" v-if="show" @click="hideDialog"></div>
     </Transition>
     <Transition name="pop">
       <div class="modal" v-if="showDialog()">
@@ -27,12 +27,13 @@ const emit = defineEmits<{
 const showDialog = () => {
   if (props.show) {
     document.body.classList.add('modal-open');
+  } else {
+    document.body.classList.remove('modal-open');
   }
   return props.show;
 };
 const hideDialog = () => {
   emit('update:show', false);
-  document.body.classList.remove('modal-open');
 };
 useEventListener(window, 'keyup', (event) => {
   if (event.code === 'Escape') {
