@@ -166,6 +166,7 @@ const deleteProject = (id: number) => {
   top: 12px;
   left: 12px;
   cursor: pointer;
+  background-color: #edeced;
   border-radius: 50%;
   min-width: 28px;
   min-height: 28px;
