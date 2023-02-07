@@ -84,6 +84,13 @@
       <div class="field">
         <MyInput
           class="input"
+          placeholder="Alt"
+          v-model="formImage.alt.value"
+        />
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
           placeholder="Width"
           v-model="formImage.width.value"
         />
