@@ -9,10 +9,25 @@
         v-for="block in mySlot.blocks"
         :key="block.id"
       >
-        <div class="type__image" v-if="block.type === 'IMAGE'">
+        <div
+          class="type__image"
+          v-if="block.type === 'IMAGE'"
+          :style="{
+            width: block.styles.width,
+            height: block.styles.height,
+          }"
+        >
           <img :src="block.content.url" />
         </div>
-        <div class="type__text" v-if="block.type === 'TEXT'">
+        <div
+          class="type__text"
+          v-if="block.type === 'TEXT'"
+          :style="{
+            fontWeight: block.styles.fontWeight,
+            fontSize: block.styles.fontSize,
+            color: block.styles.color,
+          } as StyleValue"
+        >
           {{ block.content.text }}
         </div>
         <BlockMenu
@@ -32,7 +47,7 @@
 <script setup lang="ts">
 import type { Block } from '@/interfaces/Block';
 import type { Slot } from '@/interfaces/Slot';
-import { ref } from 'vue';
+import { ref, type StyleValue } from 'vue';
 import BlockMenu from './BlockMenu.vue';
 interface ISlot extends Slot {
   blocks: Block[];

@@ -121,6 +121,8 @@ export const useSlotsStore = defineStore('slots', {
         slotId: number;
         type: string;
         content: any;
+        attributes: any;
+        styles: any;
       }
     ): Promise<void> {
       try {
@@ -143,7 +145,7 @@ export const useSlotsStore = defineStore('slots', {
       slotId: number,
       blockId: number,
       projectId: number,
-      payload: { type: string; content: any }
+      payload: { type: string; content: any; attributes: any; styles: any }
     ): Promise<void> {
       try {
         this.loadingEditBlock = true;

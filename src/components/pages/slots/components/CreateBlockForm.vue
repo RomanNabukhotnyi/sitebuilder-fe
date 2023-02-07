@@ -24,6 +24,34 @@
           v-model="formText.subtext.value"
         />
       </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Title"
+          v-model="formText.title.value"
+        />
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Font Weight"
+          v-model="formText.fontWeight.value"
+        />
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Font Size"
+          v-model="formText.fontSize.value"
+        />
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Color"
+          v-model="formText.color.value"
+        />
+      </div>
     </div>
     <div v-else>
       <div class="field">
@@ -44,6 +72,27 @@
           class="input"
           placeholder="Subtext"
           v-model="formImage.subtext.value"
+        />
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Title"
+          v-model="formImage.title.value"
+        />
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Width"
+          v-model="formImage.width.value"
+        />
+      </div>
+      <div class="field">
+        <MyInput
+          class="input"
+          placeholder="Height"
+          v-model="formImage.height.value"
         />
       </div>
     </div>
@@ -94,6 +143,18 @@ const formText = useForm({
   subtext: {
     value: '',
   },
+  title: {
+    value: '',
+  },
+  fontWeight: {
+    value: '',
+  },
+  fontSize: {
+    value: '',
+  },
+  color: {
+    value: '',
+  },
 });
 const formImage = useForm({
   url: {
@@ -104,6 +165,18 @@ const formImage = useForm({
     },
   },
   subtext: {
+    value: '',
+  },
+  title: {
+    value: '',
+  },
+  alt: {
+    value: '',
+  },
+  width: {
+    value: '',
+  },
+  height: {
     value: '',
   },
 });
@@ -133,7 +206,34 @@ const createBlock = () => {
           url: form.url.value,
           subtext: form.subtext.value === '' ? undefined : form.subtext.value,
         };
-  emit('createBlock', props.slotId, { type: type.value, content });
+  const attributes =
+    type.value === 'TEXT'
+      ? {
+          title: form.title.value === '' ? undefined : form.title.value,
+        }
+      : {
+          title: form.title.value === '' ? undefined : form.title.value,
+          alt: form.alt.value === '' ? undefined : form.alt.value,
+        };
+  const styles =
+    type.value === 'TEXT'
+      ? {
+          fontWeight:
+            form.fontWeight.value === '' ? undefined : form.fontWeight.value,
+          fontSize:
+            form.fontSize.value === '' ? undefined : form.fontSize.value,
+          color: form.color.value === '' ? undefined : form.color.value,
+        }
+      : {
+          width: form.width.value === '' ? undefined : form.width.value,
+          height: form.height.value === '' ? undefined : form.height.value,
+        };
+  emit('createBlock', props.slotId, {
+    type: type.value,
+    content,
+    attributes,
+    styles,
+  });
 };
 const selectOption = (option: Option) => {
   type.value = option.value;

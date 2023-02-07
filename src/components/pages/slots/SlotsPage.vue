@@ -100,16 +100,20 @@ const createBlock = async (slotId: number, block: Block) => {
     slotId,
     type: block.type,
     content: block.content,
+    attributes: block.attributes,
+    styles: block.styles,
   });
   dialogCreateBlockVisible.value = false;
 };
 const editBlock = async (
   slotId: number,
-  block: Pick<Block, 'id' | 'type' | 'content'>
+  block: Pick<Block, 'id' | 'type' | 'content' | 'attributes' | 'styles'>
 ) => {
   await slotsStore.editBlock(slotId, block.id, +route.params.projectId, {
     type: block.type,
     content: block.content,
+    attributes: block.attributes,
+    styles: block.styles,
   });
   dialogEditBlockVisible.value = false;
 };
