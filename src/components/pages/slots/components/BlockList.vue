@@ -85,7 +85,9 @@ const deleteBlock = (slotId: number, blockId: number) => {
 }
 .blocks .block {
   min-height: 100px;
-  display: block;
+  display: grid;
+  justify-content: center;
+  align-items: center;
   flex: 1;
   position: relative;
 }
