@@ -9,7 +9,9 @@
           placeholder="Text"
           v-model="formText.text.value"
         />
-        <div v-if="!formText.text.errors.required"></div>
+        <p v-if="formText.text.errors.required" class="error">
+          Field is required
+        </p>
       </div>
       <div class="field">
         <MyInput
@@ -31,6 +33,11 @@
           placeholder="Font Weight"
           v-model="formText.fontWeight.value"
         />
+        <div v-if="formText.fontWeight.value.length !== 0" class="error">
+          <p v-if="formText.fontWeight.errors.cssWeight" class="error">
+            Font weight is incorrect
+          </p>
+        </div>
       </div>
       <div class="field">
         <MyInput
@@ -38,6 +45,11 @@
           placeholder="Font Size"
           v-model="formText.fontSize.value"
         />
+        <div v-if="formText.fontSize.value.length !== 0" class="error">
+          <p v-if="formText.fontSize.errors.cssFontSize" class="error">
+            Font size is incorrect
+          </p>
+        </div>
       </div>
       <div class="field">
         <MyInput
@@ -45,6 +57,11 @@
           placeholder="Color"
           v-model="formText.color.value"
         />
+        <div v-if="formText.color.value.length !== 0" class="error">
+          <p v-if="formText.color.errors.cssColor" class="error">
+            Color is incorrect
+          </p>
+        </div>
       </div>
     </div>
     <div v-else>
@@ -55,6 +72,9 @@
           placeholder="Url"
           v-model="formImage.url.value"
         />
+        <p v-if="formImage.url.errors.required" class="error">
+          Field is required
+        </p>
         <div v-if="!formImage.url.errors.required">
           <p v-if="formImage.url.errors.url" class="error">
             That’s not a valid url
@@ -88,6 +108,11 @@
           placeholder="Width"
           v-model="formImage.width.value"
         />
+        <div v-if="formImage.width.value.length !== 0" class="error">
+          <p v-if="formImage.width.errors.cssWidthOrHeight" class="error">
+            Width is incorrect
+          </p>
+        </div>
       </div>
       <div class="field">
         <MyInput
@@ -95,6 +120,11 @@
           placeholder="Height"
           v-model="formImage.height.value"
         />
+        <div v-if="formImage.height.value.length !== 0" class="error">
+          <p v-if="formImage.height.errors.cssWidthOrHeight" class="error">
+            Height is incorrect
+          </p>
+        </div>
       </div>
     </div>
     <MyButton
@@ -137,7 +167,15 @@ const emit = defineEmits<{
     block: Pick<Block, 'id' | 'type' | 'content' | 'attributes' | 'styles'>
   ): void;
 }>();
-const { required, url } = useValidators();
+const {
+  required,
+  url,
+  cssWeight,
+  cssFontSize,
+  cssColor,
+  cssWidthOrHeight,
+  optional,
+} = useValidators();
 const formText = useForm({
   text: {
     value: props.block.type === 'TEXT' ? props.block.content.text : '',
@@ -153,12 +191,24 @@ const formText = useForm({
   },
   fontWeight: {
     value: props.block.styles.fontWeight ?? '',
+    validators: {
+      optional,
+      cssWeight,
+    },
   },
   fontSize: {
     value: props.block.styles.fontSize ?? '',
+    validators: {
+      optional,
+      cssFontSize,
+    },
   },
   color: {
     value: props.block.styles.color ?? '',
+    validators: {
+      optional,
+      cssColor,
+    },
   },
 });
 const formImage = useForm({
@@ -180,9 +230,17 @@ const formImage = useForm({
   },
   width: {
     value: props.block.styles.width ?? '',
+    validators: {
+      optional,
+      cssWidthOrHeight,
+    },
   },
   height: {
     value: props.block.styles.height ?? '',
+    validators: {
+      optional,
+      cssWidthOrHeight,
+    },
   },
 });
 const formValid = computed(() =>

@@ -13,8 +13,11 @@ export const useForm = (init: {}) => {
 
   form.valid = computed(() =>
     Object.keys(form)
-      .filter((k) => k !== 'valid')
+      .filter((k) => {
+        return k !== 'valid';
+      })
       .reduce((acc, k) => {
+        console.log('formvalid:', form.valid);
         return acc && form[k].valid;
       }, true)
   );

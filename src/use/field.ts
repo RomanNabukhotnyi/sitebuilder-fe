@@ -7,6 +7,9 @@ export const useField = (field: {
   const valid = ref(true);
   const value = ref(field.value);
   const errors = reactive<{ [key: string]: boolean }>({});
+  const isOptional = !!Object.keys(field.validators ?? {}).find(
+    (k) => k === 'optional'
+  );
 
   const reassign = (value: any): void => {
     valid.value = true;
@@ -14,7 +17,7 @@ export const useField = (field: {
       const isValid = field.validators[name](value);
       errors[name] = !isValid;
       if (!isValid) {
-        valid.value = false;
+        valid.value = false || isOptional;
       }
     });
   };
