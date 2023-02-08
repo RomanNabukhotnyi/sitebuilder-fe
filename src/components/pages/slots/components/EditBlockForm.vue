@@ -187,24 +187,24 @@ const formText = useForm({
     value: props.block.content.subtext ?? '',
   },
   title: {
-    value: props.block.attributes.title ?? '',
+    value: props.block.attributes?.title ?? '',
   },
   fontWeight: {
-    value: props.block.styles.fontWeight ?? '',
+    value: props.block.styles?.fontWeight ?? '',
     validators: {
       optional,
       cssWeight,
     },
   },
   fontSize: {
-    value: props.block.styles.fontSize ?? '',
+    value: props.block.styles?.fontSize ?? '',
     validators: {
       optional,
       cssFontSize,
     },
   },
   color: {
-    value: props.block.styles.color ?? '',
+    value: props.block.styles?.color ?? '',
     validators: {
       optional,
       cssColor,
@@ -223,20 +223,20 @@ const formImage = useForm({
     value: props.block.content.subtext ?? '',
   },
   title: {
-    value: props.block.attributes.title ?? '',
+    value: props.block.attributes?.title ?? '',
   },
   alt: {
-    value: props.block.attributes.alt ?? '',
+    value: props.block.attributes?.alt ?? '',
   },
   width: {
-    value: props.block.styles.width ?? '',
+    value: props.block.styles?.width ?? '',
     validators: {
       optional,
       cssWidthOrHeight,
     },
   },
   height: {
-    value: props.block.styles.height ?? '',
+    value: props.block.styles?.height ?? '',
     validators: {
       optional,
       cssWidthOrHeight,
@@ -251,6 +251,9 @@ useEventListener(window, 'keyup', (event) => {
     editBlock();
   }
 });
+function removeEmpty(obj: Object) {
+  return Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null));
+}
 const editBlock = () => {
   const form = props.block.type === 'TEXT' ? formText : formImage;
   const content: any =
@@ -289,8 +292,10 @@ const editBlock = () => {
     id: props.block.id,
     type: props.block.type,
     content,
-    attributes,
-    styles,
+    attributes: !Object.keys(removeEmpty(attributes)).length
+      ? undefined
+      : attributes,
+    styles: !Object.keys(removeEmpty(styles)).length ? undefined : styles,
   });
 };
 </script>

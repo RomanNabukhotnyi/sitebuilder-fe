@@ -13,8 +13,8 @@
           class="type__image"
           v-if="block.type === 'IMAGE'"
           :style="{
-            width: block.styles.width,
-            height: block.styles.height,
+            width: block.styles?.width,
+            height: block.styles?.height,
           }"
         >
           <img :src="block.content.url" />
@@ -23,9 +23,9 @@
           class="type__text"
           v-if="block.type === 'TEXT'"
           :style="{
-            fontWeight: block.styles.fontWeight,
-            fontSize: block.styles.fontSize,
-            color: block.styles.color,
+            fontWeight: block.styles?.fontWeight,
+            fontSize: block.styles?.fontSize,
+            color: block.styles?.color,
           } as StyleValue"
         >
           {{ block.content.text }}

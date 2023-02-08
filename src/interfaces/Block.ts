@@ -28,12 +28,15 @@ type ImageStyles = {
   height?: string;
 };
 
+type Attributes = (TextAttributes & ImageAttributes) | null | undefined;
+type Styles = (TextStyles & ImageStyles) | null | undefined;
+
 export interface Block {
   id: number;
   type: string;
   content: Image & Text;
-  attributes: TextAttributes & ImageAttributes;
-  styles: TextStyles & ImageStyles;
+  attributes: Attributes;
+  styles: Styles;
   order: number;
   createdAt: string;
 }

@@ -17,7 +17,6 @@ export const useForm = (init: {}) => {
         return k !== 'valid';
       })
       .reduce((acc, k) => {
-        console.log('formvalid:', form.valid);
         return acc && form[k].valid;
       }, true)
   );

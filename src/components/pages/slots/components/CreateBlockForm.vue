@@ -259,6 +259,9 @@ useEventListener(window, 'keyup', (event) => {
     createBlock();
   }
 });
+function removeEmpty(obj: Object) {
+  return Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null));
+}
 const createBlock = () => {
   const form = type.value === 'TEXT' ? formText : formImage;
   const content =
@@ -296,8 +299,10 @@ const createBlock = () => {
   emit('createBlock', props.slotId, {
     type: type.value,
     content,
-    attributes,
-    styles,
+    attributes: !Object.keys(removeEmpty(attributes)).length
+      ? undefined
+      : attributes,
+    styles: !Object.keys(removeEmpty(styles)).length ? undefined : styles,
   });
 };
 const selectOption = (option: Option) => {
