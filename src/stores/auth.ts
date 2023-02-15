@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { IError } from '@/interfaces/IError';
 import axios from 'axios';
+import { api } from '@/services/api-service';
 
 interface State {
   user: { email: string } | null;
@@ -19,7 +20,7 @@ export const useAuthStore = defineStore('auth', {
     async login(payload: { email: string; password: string }) {
       try {
         this.loading = true;
-        const response = await axios.post('/auth/login', payload);
+        const response = await api.post('/auth/login', payload);
         const tokens = response.data.data;
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);

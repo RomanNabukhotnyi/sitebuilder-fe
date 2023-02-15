@@ -5,7 +5,7 @@ import { useToast, type PluginOptions } from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 
 import App from './App.vue';
-import * as appRouter from './appRouter';
+import { routeConfig } from './router';
 
 const app = createApp(App);
 
@@ -26,7 +26,7 @@ const options: PluginOptions = {
 
 app.use(Toast, options);
 app.use(createPinia());
-app.use(appRouter.routeConfig);
+app.use(routeConfig);
 
 app.directive('focus', {
   mounted(el) {

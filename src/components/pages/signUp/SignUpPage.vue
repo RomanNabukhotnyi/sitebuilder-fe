@@ -27,6 +27,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useToast } from 'vue-toastification';
 import SignUpForm from './components/SignUpForm.vue';
+import { ROUTE_NAMES } from '@/constants/route-names-constants';
 const authStore = useAuthStore();
 const router = useRouter();
 const toast = useToast();
@@ -34,7 +35,9 @@ const loading = computed(() => authStore.loading);
 const signUp = async (payload: { email: string; password: string }) => {
   await authStore.signUp(payload);
   toast.success('Sign up is successful!');
-  router.push('/login');
+  router.push({
+      name: ROUTE_NAMES.LOGIN
+  });
 };
 </script>
 
