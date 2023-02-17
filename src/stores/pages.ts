@@ -1,11 +1,15 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
-import { IError } from '@/interfaces/IError';
 
-import type { Page } from '../interfaces/Page';
+import { IError } from '@/types/IError';
+import type { ApiPage } from '../types/pages/ApiPage';
+import type { ApiCreatePage } from '@/types/pages/ApiCreatePage';
+import type { ApiUpdatePage } from '@/types/pages/ApiUpdatePage';
+import type { Order } from '@/types/Order';
+
+import { createPage, getPagesByProjectId, deletePage, updatePageOrder, updatePage } from '@/api/pages';
 
 interface State {
-  pages: Page[];
+  pages: ApiPage[];
   loadingGetPages: boolean;
   loadingCreatePage: boolean;
   loadingEditPage: boolean;
@@ -21,11 +25,25 @@ export const usePagesStore = defineStore('pages', {
     loadingDeletePage: false,
   }),
   actions: {
+    async createPage(
+      projectId: number,
+      payload: ApiCreatePage
+    ): Promise<void> {
+      try {
+        this.loadingCreatePage = true;
+        const page = await createPage(projectId, payload);
+        this.pages.push(page);
+      } catch (error) {
+        throw new IError(error);
+      } finally {
+        this.loadingCreatePage = false;
+      }
+    },
     async getPages(projectId: number): Promise<void> {
       try {
         this.loadingGetPages = true;
-        const response = await axios.get(`/projects/${projectId}/pages`);
-        this.pages = (response.data.data as Page[]).sort((a, b) => {
+        const pages = await getPagesByProjectId(projectId);
+        this.pages = pages.sort((a, b) => {
           if (a.order === 0) {
             return 1;
           }
@@ -37,50 +55,25 @@ export const usePagesStore = defineStore('pages', {
         this.loadingGetPages = false;
       }
     },
-    async createPage(
-      projectId: number,
-      payload: {
-        name: string;
-        meta: any;
-      }
-    ): Promise<void> {
-      try {
-        this.loadingCreatePage = true;
-        const respose = await axios.post(
-          `/projects/${projectId}/pages`,
-          payload
-        );
-        this.pages.push(respose.data.data);
-      } catch (error) {
-        throw new IError(error);
-      } finally {
-        this.loadingCreatePage = false;
-      }
-    },
-    async editPage(
+    async updatePage(
       id: number,
       projectId: number,
-      payload: { name: string; meta: any }
+      payload: ApiUpdatePage
     ): Promise<void> {
       try {
         this.loadingEditPage = true;
-        const response = await axios.put(
-          `/projects/${projectId}/pages/${id}`,
-          payload
-        );
+        const page = await updatePage(projectId, id, payload);
         const index = this.pages.findIndex((page) => page.id === id);
-        this.pages[index] = response.data.data;
+        this.pages[index] = page;
       } catch (error) {
         throw new IError(error);
       } finally {
         this.loadingEditPage = false;
       }
     },
-    async updateOrders(projectId: number, orders: any[]): Promise<void> {
+    async updatePageOrder(projectId: number, orders: Order[]): Promise<void> {
       try {
-        await axios.put(`/projects/${projectId}/pages/order`, {
-          orders,
-        });
+        await updatePageOrder(projectId, orders);
       } catch (error) {
         throw new IError(error);
       }
@@ -88,7 +81,7 @@ export const usePagesStore = defineStore('pages', {
     async deletePage(id: number, projectId: number): Promise<void> {
       try {
         this.loadingDeletePage = true;
-        await axios.delete(`/projects/${projectId}/pages/${id}`);
+        await deletePage(projectId, id);
         const index = this.pages.findIndex((page) => page.id === id);
         this.pages.splice(index, 1);
       } catch (error) {

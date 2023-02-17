@@ -1,9 +1,16 @@
 import { defineStore } from 'pinia';
-import { IError } from '@/interfaces/IError';
-import axios from 'axios';
+
+import type { ApiSignUp } from '@/types/auth/ApiSignUp';
+import type { ApiLogin } from '@/types/auth/ApiLogin';
+import { IError } from '@/types/IError';
+import type { ApiUser } from '@/types/users/ApiUser';
+
+import { api } from '@/services/api-service';
+import { signUp, login } from '@/api/auth';
+import { getUser } from '@/api/user';
 
 interface State {
-  user: { email: string } | null;
+  user: ApiUser | null;
   loading: boolean;
 }
 
@@ -16,14 +23,23 @@ export const useAuthStore = defineStore('auth', {
     isLoggedIn: (state) => state.user !== null,
   },
   actions: {
-    async login(payload: { email: string; password: string }) {
+    async signUp(payload: ApiSignUp) {
       try {
         this.loading = true;
-        const response = await axios.post('/auth/login', payload);
-        const tokens = response.data.data;
-        localStorage.setItem('accessToken', tokens.accessToken);
-        localStorage.setItem('refreshToken', tokens.refreshToken);
-        axios.defaults.headers.common[
+        await signUp(payload)
+      } catch (error) {
+        throw new IError(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async login(payload: ApiLogin) {
+      try {
+        this.loading = true;
+        const { accessToken, refreshToken } = await login(payload);
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        api.defaults.headers.common[
           'Authorization'
         ] = `Bearer ${localStorage.getItem('accessToken')}`;
         await this.getUser();
@@ -33,20 +49,9 @@ export const useAuthStore = defineStore('auth', {
         this.loading = false;
       }
     },
-    async signUp(payload: { email: string; password: string }) {
-      try {
-        this.loading = true;
-        await axios.post('/auth/sign-up', payload);
-      } catch (error) {
-        throw new IError(error);
-      } finally {
-        this.loading = false;
-      }
-    },
     async getUser() {
       try {
-        const response = await axios.get('/users');
-        this.user = { email: response.data.data.email };
+        this.user = await getUser();
       } catch (error) {
         throw new IError(error);
       }

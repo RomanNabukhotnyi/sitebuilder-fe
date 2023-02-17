@@ -2,7 +2,7 @@ import { ref, reactive, watch } from 'vue';
 
 export const useField = (field: {
   value: string;
-  validators: { [key: string]: Function };
+  validators?: { [key: string]: (value: string) => boolean };
 }) => {
   const valid = ref(true);
   const value = ref(field.value);
@@ -11,10 +11,10 @@ export const useField = (field: {
     (k) => k === 'optional'
   );
 
-  const reassign = (value: any): void => {
+  const reassign = (value: string): void => {
     valid.value = true;
-    Object.keys(field.validators ?? {}).map((name) => {
-      const isValid = field.validators[name](value);
+    Object.keys(field.validators || {}).map((name) => {
+      const isValid = field.validators ? field.validators[name](value) : true;
       errors[name] = !isValid;
       if (!isValid) {
         valid.value = false || isOptional;
