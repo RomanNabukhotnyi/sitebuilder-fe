@@ -108,18 +108,4 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss">
-.p-pages {
-  .panel {
-    width: 100%;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    top: 0;
-    height: 76px;
-  }
-  .button__create {
-    margin: 0 36px 0 auto;
-  }
-}
-</style>
+<style lang="scss" src="./p-pages.scss" />
