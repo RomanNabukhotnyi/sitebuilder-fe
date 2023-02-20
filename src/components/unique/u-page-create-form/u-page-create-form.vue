@@ -1,0 +1,183 @@
+<template>
+  <div class="u-page-create-form">
+    <h4>Create page</h4>
+    <div class="field">
+      <CInput
+        v-model="form.name.value"
+        v-focus
+        class="input"
+        type="text"
+        placeholder="Name"
+      />
+      <div v-if="!form.name.errors.required">
+        <p
+          v-if="form.name.errors.exist"
+          class="error"
+        >
+          A page with that name exist
+        </p>
+      </div>
+    </div>
+    <CButton
+      class="button"
+      :disabled="!form.valid || loadingCreatePage"
+      @click="createPage"
+    >
+      <p v-if="!loadingCreatePage">
+        Create
+      </p>
+      <div
+        v-else
+        class="loadingio-spinner-ellipsis-yg3d79y87xd"
+      >
+        <div class="ldio-bzxhjz25vr">
+          <div />
+          <div />
+          <div />
+          <div />
+          <div />
+        </div>
+      </div>
+    </CButton>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { ApiPage } from '@/types/pages/ApiPage';
+
+import CButton from '@/components/common/c-button';
+import CInput from '@/components/common/c-input';
+
+import { useValidators } from '@/use/validators';
+import { useEventListener } from '@/use/use-event-listener';
+import { useForm } from '@/use/form';
+
+const props = defineProps<{
+  pages: ApiPage[];
+  loadingCreatePage: boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: 'create', page: Omit<ApiPage, 'id' | 'order'>): void;
+}>();
+
+const { windowEventListener } = useEventListener();
+const { required, exist } = useValidators();
+const form = useForm({
+  name: {
+    value: '',
+    validators: {
+      required,
+      exist: exist(props.pages.map((p) => p.name)),
+    },
+  },
+});
+
+const createPage = () => {
+  emit('create', {
+    name: form.name.value,
+    meta: {},
+  });
+};
+
+windowEventListener('keyup', (event) => {
+  if (event.code === 'Enter' && form.valid) {
+    createPage();
+  }
+});
+</script>
+
+<style lang="scss">
+.u-page-create-form {
+  display: flex;
+  flex-direction: column;
+
+  .field {
+    margin: 15px 0;
+  }
+  .error {
+    font-size: 10px;
+    color: rgb(255, 107, 107);
+  }
+  .button {
+    align-self: flex-end;
+    width: 50%;
+
+    &:disabled {
+      background-color: #a9b5c2;
+
+      &:hover {
+        opacity: 1;
+        cursor: default;
+      }
+    }
+  }
+  /* loading */
+  @keyframes ldio-bzxhjz25vr {
+    0% {
+      transform: translate(1.2px, 8px) scale(0);
+    }
+    25% {
+      transform: translate(1.2px, 8px) scale(0);
+    }
+    50% {
+      transform: translate(1.2px, 8px) scale(1);
+    }
+    75% {
+      transform: translate(8px, 8px) scale(1);
+    }
+    100% {
+      transform: translate(14.8px, 8px) scale(1);
+    }
+  }
+  @keyframes ldio-bzxhjz25vr-r {
+    0% {
+      transform: translate(14.8px, 8px) scale(1);
+    }
+    100% {
+      transform: translate(14.8px, 8px) scale(0);
+    }
+  }
+  .loadingio-spinner-ellipsis-yg3d79y87xd {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+  }
+  .ldio-bzxhjz25vr {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform: translateZ(0) scale(1);
+    backface-visibility: hidden;
+    transform-origin: 0 0;
+
+    div {
+      box-sizing: content-box;
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      transform: translate(8px, 8px) scale(1);
+      background: white;
+      animation: ldio-bzxhjz25vr 1s infinite cubic-bezier(0, 0.5, 0.5, 1);
+
+      &:nth-child(1) {
+        transform: translate(14.8px, 8px) scale(1);
+        animation: ldio-bzxhjz25vr-r 0.25s infinite cubic-bezier(0, 0.5, 0.5, 1);
+      }
+      &:nth-child(2) {
+        animation-delay: -0.25s;
+      }
+      &:nth-child(3) {
+        animation-delay: -0.5s;
+      }
+      &:nth-child(4) {
+        animation-delay: -0.75s;
+      }
+      &:nth-child(5) {
+        animation-delay: -1s;
+      }
+    }
+  }
+}
+</style>

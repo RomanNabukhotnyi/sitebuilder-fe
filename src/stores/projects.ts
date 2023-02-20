@@ -1,19 +1,18 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
-import { computed } from 'vue';
-import { useAuthStore } from './auth';
-import type { Project } from '../interfaces/Project';
-import type { Permission } from '../interfaces/Permission';
-import type { ApiKey } from '../interfaces/ApiKey';
-import { IError } from '@/interfaces/IError';
 
-interface IProject extends Project {
-  permissions: Permission[];
-  apiKey?: ApiKey;
-}
+import type { PreparedProject } from '@/types/projects/PreparedProject';
+import type { ApiCreateProject } from '@/types/projects/ApiCreateProject';
+import type { ApiPermission } from '../types/permissions/ApiPermission';
+import type { ApiKey } from '../types/ApiKey';
+import type { ApiCreatePermission } from '@/types/permissions/ApiCreatePermission';
+import { IError } from '@/types/IError';
+
+import { getProjects, createProject, updateProject, deleteProject } from '@/api/projects';
+import { getPermisiionsByProjectId, createPermission, deletePermission } from '@/api/permissions';
+import { getApiKeyByProjectId, createApiKey, deleteApiKey, refreshApiKey } from '@/api/api-key';
 
 interface State {
-  projects: IProject[];
+  projects: PreparedProject[];
   loadingGetProjects: boolean;
   loadingCreateProject: boolean;
   loadingEditProject: boolean;
@@ -23,6 +22,28 @@ interface State {
   loadingCreateApiKey: boolean;
   loadingRefreshApiKey: boolean;
   loadingDeleteApiKey: boolean;
+}
+
+async function getProjectPermissions(projectId: string | number) {
+	let permissions: ApiPermission[] = [];
+	try {
+		permissions = await getPermisiionsByProjectId(projectId);
+	} catch (error) {
+		permissions = [];
+	}
+
+	return permissions;
+}
+
+async function getProjectApiKey(projectId: string | number) {
+	let apiKey: ApiKey | undefined;
+	try {
+		apiKey = await getApiKeyByProjectId(projectId);
+	} catch (error) {
+		apiKey = undefined;
+	}
+
+	return apiKey;
 }
 
 export const useProjectsStore = defineStore('projects', {
@@ -39,28 +60,29 @@ export const useProjectsStore = defineStore('projects', {
     loadingDeleteApiKey: false,
   }),
   actions: {
+    async createProject(payload: ApiCreateProject): Promise<void> {
+      try {
+        this.loadingCreateProject = true;
+        const project = await createProject(payload);
+        const permissions = await getPermisiionsByProjectId(project.id);
+        this.projects.push({
+          ...project,
+          permissions,
+        });
+      } catch (error) {
+        throw new IError(error);
+      } finally {
+        this.loadingCreateProject = false;
+      }
+    },
     async getProjects(): Promise<void> {
       try {
         this.loadingGetProjects = true;
-        const response = await axios.get('/projects');
-        const projects = response.data.data as Project[];
+        const projects = await getProjects();
         this.projects = await Promise.all(
           projects.map(async (project) => {
-            let permissions: Permission[];
-            let apiKey: ApiKey | undefined;
-            try {
-              permissions = (
-                await axios.get(`/projects/${project.id}/permissions`)
-              ).data.data;
-            } catch (error) {
-              permissions = [];
-            }
-            try {
-              apiKey = (await axios.get(`/projects/${project.id}/api-keys`))
-                .data.data;
-            } catch (error) {
-              apiKey = undefined;
-            }
+            const permissions: ApiPermission[] = await getProjectPermissions(project.id);
+            const apiKey: ApiKey | undefined = await getProjectApiKey(project.id);
             return {
               ...project,
               permissions,
@@ -74,33 +96,12 @@ export const useProjectsStore = defineStore('projects', {
         this.loadingGetProjects = false;
       }
     },
-    async createProject(payload: { name: string }): Promise<void> {
-      try {
-        const authStore = useAuthStore();
-        const user = computed(() => authStore.user);
-        this.loadingCreateProject = true;
-        const response = await axios.post('/projects', payload);
-        this.projects.push({
-          ...response.data.data,
-          permissions: [
-            {
-              email: user.value?.email,
-              permission: 'OWNER',
-            },
-          ],
-        });
-      } catch (error) {
-        throw new IError(error);
-      } finally {
-        this.loadingCreateProject = false;
-      }
-    },
-    async editProject(id: number, payload: { name: string }): Promise<void> {
+    async updateProject(id: number, payload: { name: string }): Promise<void> {
       try {
         this.loadingEditProject = true;
-        const response = await axios.put(`/projects/${id}`, payload);
+        const project = await updateProject(id, payload);
         const index = this.projects.findIndex((project) => project.id === id);
-        Object.assign(this.projects[index], response.data.data);
+        Object.assign(this.projects[index], project);
       } catch (error) {
         throw new IError(error);
       } finally {
@@ -110,7 +111,7 @@ export const useProjectsStore = defineStore('projects', {
     async deleteProject(id: number): Promise<void> {
       try {
         this.loadingDeleteProject = true;
-        await axios.delete(`/projects/${id}`);
+        await deleteProject(id);
         const index = this.projects.findIndex((project) => project.id === id);
         this.projects.splice(index, 1);
       } catch (error) {
@@ -121,16 +122,13 @@ export const useProjectsStore = defineStore('projects', {
     },
     async createPermission(
       id: number,
-      payload: { email: string; permission: string }
+      payload: ApiCreatePermission
     ): Promise<void> {
       try {
         this.loadingAddPermission = true;
-        const response = await axios.post(
-          `/projects/${id}/permissions`,
-          payload
-        );
+        const permission = await createPermission(id, payload);
         const index = this.projects.findIndex((project) => project.id === id);
-        this.projects[index].permissions.push(response.data.data);
+        this.projects[index].permissions.push(permission);
       } catch (error) {
         throw new IError(error);
       } finally {
@@ -140,7 +138,7 @@ export const useProjectsStore = defineStore('projects', {
     async deletePermission(projectId: number, userId: number): Promise<void> {
       try {
         this.loadingDeletePermission = true;
-        await axios.delete(`/projects/${projectId}/permissions/${userId}`);
+        await deletePermission(projectId, userId);
         const projectIndex = this.projects.findIndex(
           (project) => project.id === projectId
         );
@@ -157,11 +155,11 @@ export const useProjectsStore = defineStore('projects', {
     async createApiKey(projectId: number): Promise<void> {
       try {
         this.loadingCreateApiKey = true;
-        const response = await axios.post(`/projects/${projectId}/api-keys`);
+        const apiKey = await createApiKey(projectId);
         const index = this.projects.findIndex(
           (project) => project.id === projectId
         );
-        this.projects[index].apiKey = response.data.data;
+        this.projects[index].apiKey = apiKey;
       } catch (error) {
         throw new IError(error);
       } finally {
@@ -171,13 +169,11 @@ export const useProjectsStore = defineStore('projects', {
     async refreshApiKey(id: number, projectId: number): Promise<void> {
       try {
         this.loadingRefreshApiKey = true;
-        const response = await axios.get(
-          `/projects/${projectId}/api-keys/${id}`
-        );
+        const apiKey = await refreshApiKey(projectId, id);
         const index = this.projects.findIndex(
           (project) => project.id === projectId
         );
-        this.projects[index].apiKey = response.data.data;
+        this.projects[index].apiKey = apiKey;
       } catch (error) {
         throw new IError(error);
       } finally {
@@ -187,7 +183,7 @@ export const useProjectsStore = defineStore('projects', {
     async deleteApiKey(id: number, projectId: number): Promise<void> {
       try {
         this.loadingDeleteApiKey = true;
-        await axios.delete(`/projects/${projectId}/api-keys/${id}`);
+        await deleteApiKey(projectId, id);
         const index = this.projects.findIndex(
           (project) => project.id === projectId
         );
