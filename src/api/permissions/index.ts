@@ -1,4 +1,4 @@
-import type { Permission } from '@/types/permissions/ApiPermission';
+import type { ApiPermission } from '@/types/permissions/ApiPermission';
 import type { ApiCreatePermission } from '@/types/permissions/ApiCreatePermission';
 
 import { api } from '@/services/api-service';
@@ -6,11 +6,11 @@ import { api } from '@/services/api-service';
 export const createPermission = (
   projectId: number | string,
   payload: ApiCreatePermission
-): Promise<Permission> => api.post(`/projects/${projectId}/permissions`, payload);
+): Promise<ApiPermission> => api.post(`/projects/${projectId}/permissions`, payload);
 
 export const getPermisiionsByProjectId = (
   projectId: number | string
-): Promise<Permission[]> => api.get(`/projects/${projectId}/permissions`);
+): Promise<ApiPermission[]> => api.get(`/projects/${projectId}/permissions`);
 
 export const deletePermission = (
   projectId: number | string,
