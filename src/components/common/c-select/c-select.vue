@@ -1,7 +1,7 @@
 <template>
   <div
     ref="el"
-    class="c-select select"
+    class="c-select"
   >
     <div
       class="selected"
@@ -86,12 +86,10 @@ windowEventListener('click', hideOptions);
 
 <style lang="scss">
 .c-select {
-  &.select {
-    color: #fff;
-    cursor: pointer;
-    border-radius: 5px;
-    position: relative;
-  }
+  color: #fff;
+  cursor: pointer;
+  border-radius: 5px;
+  position: relative;
 
   .selected {
     padding: 10px;
@@ -147,39 +145,39 @@ windowEventListener('click', hideOptions);
 }
 
 .chevron {
-    display: inline-block;
-    width: 14px;
-    height: 11px;
+  display: inline-block;
+  width: 14px;
+  height: 11px;
 
-    &__group {
-      transform: translateY(0);
-      transition: transform 0.1s linear;
-    }
-
-    &__box--left,
-    &__box--right {
-      transform: rotate(0) translateY(0);
-      transition: transform 0.1s linear;
-    }
-
-    &__box--left {
-      transform-origin: 1px 1px;
-    }
-
-    &__box--right {
-      transform-origin: 7px 1px;
-    }
-
-    &--flip &__box--left {
-      transform: rotate(-90deg) translateY(0);
-    }
-
-    &--flip &__box--right {
-      transform: rotate(90deg) translateY(0);
-    }
-
-    &--flip &__group {
-      transform: translateY(3px);
-    }
+  &__group {
+    transform: translateY(0);
+    transition: transform 0.1s linear;
   }
+
+  &__box--left,
+  &__box--right {
+    transform: rotate(0) translateY(0);
+    transition: transform 0.1s linear;
+  }
+
+  &__box--left {
+    transform-origin: 1px 1px;
+  }
+
+  &__box--right {
+    transform-origin: 7px 1px;
+  }
+
+  &--flip &__box--left {
+    transform: rotate(-90deg) translateY(0);
+  }
+
+  &--flip &__box--right {
+    transform: rotate(90deg) translateY(0);
+  }
+
+  &--flip &__group {
+    transform: translateY(3px);
+  }
+}
 </style>

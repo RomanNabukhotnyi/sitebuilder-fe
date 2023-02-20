@@ -1,7 +1,7 @@
 <template>
   <input
     v-model="value"
-    class="c-input input"
+    class="c-input"
     type="text"
   >
 </template>
@@ -29,17 +29,15 @@ const value = computed({
 
 <style lang="scss">
 .c-input {
-  &.input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 2px;
-    border: 0;
-    background-color: #eeeeee;
-    height: 40px;
-    font-size: 15px;
-    color: #554d56;
-    caret-color: #419bf9;
-    outline-color: #419bf9;
-  }
+  width: 100%;
+  padding: 10px;
+  border-radius: 2px;
+  border: 0;
+  background-color: #eeeeee;
+  height: 40px;
+  font-size: 15px;
+  color: #554d56;
+  caret-color: #419bf9;
+  outline-color: #419bf9;
 }
 </style>

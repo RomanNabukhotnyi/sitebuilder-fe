@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="p-projects">
     <CModal v-model:show="dialogCreateVisible">
       <UProjectCreateForm
         :loading-create-project="loadingCreateProject"
@@ -141,10 +141,7 @@ const editProject = async (project: { id: number; name: string }) => {
 const deleteProject = async (id: number) => {
   await projectsStore.deleteProject(id);
 };
-const addPermission = async (
-  id: number,
-  payload: ApiCreatePermission
-) => {
+const addPermission = async (id: number, payload: ApiCreatePermission) => {
   await projectsStore.createPermission(id, payload);
 };
 const deletePermission = async (projectId: number, userId: number) => {
@@ -165,16 +162,18 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-.panel {
-  width: 100%;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  top: 0;
-  height: 76px;
-}
-.button__create {
-  margin: 0 36px 0 auto;
+<style lang="scss">
+.p-projects {
+  .panel {
+    width: 100%;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    top: 0;
+    height: 76px;
+  }
+  .button__create {
+    margin: 0 36px 0 auto;
+  }
 }
 </style>

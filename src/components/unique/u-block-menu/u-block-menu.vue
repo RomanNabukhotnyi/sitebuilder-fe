@@ -1,5 +1,5 @@
 <template>
-  <div class="blockMenu">
+  <div class="u-block-menu">
     <div
       class="menuAction moveAction"
       @click="moveLeftBlock"
@@ -101,8 +101,19 @@ const deleteBlock = () => {
 };
 </script>
 
-<style scoped>
-.blockMenu {
+<style lang="scss">
+.block:hover .u-block-menu {
+  display: flex;
+}
+.block:last-child .moveAction:nth-child(2) {
+  cursor: default;
+  color: #bcbcbc;
+}
+.block:first-child .moveAction:first-child svg {
+  cursor: default;
+  color: #bcbcbc;
+}
+.u-block-menu {
   position: absolute;
   display: none;
   top: calc(100% - 36px);
@@ -113,39 +124,33 @@ const deleteBlock = () => {
   border-radius: 4px;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 10px 0 rgba(0, 0, 0, 0.08),
     0 1px 20px 0 rgba(0, 0, 0, 0.08);
-}
-.block:hover .blockMenu {
-  display: flex;
-}
-.menuAction {
-  cursor: pointer;
-  padding-right: 3px;
-  padding-left: 3px;
-}
-.menuAction:hover {
-  color: #116dff;
-}
-.menuAction {
-  display: flex;
-  align-items: center;
-}
-.menuAction:first-child {
-  padding-left: 6px;
-  padding-right: 3px;
-}
-.moveAction svg {
-  transform: rotate(-90deg);
-}
-.block:last-child .moveAction:nth-child(2) {
-  cursor: default;
-  color: #bcbcbc;
-}
-.block:first-child .moveAction:first-child svg {
-  cursor: default;
-  color: #bcbcbc;
-}
-.menuAction:last-child {
-  padding-left: 3px;
-  padding-right: 6px;
+
+  .menuAction {
+    cursor: pointer;
+    padding-right: 3px;
+    padding-left: 3px;
+    display: flex;
+    align-items: center;
+
+    &.moveAction {
+      svg {
+        transform: rotate(-90deg);
+      }
+    }
+
+    &:hover {
+      color: #116dff;
+    }
+
+    &:first-child {
+      padding-left: 6px;
+      padding-right: 3px;
+    }
+
+    &:last-child {
+      padding-left: 3px;
+      padding-right: 6px;
+    }
+  }
 }
 </style>

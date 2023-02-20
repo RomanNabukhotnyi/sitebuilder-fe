@@ -1,5 +1,5 @@
 <template>
-  <div class="form">
+  <div class="u-project-api-key">
     <h4>Api key</h4>
     <div class="apiKeys">
       <Transition name="list">
@@ -114,144 +114,148 @@ windowEventListener('keyup', (event) => {
 });
 </script>
 
-<style scoped>
-.form {
+<style lang="scss">
+.u-project-api-key {
   display: flex;
   flex-direction: column;
   min-width: 300px;
-}
-.apiKeys {
-  margin: 10px 0;
-}
-.apiKey {
-  display: flex;
-  align-items: center;
-  margin: 5px 0;
-  justify-content: space-between;
-}
-.loadingApiKey {
-  opacity: 0.5;
-}
-.roleAndActions {
-  display: flex;
-  align-items: center;
-}
-.actions {
-  display: flex;
-}
-.button__delete {
-  margin: 0 0 0 5px;
-  background-color: #ff4747;
-}
-.button__refresh {
-  background-color: #ffc038;
-}
-.button__refresh:disabled {
-  background-color: #a9b5c2;
-}
-.button__delete:disabled {
-  background-color: #a9b5c2;
-}
-.field {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 15px 0;
-}
-.button {
-  width: 20%;
-}
-.button:disabled {
-  background-color: #a9b5c2;
-}
-.button:disabled:hover {
-  opacity: 1;
-  cursor: default;
-}
-/* animations */
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: scale(0.3);
-}
-.createButton-enter-active,
-.createButton-leave-active {
-  transition: all 0.5s ease;
-}
-.createButton-enter-from,
-.createButton-leave-to {
-  opacity: 0;
-  transform: scale(0.3);
-}
-/* loading */
-@keyframes ldio-bzxhjz25vr {
-  0% {
-    transform: translate(1.2px, 8px) scale(0);
+
+  .apiKeys {
+    margin: 10px 0;
   }
-  25% {
-    transform: translate(1.2px, 8px) scale(0);
+  .apiKey {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    justify-content: space-between;
   }
-  50% {
-    transform: translate(1.2px, 8px) scale(1);
+  .loadingApiKey {
+    opacity: 0.5;
   }
-  75% {
-    transform: translate(8px, 8px) scale(1);
+  .roleAndActions {
+    display: flex;
+    align-items: center;
   }
-  100% {
-    transform: translate(14.8px, 8px) scale(1);
+  .actions {
+    display: flex;
   }
-}
-@keyframes ldio-bzxhjz25vr-r {
-  0% {
-    transform: translate(14.8px, 8px) scale(1);
+  .button__delete {
+    margin: 0 0 0 5px;
+    background-color: #ff4747;
+
+    &:disabled {
+      background-color: #a9b5c2;
+    }
   }
-  100% {
-    transform: translate(14.8px, 8px) scale(0);
+  .button__refresh {
+    background-color: #ffc038;
+    &:disabled {
+      background-color: #a9b5c2;
+    }
   }
-}
-.ldio-bzxhjz25vr div {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  transform: translate(8px, 8px) scale(1);
-  background: white;
-  animation: ldio-bzxhjz25vr 1s infinite cubic-bezier(0, 0.5, 0.5, 1);
-}
-.ldio-bzxhjz25vr div:nth-child(1) {
-  transform: translate(14.8px, 8px) scale(1);
-  animation: ldio-bzxhjz25vr-r 0.25s infinite cubic-bezier(0, 0.5, 0.5, 1);
-}
-.ldio-bzxhjz25vr div:nth-child(2) {
-  animation-delay: -0.25s;
-}
-.ldio-bzxhjz25vr div:nth-child(3) {
-  animation-delay: -0.5s;
-}
-.ldio-bzxhjz25vr div:nth-child(4) {
-  animation-delay: -0.75s;
-}
-.ldio-bzxhjz25vr div:nth-child(5) {
-  animation-delay: -1s;
-}
-.loadingio-spinner-ellipsis-yg3d79y87xd {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-}
-.ldio-bzxhjz25vr {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform: translateZ(0) scale(1);
-  backface-visibility: hidden;
-  transform-origin: 0 0;
-}
-.ldio-bzxhjz25vr div {
-  box-sizing: content-box;
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+  }
+  .button {
+    width: 20%;
+
+    &:disabled {
+      background-color: #a9b5c2;
+
+      &:hover {
+        opacity: 1;
+        cursor: default;
+      }
+    }
+  }
+  /* animations */
+  .list-enter-active,
+  .list-leave-active {
+    transition: all 0.5s ease;
+  }
+  .list-enter-from,
+  .list-leave-to {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  .createButton-enter-active,
+  .createButton-leave-active {
+    transition: all 0.5s ease;
+  }
+  .createButton-enter-from,
+  .createButton-leave-to {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  /* loading */
+  @keyframes ldio-bzxhjz25vr {
+    0% {
+      transform: translate(1.2px, 8px) scale(0);
+    }
+    25% {
+      transform: translate(1.2px, 8px) scale(0);
+    }
+    50% {
+      transform: translate(1.2px, 8px) scale(1);
+    }
+    75% {
+      transform: translate(8px, 8px) scale(1);
+    }
+    100% {
+      transform: translate(14.8px, 8px) scale(1);
+    }
+  }
+  @keyframes ldio-bzxhjz25vr-r {
+    0% {
+      transform: translate(14.8px, 8px) scale(1);
+    }
+    100% {
+      transform: translate(14.8px, 8px) scale(0);
+    }
+  }
+  .loadingio-spinner-ellipsis-yg3d79y87xd {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+  }
+  .ldio-bzxhjz25vr {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform: translateZ(0) scale(1);
+    backface-visibility: hidden;
+    transform-origin: 0 0;
+
+    div {
+      box-sizing: content-box;
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      transform: translate(8px, 8px) scale(1);
+      background: white;
+      animation: ldio-bzxhjz25vr 1s infinite cubic-bezier(0, 0.5, 0.5, 1);
+
+      &:nth-child(1) {
+        transform: translate(14.8px, 8px) scale(1);
+        animation: ldio-bzxhjz25vr-r 0.25s infinite cubic-bezier(0, 0.5, 0.5, 1);
+      }
+      &:nth-child(2) {
+        animation-delay: -0.25s;
+      }
+      &:nth-child(3) {
+        animation-delay: -0.5s;
+      }
+      &:nth-child(4) {
+        animation-delay: -0.75s;
+      }
+      &:nth-child(5) {
+        animation-delay: -1s;
+      }
+    }
+  }
 }
 </style>

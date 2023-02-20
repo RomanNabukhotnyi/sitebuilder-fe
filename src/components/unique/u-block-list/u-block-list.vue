@@ -1,5 +1,5 @@
 <template>
-  <div class="blocks">
+  <div class="u-block-list">
     <TransitionGroup name="blockList">
       <div
         v-for="block in mySlot.blocks"
@@ -85,51 +85,54 @@ const deleteBlock = (slotId: number, blockId: number) => {
 };
 </script>
 
-<style scoped>
-.blocks {
+<style lang="scss">
+.u-block-list {
   width: 100%;
   display: flex;
-}
-.blocks .block {
-  min-height: 100px;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
-  position: relative;
-}
-.deleteBlock {
-  opacity: 0.5;
-}
-.blocks .type__text {
-  height: 100%;
-  display: grid;
-  text-align: center;
-  align-items: center;
-  padding: 5px;
-}
-.blocks .type__image {
-  height: 100%;
-}
-.blocks .type__image img {
-  width: 100%;
-  height: 100%;
-}
-.block:hover {
-  border: 1px solid #419bf9;
-}
-/* animations */
-.blockList-move,
-.blockList-enter-active,
-.blockList-leave-active {
-  transition: all 0.5s ease;
-}
-.blockList-enter-from,
-.blockList-leave-to {
-  opacity: 0;
-  transform: scale(0.3);
-}
-.blockList-leave-active {
-  position: absolute;
+
+  .block {
+    min-height: 100px;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    position: relative;
+
+    &:hover {
+      border: 1px solid #419bf9;
+    }
+  }
+  .deleteBlock {
+    opacity: 0.5;
+  }
+  .type__text {
+    height: 100%;
+    display: grid;
+    text-align: center;
+    align-items: center;
+    padding: 5px;
+  }
+  .type__image {
+    height: 100%;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  /* animations */
+  .blockList-move,
+  .blockList-enter-active,
+  .blockList-leave-active {
+    transition: all 0.5s ease;
+  }
+  .blockList-enter-from,
+  .blockList-leave-to {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  .blockList-leave-active {
+    position: absolute;
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="form">
+  <div class="u-block-edit-form">
     <h4>Edit block</h4>
     <div v-if="block.type === 'TEXT'">
       <div class="field">
@@ -221,8 +221,8 @@ const emit = defineEmits<{
     slotId: number,
     blockId: number,
     block: ApiUpdateBlock
-    ): void;
-  }>();
+  ): void;
+}>();
 
 const { windowEventListener } = useEventListener();
 const {
@@ -234,10 +234,13 @@ const {
   cssWidthOrHeight,
   optional,
 } = useValidators();
-console.log(props.block.content)
+console.log(props.block.content);
 const formText = useForm({
   text: {
-    value: props.block.type === 'TEXT' ? (props.block.content as TextContent).text : '',
+    value:
+      props.block.type === 'TEXT'
+        ? (props.block.content as TextContent).text
+        : '',
     validators: {
       required,
     },
@@ -270,10 +273,13 @@ const formText = useForm({
     },
   },
 });
-console.log(props.block)
+console.log(props.block);
 const formImage = useForm({
   url: {
-    value: props.block.type === 'IMAGE' ? (props.block.content as ImageContent).url : '',
+    value:
+      props.block.type === 'IMAGE'
+        ? (props.block.content as ImageContent).url
+        : '',
     validators: {
       required,
       url,
@@ -361,100 +367,103 @@ windowEventListener('keyup', (event) => {
 });
 </script>
 
-<style scoped>
-.form {
+<style lang="scss">
+.u-block-edit-form {
   display: flex;
   flex-direction: column;
-}
-.select,
-.field {
-  margin: 10px 0 0;
-}
-.textarea,
-.input {
-  width: 100%;
-}
-.error {
-  font-size: 10px;
-  color: rgb(255, 107, 107);
-}
-.button {
-  margin: 15px 0 0;
-  align-self: flex-end;
-  width: 50%;
-}
-.button:disabled {
-  background-color: #a9b5c2;
-}
-.button:disabled:hover {
-  opacity: 1;
-  cursor: default;
-}
-/* loading */
-@keyframes ldio-bzxhjz25vr {
-  0% {
-    transform: translate(1.2px, 8px) scale(0);
+
+  .select,
+  .field {
+    margin: 10px 0 0;
   }
-  25% {
-    transform: translate(1.2px, 8px) scale(0);
+  .textarea,
+  .input {
+    width: 100%;
   }
-  50% {
-    transform: translate(1.2px, 8px) scale(1);
+  .error {
+    font-size: 10px;
+    color: rgb(255, 107, 107);
   }
-  75% {
-    transform: translate(8px, 8px) scale(1);
+  .button {
+    margin: 15px 0 0;
+    align-self: flex-end;
+    width: 50%;
+
+    &:disabled {
+      background-color: #a9b5c2;
+
+      &:hover {
+        opacity: 1;
+        cursor: default;
+      }
+    }
   }
-  100% {
-    transform: translate(14.8px, 8px) scale(1);
+  /* loading */
+  @keyframes ldio-bzxhjz25vr {
+    0% {
+      transform: translate(1.2px, 8px) scale(0);
+    }
+    25% {
+      transform: translate(1.2px, 8px) scale(0);
+    }
+    50% {
+      transform: translate(1.2px, 8px) scale(1);
+    }
+    75% {
+      transform: translate(8px, 8px) scale(1);
+    }
+    100% {
+      transform: translate(14.8px, 8px) scale(1);
+    }
   }
-}
-@keyframes ldio-bzxhjz25vr-r {
-  0% {
-    transform: translate(14.8px, 8px) scale(1);
+  @keyframes ldio-bzxhjz25vr-r {
+    0% {
+      transform: translate(14.8px, 8px) scale(1);
+    }
+    100% {
+      transform: translate(14.8px, 8px) scale(0);
+    }
   }
-  100% {
-    transform: translate(14.8px, 8px) scale(0);
+  .loadingio-spinner-ellipsis-yg3d79y87xd {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
   }
-}
-.ldio-bzxhjz25vr div {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  transform: translate(8px, 8px) scale(1);
-  background: white;
-  animation: ldio-bzxhjz25vr 1s infinite cubic-bezier(0, 0.5, 0.5, 1);
-}
-.ldio-bzxhjz25vr div:nth-child(1) {
-  transform: translate(14.8px, 8px) scale(1);
-  animation: ldio-bzxhjz25vr-r 0.25s infinite cubic-bezier(0, 0.5, 0.5, 1);
-}
-.ldio-bzxhjz25vr div:nth-child(2) {
-  animation-delay: -0.25s;
-}
-.ldio-bzxhjz25vr div:nth-child(3) {
-  animation-delay: -0.5s;
-}
-.ldio-bzxhjz25vr div:nth-child(4) {
-  animation-delay: -0.75s;
-}
-.ldio-bzxhjz25vr div:nth-child(5) {
-  animation-delay: -1s;
-}
-.loadingio-spinner-ellipsis-yg3d79y87xd {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-}
-.ldio-bzxhjz25vr {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform: translateZ(0) scale(1);
-  backface-visibility: hidden;
-  transform-origin: 0 0;
-}
-.ldio-bzxhjz25vr div {
-  box-sizing: content-box;
+  .ldio-bzxhjz25vr {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform: translateZ(0) scale(1);
+    backface-visibility: hidden;
+    transform-origin: 0 0;
+
+    div {
+      box-sizing: content-box;
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      transform: translate(8px, 8px) scale(1);
+      background: white;
+      animation: ldio-bzxhjz25vr 1s infinite cubic-bezier(0, 0.5, 0.5, 1);
+
+      &:nth-child(1) {
+        transform: translate(14.8px, 8px) scale(1);
+        animation: ldio-bzxhjz25vr-r 0.25s infinite cubic-bezier(0, 0.5, 0.5, 1);
+      }
+      &:nth-child(2) {
+        animation-delay: -0.25s;
+      }
+      &:nth-child(3) {
+        animation-delay: -0.5s;
+      }
+      &:nth-child(4) {
+        animation-delay: -0.75s;
+      }
+      &:nth-child(5) {
+        animation-delay: -1s;
+      }
+    }
+  }
 }
 </style>

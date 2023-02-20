@@ -1,5 +1,5 @@
 <template>
-  <div class="panel__search">
+  <div class="c-search">
     <svg
       width="16"
       height="16"
@@ -31,8 +31,8 @@ const filter = () => {
 };
 </script>
 
-<style scoped>
-.panel__search {
+<style lang="scss">
+.c-search {
   margin: 0 0 0 36px;
   width: 140px;
   height: 28px;
@@ -42,22 +42,22 @@ const filter = () => {
   align-items: center;
   justify-content: center;
   cursor: text;
-}
 
-.panel__search svg {
-  top: 50%;
-  transform: translateY(-50%);
-  left: 12px;
-  position: absolute;
-}
+  svg {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 12px;
+    position: absolute;
+  }
 
-.panel__search input {
-  width: 100%;
-  height: 100%;
-  font-size: 15px;
-  padding: 0 5px 0 34px;
-  color: #554d56;
-  background-color: #eeeeee;
-  caret-color: #419bf9;
+  input {
+    width: 100%;
+    height: 100%;
+    font-size: 15px;
+    padding: 0 5px 0 34px;
+    color: #554d56;
+    background-color: #eeeeee;
+    caret-color: #419bf9;
+  }
 }
 </style>

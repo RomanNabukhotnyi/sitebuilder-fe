@@ -24,6 +24,28 @@ interface State {
   loadingDeleteApiKey: boolean;
 }
 
+async function getProjectPermissions(projectId: string | number) {
+	let permissions: ApiPermission[] = [];
+	try {
+		permissions = await getPermisiionsByProjectId(projectId);
+	} catch (error) {
+		permissions = [];
+	}
+
+	return permissions;
+}
+
+async function getProjectApiKey(projectId: string | number) {
+	let apiKey: ApiKey | undefined;
+	try {
+		apiKey = await getApiKeyByProjectId(projectId);
+	} catch (error) {
+		apiKey = undefined;
+	}
+
+	return apiKey;
+}
+
 export const useProjectsStore = defineStore('projects', {
   state: (): State => ({
     projects: [],
@@ -59,18 +81,8 @@ export const useProjectsStore = defineStore('projects', {
         const projects = await getProjects();
         this.projects = await Promise.all(
           projects.map(async (project) => {
-            let permissions: ApiPermission[];
-            let apiKey: ApiKey | undefined;
-            try {
-              permissions = await getPermisiionsByProjectId(project.id);
-            } catch (error) {
-              permissions = [];
-            }
-            try {
-              apiKey = await getApiKeyByProjectId(project.id);
-            } catch (error) {
-              apiKey = undefined;
-            }
+            const permissions: ApiPermission[] = await getProjectPermissions(project.id);
+            const apiKey: ApiKey | undefined = await getProjectApiKey(project.id);
             return {
               ...project,
               permissions,

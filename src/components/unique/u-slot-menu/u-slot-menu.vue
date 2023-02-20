@@ -1,5 +1,5 @@
 <template>
-  <div class="slotMenu">
+  <div class="u-slot-menu">
     <div
       class="menuAction moveAction"
       @click="moveUpSlot"
@@ -93,36 +93,9 @@ const deleteSlot = () => {
 };
 </script>
 
-<style scoped>
-.slotMenu {
-  position: absolute;
-  left: 100%;
-  display: none;
-  width: 36px;
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 10px 0 rgba(0, 0, 0, 0.08),
-    0 1px 20px 0 rgba(0, 0, 0, 0.08);
-}
-.slot:hover .slotMenu {
+<style lang="scss">
+.slot:hover .u-slot-menu {
   display: block;
-}
-.menuAction {
-  cursor: pointer;
-  padding-top: 3px;
-  padding-bottom: 3px;
-}
-.menuAction:hover {
-  color: #116dff;
-}
-.menuAction {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-.menuAction:first-child {
-  padding-top: 6px;
-  padding-bottom: 3px;
 }
 .slot:last-child .moveAction:nth-child(2) {
   cursor: default;
@@ -132,15 +105,44 @@ const deleteSlot = () => {
   cursor: default;
   color: #bcbcbc;
 }
-.menuAction:last-child {
-  padding-top: 3px;
-  padding-bottom: 6px;
-}
-.disabled {
-  cursor: default;
-  color: #bcbcbc;
-  display: flex;
-  justify-content: center;
-  width: 100%;
+.u-slot-menu {
+  position: absolute;
+  left: 100%;
+  display: none;
+  width: 36px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 10px 0 rgba(0, 0, 0, 0.08),
+    0 1px 20px 0 rgba(0, 0, 0, 0.08);
+
+  .menuAction {
+    cursor: pointer;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    &:hover {
+      color: #116dff;
+    }
+
+    &:first-child {
+      padding-top: 6px;
+      padding-bottom: 3px;
+    }
+
+    &:last-child {
+      padding-top: 3px;
+      padding-bottom: 6px;
+    }
+  }
+  .disabled {
+    cursor: default;
+    color: #bcbcbc;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
 }
 </style>

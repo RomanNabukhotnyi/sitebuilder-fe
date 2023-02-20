@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="p-slots">
     <CModal v-model:show="dialogCreateSlotVisible">
       <USlotCreateForm
         :loading-create-slot="loadingCreateSlot"
@@ -209,18 +209,20 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-.page {
-  width: 90%;
-  position: relative;
-  margin: 15px auto;
-  outline: 1px solid #bcb5b9;
-}
-.createSlot {
-  border: 1px dashed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100px;
+<style lang="scss">
+.p-slots {
+  .page {
+    width: 90%;
+    position: relative;
+    margin: 15px auto;
+    outline: 1px solid #bcb5b9;
+  }
+  .createSlot {
+    border: 1px dashed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+  }
 }
 </style>
