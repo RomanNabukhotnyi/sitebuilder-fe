@@ -1,6 +1,7 @@
 .c-button {
+  height: 40px;
   position: relative;
-  display: flex;
+  display: inline-flex;
   background-color: #419bf9;
   color: #fff;
   min-height: 30px;
@@ -8,10 +9,17 @@
   font-size: 15px;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   padding: 5px 10px;
+  cursor: pointer;
 
   &:hover {
-    opacity: 0.9;
+    &:not(:disabled) {
+      opacity: 0.9;
+    }
+  }
+
+  &:disabled {
+    background-color: #a9b5c2;
+    cursor: not-allowed;
   }
 }

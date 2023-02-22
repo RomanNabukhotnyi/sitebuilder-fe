@@ -40,23 +40,21 @@
               </div>
               <div class="actions">
                 <CButton
+                    label="Edit"
                   class="button__edit"
                   @click.stop="
                     !(loadingDeletePage && element.id === deleteId) &&
                       showEditDialog(element)
                   "
-                >
-                  Edit
-                </CButton>
+                />
                 <CButton
-                  class="button__delete"
-                  @click.stop="
-                    !(loadingDeletePage && element.id === deleteId) &&
-                      deletePage(element.id)
-                  "
-                >
-                  Delete
-                </CButton>
+                        label="Delete"
+                      class="button__delete"
+                      @click.stop="
+                        !(loadingDeletePage && element.id === deleteId) &&
+                          deletePage(element.id)
+                      "
+                />
               </div>
             </div>
           </div>

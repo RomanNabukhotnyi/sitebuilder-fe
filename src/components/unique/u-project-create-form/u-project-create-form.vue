@@ -1,45 +1,30 @@
 <template>
-  <div class="u-project-create-form">
-    <h4>Create project</h4>
-    <div class="field">
-      <CInput
-        v-model="form.name.value"
-        v-focus
-        class="input"
-        type="text"
-        placeholder="Name"
-      />
-      <div v-if="!form.name.errors.required">
-        <p
-          v-if="form.name.errors.exist"
-          class="error"
-        >
-          A project with that name exist
-        </p>
-      </div>
-    </div>
-    <CButton
-      class="button"
-      :disabled="!form.valid || loadingCreateProject"
-      @click="createProject"
-    >
-      <p v-if="!loadingCreateProject">
-        Create
-      </p>
-      <div
-        v-else
-        class="loadingio-spinner-ellipsis-yg3d79y87xd"
-      >
-        <div class="ldio-bzxhjz25vr">
-          <div />
-          <div />
-          <div />
-          <div />
-          <div />
+    <div class="u-project-create-form">
+        <h4>Create project</h4>
+        <div class="field">
+            <CInput
+                v-model="form.name.value"
+                v-focus
+                class="input"
+                placeholder="Name"
+            />
+            <div v-if="!form.name.errors.required">
+                <p
+                    v-if="form.name.errors.exist"
+                    class="error"
+                >
+                    A project with that name exist
+                </p>
+            </div>
         </div>
-      </div>
-    </CButton>
-  </div>
+        <CButton
+            :is-loading="loadingCreateProject"
+            :is-disabled="!form.valid || loadingCreateProject"
+            label="Create"
+            class="button"
+            @click="createProject"
+        />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -53,37 +38,37 @@ import { useEventListener } from '@/use/use-event-listener';
 import { useForm } from '@/use/form';
 
 const props = defineProps<{
-  projects: ApiProject[];
-  loadingCreateProject: boolean;
+    projects: ApiProject[];
+    loadingCreateProject: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: 'create', project: Pick<ApiProject, 'name'>): void;
+    (e: 'create', project: Pick<ApiProject, 'name'>): void;
 }>();
 
 const { windowEventListener } = useEventListener();
 const { required, exist } = useValidators();
 const form = useForm({
-  name: {
-    value: '',
-    validators: {
-      required,
-      exist: exist(props.projects.map((p) => p.name)),
+    name: {
+        value: '',
+        validators: {
+            required,
+            exist: exist(props.projects.map((p) => p.name)),
+        },
     },
-  },
 });
 
 const createProject = () => {
-  emit('create', {
-    name: form.name.value,
-  });
+    emit('create', {
+        name: form.name.value,
+    });
 };
 
 windowEventListener('keyup', (event) => {
-  if (event.code === 'Enter' && form.valid) {
-    createProject();
-  }
+    if (event.code === 'Enter' && form.valid) {
+        createProject();
+    }
 });
 </script>
 
-<style lang="scss" src="./u-project-create-form.scss" />
+<style lang="scss" src="./u-project-create-form.scss"/>
