@@ -1,14 +1,21 @@
 import axios from 'axios';
+
 import router from '../router';
+import { ROUTE_NAMES } from '@/constants/route-names-constants';
 
 import { refresh } from '@/api/auth';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-  },
 });
+
+api.interceptors.request.use((request)=> {
+  if (request.headers) {
+    const storageToken = request.url === '/auth/refresh' ? localStorage.getItem('refreshToken') : localStorage.getItem('accessToken');
+    request.headers.Authorization = `Bearer ${storageToken}` || null;
+  }
+  return request;
+})
 
 api.interceptors.response.use(
   (response) => {
@@ -22,19 +29,15 @@ api.interceptors.response.use(
     ) {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      router.push('/login');
+      router.push({ name: ROUTE_NAMES.LOGIN });
       return Promise.reject(error);
     } else if (error.response && error.response.status === 401) {
       const { accessToken } = await refresh();
-      localStorage.removeItem('accessToken');
       localStorage.setItem('accessToken', accessToken);
-      axios.defaults.headers.common[
-        'Authorization'
-      ] = `Bearer ${localStorage.getItem('accessToken')}`;
       return axios({
         ...error.config,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${accessToken}` || null,
         },
       });
     } else {

@@ -5,7 +5,6 @@ import type { ApiLogin } from '@/types/auth/ApiLogin';
 import { IError } from '@/types/IError';
 import type { ApiUser } from '@/types/users/ApiUser';
 
-import { api } from '@/services/api-service';
 import { signUp, login } from '@/api/auth';
 import { getUser } from '@/api/user';
 
@@ -39,9 +38,6 @@ export const useAuthStore = defineStore('auth', {
         const { accessToken, refreshToken } = await login(payload);
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
-        api.defaults.headers.common[
-          'Authorization'
-        ] = `Bearer ${localStorage.getItem('accessToken')}`;
         await this.getUser();
       } catch (error) {
         throw new IError(error);
