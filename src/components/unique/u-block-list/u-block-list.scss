@@ -32,18 +32,4 @@
       height: 100%;
     }
   }
-  /* animations */
-  .blockList-move,
-  .blockList-enter-active,
-  .blockList-leave-active {
-    transition: all 0.5s ease;
-  }
-  .blockList-enter-from,
-  .blockList-leave-to {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  .blockList-leave-active {
-    position: absolute;
-  }
 }

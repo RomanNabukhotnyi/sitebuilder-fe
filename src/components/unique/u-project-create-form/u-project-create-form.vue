@@ -1,7 +1,10 @@
 <template>
   <div class="u-project-create-form">
     <h4>Create project</h4>
-    <div class="field">
+    <CField
+      :errors="form.name.errors"
+      class="field"
+    >
       <CInput
         v-model="form.name.value"
         v-focus
@@ -9,42 +12,21 @@
         type="text"
         placeholder="Name"
       />
-      <div v-if="!form.name.errors.required">
-        <p
-          v-if="form.name.errors.exist"
-          class="error"
-        >
-          A project with that name exist
-        </p>
-      </div>
-    </div>
+    </CField>
     <CButton
+      :is-loading="loadingCreateProject"
+      :is-disabled="!form.valid || loadingCreateProject"
+      label="Create"
       class="button"
-      :disabled="!form.valid || loadingCreateProject"
       @click="createProject"
-    >
-      <p v-if="!loadingCreateProject">
-        Create
-      </p>
-      <div
-        v-else
-        class="loadingio-spinner-ellipsis-yg3d79y87xd"
-      >
-        <div class="ldio-bzxhjz25vr">
-          <div />
-          <div />
-          <div />
-          <div />
-          <div />
-        </div>
-      </div>
-    </CButton>
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { ApiProject } from '@/types/projects/ApiProject';
 
+import CField from '@/components/common/c-field';
 import CButton from '@/components/common/c-button';
 import CInput from '@/components/common/c-input';
 

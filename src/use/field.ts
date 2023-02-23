@@ -1,25 +1,33 @@
-import { ref, reactive, watch } from 'vue';
+import { ref, watch } from 'vue';
+
+import type { ValidatorResult } from '@/types/ValidatorResult';
 
 export const useField = (field: {
   value: string;
-  validators?: { [key: string]: (value: string) => boolean };
+  validators?: { [key: string]: (value: string) => ValidatorResult };
 }) => {
   const valid = ref(true);
   const value = ref(field.value);
-  const errors = reactive<{ [key: string]: boolean }>({});
+  const errors = ref<Omit<ValidatorResult, 'isValid'>[]>([]);
   const isOptional = !!Object.keys(field.validators ?? {}).find(
     (k) => k === 'optional'
   );
 
   const reassign = (value: string): void => {
     valid.value = true;
-    Object.keys(field.validators || {}).map((name) => {
-      const isValid = field.validators ? field.validators[name](value) : true;
-      errors[name] = !isValid;
-      if (!isValid) {
-        valid.value = false || isOptional;
+    errors.value = [];
+    Object.keys(field.validators || {}).map((validatorName) => {
+      if (field.validators) {
+        const { name, isValid, message } = field.validators[validatorName](value);
+        if (!isValid && name !== 'optional') {
+          errors.value.push({
+            name,
+            message,
+          });
+          valid.value = false || isOptional;
+        }
       }
-    });
+      });
   };
 
   watch(value, reassign);

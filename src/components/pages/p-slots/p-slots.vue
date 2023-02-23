@@ -39,9 +39,10 @@
         @delete-block="deleteBlock"
       />
       <div class="createSlot">
-        <CButton @click="showCreateSlotDialog">
-          Create Slot
-        </CButton>
+        <CButton
+          label="Create Slot"
+          @click="showCreateSlotDialog"
+        />
       </div>
     </div>
   </div>

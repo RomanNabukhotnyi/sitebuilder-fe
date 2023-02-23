@@ -4,7 +4,7 @@
       v-show="!loadingGetProjects && projects.length !== 0"
       class="projectsContainer"
     >
-      <TransitionGroup name="list">
+      <CTransitionList>
         <div
           v-for="project in projects"
           :key="project.id"
@@ -39,17 +39,7 @@
               class="btnProjectMenu"
               @click.stop="showMenu(project.id)"
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="#554d56"
-                  fill-rule="evenodd"
-                  d="M11.437 7.5a2 2 0 0 1-3.874 0H4.5a.5.5 0 0 1 0-1H7.563a2 2 0 0 1 3.874 0H19.5a.5.5 0 1 1 0 1h-8.063zm-1.07 0a.995.995 0 0 0 0-1 1 1 0 1 0 0 1zm3.196 4.5a2 2 0 0 1 3.874 0H19.5a.5.5 0 1 1 0 1h-2.063a2 2 0 0 1-3.874 0H4.5a.5.5 0 1 1 0-1h9.063zm1.07 0a.995.995 0 0 0 0 1 1 1 0 1 0 0-1zm-5.196 6a2 2 0 0 1-3.874 0H4.5a.5.5 0 1 1 0-1h1.063a2 2 0 0 1 3.874 0H19.5a.5.5 0 1 1 0 1H9.437zm-1.07 0a.995.995 0 0 0 0-1 1 1 0 1 0 0 1z"
-                />
-              </svg>
+              <CIconMenu />
             </button>
             <img
               class="projectImage"
@@ -64,7 +54,7 @@
             </div>
           </div>
         </div>
-      </TransitionGroup>
+      </CTransitionList>
     </div>
     <div
       v-show="!loadingGetProjects && projects.length === 0"
@@ -90,9 +80,13 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+import CIconMenu from '@/components/common/c-icon-menu';
+import CTransitionList from '@/components/common/c-transition-list';
+
 import type { PreparedProject } from '@/types/projects/PreparedProject';
 
 import UProjectMenu from '../u-project-menu';
+import { ROUTE_NAMES } from '@/constants/route-names-constants';
 
 defineProps<{
   user: { email: string } | null;
@@ -114,7 +108,12 @@ const menuProjectId = ref<number | null>(null);
 const deleteId = ref<number | null>(null);
 
 const openProject = (projectId: number) => {
-  router.push(`/projects/${projectId}`);
+  router.push({
+    name: ROUTE_NAMES.PAGES,
+    params: {
+      projectId,
+    },
+  });
 };
 const showMenu = (projectId: number) => {
   menuProjectId.value = projectId;

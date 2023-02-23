@@ -1,22 +1,23 @@
 <template>
-  <div class="u-sign-up-form">
-    <div class="field">
+  <form
+    class="u-sign-up-form"
+    @submit.prevent="signUp"
+  >
+    <CField
+      :errors="form.email.errors"
+      class="field"
+    >
       <CInput
         v-model="form.email.value"
         class="input"
         name="Email"
         placeholder="Work email"
       />
-      <div v-if="!form.email.errors.required">
-        <p
-          v-if="form.email.errors.email"
-          class="error"
-        >
-          That's not a valid email
-        </p>
-      </div>
-    </div>
-    <div class="field">
+    </CField>
+    <CField 
+      :errors="form.password.errors"
+      class="field"
+    >
       <CInput
         v-model="form.password.value"
         class="input"
@@ -24,57 +25,34 @@
         type="password"
         placeholder="Password"
       />
-      <div v-if="!form.password.errors.required">
-        <p
-          v-if="form.password.errors.minLength"
-          class="error"
-        >
-          Password length can't be less then 8. Now it is
-          {{ form.password.value.length }}.
-        </p>
-      </div>
-    </div>
+    </CField>
     <CButton
+      :is-loading="loading"
+      :is-disabled="!form.valid || loading"
+      label="Sign Up"
       class="button"
-      :disabled="!form.valid || loading"
       @click="signUp"
-    >
-      <p v-if="!loading">
-        Sign Up
-      </p>
-      <div
-        v-else
-        class="loadingio-spinner-ellipsis-yg3d79y87xd"
-      >
-        <div class="ldio-bzxhjz25vr">
-          <div />
-          <div />
-          <div />
-          <div />
-          <div />
-        </div>
-      </div>
-    </CButton>
-  </div>
+    />
+  </form>
 </template>
 
 <script setup lang="ts">
-import CButton from '@/components/common/c-button';
+import { computed } from 'vue';
+
+import CField from '@/components/common/c-field';
 import CInput from '@/components/common/c-input';
+import CButton from '@/components/common/c-button';
 
-import { useValidators } from '@/use/validators';
-import { useEventListener } from '@/use/use-event-listener';
 import { useForm } from '@/use/form';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { useToast } from 'vue-toastification';
+import { useValidators } from '@/use/validators';
+import { ROUTE_NAMES } from '@/constants/route-names-constants';
 
-defineProps<{
-  loading: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: 'signUp', payload: { email: string; password: string }): void;
-}>();
-
-const { windowEventListener } = useEventListener();
+const toast = useToast();
+const router = useRouter();
+const authStore = useAuthStore();
 const { required, minLength, email } = useValidators();
 const form = useForm({
   email: {
@@ -93,18 +71,18 @@ const form = useForm({
   },
 });
 
-const signUp = () => {
-  emit('signUp', {
+const loading = computed(() => authStore.loading);
+
+const signUp = async () => {
+  if (!form.valid) return;
+
+  await authStore.signUp({
     email: form.email.value,
     password: form.password.value,
   });
+  toast.success('Sign up is successful!');
+  router.push({ name: ROUTE_NAMES.LOGIN });
 };
-
-windowEventListener('keyup', (event) => {
-  if (event.code === 'Enter' && form.valid) {
-    signUp();
-  }
-});
 </script>
 
 <style lang="scss" src="./u-sign-up-form.scss" />

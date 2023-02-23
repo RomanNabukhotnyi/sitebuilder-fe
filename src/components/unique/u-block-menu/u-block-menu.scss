@@ -1,12 +1,12 @@
 .block:hover .u-block-menu {
   display: flex;
 }
-.block:last-child .moveAction:nth-child(2) {
-  cursor: default;
+.block:last-child .moveRightAction svg {
+  cursor: not-allowed;
   color: #bcbcbc;
 }
-.block:first-child .moveAction:first-child svg {
-  cursor: default;
+.block:first-child .moveLeftAction svg  {
+  cursor: not-allowed;
   color: #bcbcbc;
 }
 .u-block-menu {
@@ -28,9 +28,15 @@
     display: flex;
     align-items: center;
 
-    &.moveAction {
+    &.moveLeftAction {
       svg {
         transform: rotate(-90deg);
+      }
+    }
+
+    &.moveRightAction {
+      svg {
+        transform: rotate(90deg);
       }
     }
 

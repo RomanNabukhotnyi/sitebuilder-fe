@@ -19,19 +19,17 @@
               class="actions"
             >
               <CButton
+                :is-disabled="loadingRefreshApiKey"
+                label="Refresh"
                 class="button__refresh"
-                :disabled="loadingRefreshApiKey"
                 @click.stop="refresh"
-              >
-                Refresh
-              </CButton>
+              />
               <CButton
+                :is-disabled="loadingDeleteApiKey"
+                label="Delete"
                 class="button__delete"
-                :disabled="loadingDeleteApiKey"
                 @click.stop="deleteApiKey"
-              >
-                Delete
-              </CButton>
+              />
             </div>
           </div>
         </div>
@@ -43,26 +41,12 @@
         class="field"
       >
         <CButton
+          :is-loading="loadingCreateApiKey"
+          :is-disabled="loadingCreateApiKey"
+          label="Create"
           class="button"
-          :disabled="loadingCreateApiKey"
           @click="create"
-        >
-          <p v-if="!loadingCreateApiKey">
-            Create
-          </p>
-          <div
-            v-else
-            class="loadingio-spinner-ellipsis-yg3d79y87xd"
-          >
-            <div class="ldio-bzxhjz25vr">
-              <div />
-              <div />
-              <div />
-              <div />
-              <div />
-            </div>
-          </div>
-        </CButton>
+        />
       </div>
     </Transition>
   </div>

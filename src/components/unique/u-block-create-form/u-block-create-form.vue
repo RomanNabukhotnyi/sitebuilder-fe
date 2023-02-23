@@ -8,191 +8,138 @@
       @select="selectOption"
     />
     <div v-if="selected === 'text'">
-      <div class="field">
+      <CField
+        :errors="formText.text.errors"
+        class="field"
+      >
         <CTextarea
           v-model="formText.text.value"
           v-focus
           class="textarea"
           placeholder="Text"
         />
-        <p
-          v-if="formText.text.errors.required"
-          class="error"
-        >
-          Field is required
-        </p>
-      </div>
-      <div class="field">
+      </CField>
+      <CField
+        :errors="formText.subtext.errors"
+        class="field"
+      >
         <CInput
           v-model="formText.subtext.value"
           class="input"
           placeholder="Subtext"
         />
-      </div>
-      <div class="field">
+      </CField>
+      <CField
+        :errors="formText.title.errors"
+        class="field"
+      >
         <CInput
           v-model="formText.title.value"
           class="input"
           placeholder="Title"
         />
-      </div>
-      <div class="field">
+      </CField>
+      <CField
+        :errors="formText.fontWeight.errors"
+        class="field"
+      >
         <CInput
           v-model="formText.fontWeight.value"
           class="input"
           placeholder="Font Weight"
         />
-        <div
-          v-if="formText.fontWeight.value.length !== 0"
-          class="error"
-        >
-          <p
-            v-if="formText.fontWeight.errors.cssWeight"
-            class="error"
-          >
-            Font weight is incorrect
-          </p>
-        </div>
-      </div>
-      <div class="field">
+      </CField>
+      <CField
+        :errors="formText.fontSize.errors"
+        class="field"
+      >
         <CInput
           v-model="formText.fontSize.value"
           class="input"
           placeholder="Font Size"
         />
-        <div
-          v-if="formText.fontSize.value.length !== 0"
-          class="error"
-        >
-          <p
-            v-if="formText.fontSize.errors.cssFontSize"
-            class="error"
-          >
-            Font size is incorrect
-          </p>
-        </div>
-      </div>
-      <div class="field">
+      </CField>
+      <CField
+        :errors="formText.color.errors"
+        class="field"
+      >
         <CInput
           v-model="formText.color.value"
           class="input"
           placeholder="Color"
         />
-        <div
-          v-if="formText.color.value.length !== 0"
-          class="error"
-        >
-          <p
-            v-if="formText.color.errors.cssColor"
-            class="error"
-          >
-            Color is incorrect
-          </p>
-        </div>
-      </div>
+      </CField>
     </div>
     <div v-else>
-      <div class="field">
+      <CField
+        :errors="formImage.url.errors"
+        class="field"
+      >
         <CInput
           v-model="formImage.url.value"
           v-focus
           class="input"
           placeholder="Url"
         />
-        <p
-          v-if="formImage.url.errors.required"
-          class="error"
-        >
-          Field is required
-        </p>
-        <div v-if="!formImage.url.errors.required">
-          <p
-            v-if="formImage.url.errors.url"
-            class="error"
-          >
-            That’s not a valid url
-          </p>
-        </div>
-      </div>
-      <div class="field">
+      </CField>
+      <CField
+        :errors="formImage.subtext.errors"
+        class="field"
+      >
         <CInput
           v-model="formImage.subtext.value"
           class="input"
           placeholder="Subtext"
         />
-      </div>
-      <div class="field">
+      </CField>
+      <CField
+        :errors="formImage.title.errors"
+        class="field"
+      >
         <CInput
           v-model="formImage.title.value"
           class="input"
           placeholder="Title"
         />
-      </div>
-      <div class="field">
+      </CField>
+      <CField
+        :errors="formImage.alt.errors"
+        class="field"
+      >
         <CInput
           v-model="formImage.alt.value"
           class="input"
           placeholder="Alt"
         />
-      </div>
-      <div class="field">
+      </CField>
+      <CField
+        :errors="formImage.width.errors"
+        class="field"
+      >
         <CInput
           v-model="formImage.width.value"
           class="input"
           placeholder="Width"
         />
-        <div
-          v-if="formImage.width.value.length !== 0"
-          class="error"
-        >
-          <p
-            v-if="formImage.width.errors.cssWidthOrHeight"
-            class="error"
-          >
-            Width is incorrect
-          </p>
-        </div>
-      </div>
-      <div class="field">
+      </CField>
+      <CField
+        :errors="formImage.height.errors"
+        class="field"
+      >
         <CInput
           v-model="formImage.height.value"
           class="input"
           placeholder="Height"
         />
-        <div
-          v-if="formImage.height.value.length !== 0"
-          class="error"
-        >
-          <p
-            v-if="formImage.height.errors.cssWidthOrHeight"
-            class="error"
-          >
-            Height is incorrect
-          </p>
-        </div>
-      </div>
+      </CField>
     </div>
     <CButton
+      :is-loading="loadingCreateBlock"
+      :is-disabled="!formValid || loadingCreateBlock"
+      label="Create"
       class="button"
-      :disabled="!formValid || loadingCreateBlock"
       @click="createBlock"
-    >
-      <p v-if="!loadingCreateBlock">
-        Create
-      </p>
-      <div
-        v-else
-        class="loadingio-spinner-ellipsis-yg3d79y87xd"
-      >
-        <div class="ldio-bzxhjz25vr">
-          <div />
-          <div />
-          <div />
-          <div />
-          <div />
-        </div>
-      </div>
-    </CButton>
+    />
   </div>
 </template>
 
@@ -202,22 +149,25 @@ import { ref, computed } from 'vue';
 import type { Option } from '@/types/Option';
 import type { ApiBlock } from '@/types/blocks/ApiBlock';
 
-import CButton from '@/components/common/c-button';
+import CField from '@/components/common/c-field';
 import CInput from '@/components/common/c-input';
 import CSelect from '@/components/common/c-select';
+import CButton from '@/components/common/c-button';
 import CTextarea from '@/components/common/c-textarea';
 
+import { useForm } from '@/use/form';
 import { useValidators } from '@/use/validators';
 import { useEventListener } from '@/use/use-event-listener';
-import { useForm } from '@/use/form';
+
 const props = defineProps<{
   slotId: number;
   loadingCreateBlock: boolean;
 }>();
-const { windowEventListener } = useEventListener();
+
 const emit = defineEmits<{
   (e: 'createBlock', slotId: number, value: ApiBlock): void;
 }>();
+
 const {
   required,
   url,
@@ -227,6 +177,7 @@ const {
   cssWidthOrHeight,
   optional,
 } = useValidators();
+const { windowEventListener } = useEventListener();
 const formText = useForm({
   text: {
     value: '',

@@ -1,7 +1,10 @@
 <template>
   <div class="u-page-create-form">
     <h4>Create page</h4>
-    <div class="field">
+    <CField
+      :errors="form.name.errors"
+      class="field"
+    >
       <CInput
         v-model="form.name.value"
         v-focus
@@ -9,42 +12,21 @@
         type="text"
         placeholder="Name"
       />
-      <div v-if="!form.name.errors.required">
-        <p
-          v-if="form.name.errors.exist"
-          class="error"
-        >
-          A page with that name exist
-        </p>
-      </div>
-    </div>
+    </CField>
     <CButton
+      :is-loading="loadingCreatePage"
+      :is-disabled="!form.valid || loadingCreatePage"
+      label="Create"
       class="button"
-      :disabled="!form.valid || loadingCreatePage"
       @click="createPage"
-    >
-      <p v-if="!loadingCreatePage">
-        Create
-      </p>
-      <div
-        v-else
-        class="loadingio-spinner-ellipsis-yg3d79y87xd"
-      >
-        <div class="ldio-bzxhjz25vr">
-          <div />
-          <div />
-          <div />
-          <div />
-          <div />
-        </div>
-      </div>
-    </CButton>
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { ApiPage } from '@/types/pages/ApiPage';
 
+import CField from '@/components/common/c-field';
 import CButton from '@/components/common/c-button';
 import CInput from '@/components/common/c-input';
 

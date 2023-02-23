@@ -1,22 +1,23 @@
 <template>
-  <div class="u-login-form">
-    <div class="field">
+  <form
+    class="u-login-form"
+    @submit.prevent="login"
+  >
+    <CField
+      :errors="form.email.errors"
+      class="field"
+    >
       <CInput
         v-model="form.email.value"
         class="input"
         name="Email"
         placeholder="Work email"
       />
-      <div v-if="!form.email.errors.required">
-        <p
-          v-if="form.email.errors.email"
-          class="error"
-        >
-          That's not a valid email
-        </p>
-      </div>
-    </div>
-    <div class="field">
+    </CField>
+    <CField
+      :errors="form.password.errors"
+      class="field"
+    >
       <CInput
         v-model="form.password.value"
         class="input"
@@ -24,57 +25,32 @@
         type="password"
         placeholder="Password"
       />
-      <div v-if="!form.password.errors.required">
-        <p
-          v-if="form.password.errors.minLength"
-          class="error"
-        >
-          Password length can't be less then 8. Now it is
-          {{ form.password.value.length }}.
-        </p>
-      </div>
-    </div>
+    </CField>
     <CButton
+      :is-loading="loading"
+      :is-disabled="!form.valid || loading"
+      label="Login"
       class="button"
-      :disabled="!form.valid || loading"
       @click="login"
-    >
-      <p v-if="!loading">
-        Login
-      </p>
-      <div
-        v-else
-        class="loadingio-spinner-ellipsis-yg3d79y87xd"
-      >
-        <div class="ldio-bzxhjz25vr">
-          <div />
-          <div />
-          <div />
-          <div />
-          <div />
-        </div>
-      </div>
-    </CButton>
-  </div>
+    />
+  </form>
 </template>
 
 <script setup lang="ts">
-import CButton from '@/components/common/c-button';
+import { computed } from 'vue';
+
+import CField from '@/components/common/c-field';
 import CInput from '@/components/common/c-input';
+import CButton from '@/components/common/c-button';
 
-import { useValidators } from '@/use/validators';
-import { useEventListener } from '@/use/use-event-listener';
 import { useForm } from '@/use/form';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { useValidators } from '@/use/validators';
+import { ROUTE_NAMES } from '@/constants/route-names-constants';
 
-defineProps<{
-  loading: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: 'login', payload: { email: string; password: string }): void;
-}>();
-
-const { windowEventListener } = useEventListener();
+const router = useRouter();
+const authStore = useAuthStore();
 const { required, minLength, email } = useValidators();
 const form = useForm({
   email: {
@@ -93,18 +69,20 @@ const form = useForm({
   },
 });
 
-const login = () => {
-  emit('login', {
+const loading = computed(() => authStore.loading);
+
+const login = async () => {
+  if (!form.valid) return;
+
+  await authStore.login({
     email: form.email.value,
     password: form.password.value,
   });
-};
 
-windowEventListener('keyup', (event) => {
-  if (event.code === 'Enter' && form.valid) {
-    login();
+  if (authStore.isLoggedIn) {
+    router.push({ name: ROUTE_NAMES.PROJECTS });
   }
-});
+};
 </script>
 
 <style lang="scss" src="./u-login-form.scss" />

@@ -2,7 +2,7 @@
   <div class="u-project-user-permissions">
     <h4>Permissions</h4>
     <div class="permissions">
-      <TransitionGroup name="list">
+      <CTransitionList>
         <div
           v-for="permission in project.permissions"
           :key="permission.id"
@@ -24,24 +24,25 @@
               class="actions"
             >
               <CButton
-                class="button__delete"
-                :disabled="
+                :is-disabled="
                   loadingDeletePermission && permission.id === deleteId
                 "
+                label="Delete"
+                class="button__delete"
                 @click.stop="deletePermission(permission.id, permission.userId)"
-              >
-                Delete
-              </CButton>
+              />
             </div>
           </div>
         </div>
-      </TransitionGroup>
+      </CTransitionList>
     </div>
     <div
       v-if="isOwner"
       class="field"
     >
-      <div>
+      <CField
+        :errors="form.email.errors"
+      >
         <CInput
           v-model="form.email.value"
           v-focus
@@ -49,15 +50,7 @@
           type="text"
           placeholder="Email"
         />
-        <div v-if="!form.email.errors.required">
-          <p
-            v-if="form.email.errors.email"
-            class="error"
-          >
-            That's not a valid email
-          </p>
-        </div>
-      </div>
+      </CField>
       <CSelect
         class="select"
         :selected="selected"
@@ -65,26 +58,12 @@
         @select="selectOption"
       />
       <CButton
+        :is-loading="loadingAddPermission"
+        :is-disabled="!form.valid || loadingAddPermission"
+        label="Invite"
         class="button"
-        :disabled="!form.valid || loadingAddPermission"
         @click="invite"
-      >
-        <p v-if="!loadingAddPermission">
-          Invite
-        </p>
-        <div
-          v-else
-          class="loadingio-spinner-ellipsis-yg3d79y87xd"
-        >
-          <div class="ldio-bzxhjz25vr">
-            <div />
-            <div />
-            <div />
-            <div />
-            <div />
-          </div>
-        </div>
-      </CButton>
+      />
     </div>
   </div>
 </template>
@@ -96,6 +75,8 @@ import type { ApiCreatePermission } from '@/types/permissions/ApiCreatePermissio
 import type { PreparedProject } from '@/types/projects/PreparedProject';
 import type { Option } from '@/types/Option';
 
+import CTransitionList from '@/components/common/c-transition-list';
+import CField from '@/components/common/c-field';
 import CButton from '@/components/common/c-button';
 import CInput from '@/components/common/c-input';
 import CSelect from '@/components/common/c-select';

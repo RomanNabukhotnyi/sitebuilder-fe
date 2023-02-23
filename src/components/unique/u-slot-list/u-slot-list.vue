@@ -4,7 +4,7 @@
       v-show="!loadingGetSlots && slots.length !== 0"
       class="slots"
     >
-      <TransitionGroup name="list">
+      <CTransitionList>
         <div
           v-for="slot in slots"
           :key="slot.id"
@@ -24,14 +24,7 @@
             class="emptySlot"
             @click="slot.type !== 'STATIC' && showCreateBlockDialog(slot.id)"
           >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" />
-            </svg>
+            <CIconAdd />
           </div>
           <UBlockList
             v-else
@@ -50,7 +43,7 @@
             @delete-slot="deleteSlot"
           />
         </div>
-      </TransitionGroup>
+      </CTransitionList>
     </div>
     <div v-show="loadingGetSlots">
       <div
@@ -69,6 +62,8 @@ import { ref } from 'vue';
 import type { PreparedSlot } from '@/types/slots/PreparedSlot';
 import type { ApiBlock } from '@/types/blocks/ApiBlock';
 
+import CTransitionList from '@/components/common/c-transition-list';
+import CIconAdd from '@/components/common/c-icon-add';
 import USlotMenu from '../u-slot-menu';
 import UBlockList from '../u-block-list';
 

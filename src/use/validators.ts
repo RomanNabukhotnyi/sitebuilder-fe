@@ -1,3 +1,5 @@
+import type { ValidatorResult } from "@/types/ValidatorResult";
+
 const widthAndHeightKeywords = ['auto', 'max-content', 'min-content'];
 const weightKeywords = ['normal', 'bold', 'lighter', 'bolder'];
 const fontSizeKeywords = [
@@ -33,32 +35,101 @@ const colorKeywords = [
 ];
 
 export const useValidators = () => {
-  const required = (value: string) => !!value;
-  const optional = (value: string) => !value;
-  const minLength = (num: number) => (value: string) => value.length >= num;
-  const email = (value: string) =>
-    !!value.match(/^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/);
-  const exist = (values: string[]) => (value: string) =>
-    !values.includes(value);
-  const url = (value: string) =>
-    !!value.match(
+  const required = (value: string): ValidatorResult => {
+    const isValid = !!value;
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : 'Value is required',
+    };
+  };
+  const optional = (value: string): ValidatorResult => {
+    const isValid = !value;
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : 'Value is optional',
+    };
+  }
+  const minLength = (num: number) => (value: string): ValidatorResult => {
+    const isValid = value.length >= num;
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : `Value length can't be less then ${num}. Now it is ${value.length}`,
+    };
+  }
+  const email = (value: string): ValidatorResult => {
+    const isValid = !!value.match(/^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/);
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : `That's not a valid email`,
+    };
+  }
+  const exist = (values: string[]) => (value: string): ValidatorResult => {
+    const isValid = !values.includes(value);
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : `Value already exist`,
+    };
+  }
+  const url = (value: string): ValidatorResult => {
+    const isValid = !!value.match(
       /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/
     );
-  const cssSize = (value: string) =>
-    !!value.match(
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : `That’s not a valid url`,
+    };
+  }
+  const cssSize = (value: string): ValidatorResult => {
+    const isValid = !!value.match(
       /\b(?<!\.)(?!0+(?:\.0+)?%)(?:\d|[1-9]\d|100)(?:(?<!100)\.\d+)?%/g
     ) ||
     !!value.match(/\d+[.\d+]*px/g) ||
     !!value.match(/\d+[.\d+]*(px|rem|em|ex)/g);
-  const cssWidthOrHeight = (value: string) =>
-    cssSize(value) || !!widthAndHeightKeywords.find((k) => k === value);
-  const cssWeight = (value: string) =>
-    (Number(value) < 1000 && Number(value) > 1) ||
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : `That’s not a valid css size`,
+    };
+  }
+  const cssWidthOrHeight = (value: string): ValidatorResult => {
+    const isValid = cssSize(value).isValid || !!widthAndHeightKeywords.find((k) => k === value);
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : `That’s not a valid css width or height`,
+    };
+  }
+  const cssWeight = (value: string): ValidatorResult => {
+    const isValid = (Number(value) < 1000 && Number(value) > 1) ||
     !!weightKeywords.find((k) => k === value);
-  const cssFontSize = (value: string) =>
-    cssSize(value) || !!fontSizeKeywords.find((k) => k === value);
-  const cssColor = (value: string) =>
-    !!value.match(/^#[a-z0-9]{6}$/g) || !!colorKeywords.find((k) => k === value);
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : `That’s not a valid css weight`,
+    };
+  }
+  const cssFontSize = (value: string): ValidatorResult => {
+    const isValid = cssSize(value).isValid || !!fontSizeKeywords.find((k) => k === value);
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : `That’s not a valid css font size`,
+    };
+  }
+  const cssColor = (value: string): ValidatorResult => {
+    const isValid = !!value.match(/^#[a-z0-9]{6}$/g) || !!colorKeywords.find((k) => k === value);
+    return {
+      name: Function.name,
+      isValid,
+      message: isValid ? 'OK' : `That’s not a valid css color`,
+    };
+  }
   return {
     required,
     optional,

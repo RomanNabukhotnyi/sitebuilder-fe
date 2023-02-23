@@ -19,13 +19,12 @@
       <div class="panel__sort">
         <!-- SORT -->
       </div>
-      <CSearch v-model:search="searchQuery" />
+      <CSearch v-model="searchQuery" />
       <CButton
+        label="Create Page"
         class="button__create"
         @click="showCreateDialog"
-      >
-        Create Page
-      </CButton>
+      />
     </div>
     <div>
       <UPageList
