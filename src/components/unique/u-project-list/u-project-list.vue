@@ -41,12 +41,6 @@
             >
               <CIconMenu />
             </button>
-            <img
-              class="projectImage"
-              width="270"
-              height="92"
-              src="https://img.zeplin.io/https%3A%2F%2Fcdn.zeplin.io%2F638878ea1a052582d3461e31%2Fscreens%2F1ef6e135-a095-40bb-a7a6-ef091643fe44.png?w=270&amp;cropTop=0&amp;cropLeft=0&amp;cropWidth=270&amp;cropHeight=92"
-            >
           </div>
           <div class="project__body">
             <div class="projectName">
