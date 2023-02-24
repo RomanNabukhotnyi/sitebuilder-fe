@@ -1,0 +1,36 @@
+.chevron {
+  display: inline-block;
+  width: 14px;
+  height: 11px;
+
+  &__group {
+    transform: translateY(0);
+    transition: transform 0.1s linear;
+  }
+
+  &__box--left,
+  &__box--right {
+    transform: rotate(0) translateY(0);
+    transition: transform 0.1s linear;
+  }
+
+  &__box--left {
+    transform-origin: 1px 1px;
+  }
+
+  &__box--right {
+    transform-origin: 7px 1px;
+  }
+
+  &--flip &__box--left {
+    transform: rotate(-90deg) translateY(0);
+  }
+
+  &--flip &__box--right {
+    transform: rotate(90deg) translateY(0);
+  }
+
+  &--flip &__group {
+    transform: translateY(3px);
+  }
+}

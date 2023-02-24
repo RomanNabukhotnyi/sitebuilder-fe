@@ -42,13 +42,12 @@
       <div class="panel__sort">
         <!-- SORT -->
       </div>
-      <CSearch v-model:search="searchQuery" />
+      <CSearch v-model="searchQuery" />
       <CButton
+        label="Create Project"
         class="button__create"
         @click="showCreateDialog"
-      >
-        Create Project
-      </CButton>
+      />
     </div>
     <div>
       <UProjectList

@@ -44,6 +44,7 @@ import { useRouter } from 'vue-router';
 import UMainUserMenu from '@/components/unique/u-main-user-menu';
 
 import { useAuthStore } from '@/stores/auth';
+import { ROUTE_NAMES } from '@/constants/route-names-constants';
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -52,7 +53,7 @@ const menuVisible = ref(false);
 
 const logout = async () => {
   await authStore.logout();
-  router.push('/login');
+  router.push({ name: ROUTE_NAMES.LOGIN });
 };
 </script>
 

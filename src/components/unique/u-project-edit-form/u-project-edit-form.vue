@@ -1,7 +1,10 @@
 <template>
   <div class="u-project-edit-form">
     <h4>Edit project</h4>
-    <div class="field">
+    <CField
+      :errors="form.name.errors"
+      class="field"
+    >
       <CInput
         v-model="form.name.value"
         v-focus
@@ -9,40 +12,19 @@
         type="text"
         placeholder="Name"
       />
-      <div v-if="!form.name.errors.required">
-        <p
-          v-if="form.name.errors.exist"
-          class="error"
-        >
-          A project with that name exist
-        </p>
-      </div>
-    </div>
+    </CField>
     <CButton
+      :is-loading="loadingEditProject"
+      :is-disabled="!form.valid || loadingEditProject"
+      label="Edit"
       class="button"
-      :disabled="!form.valid || loadingEditProject"
       @click="editProject"
-    >
-      <p v-if="!loadingEditProject">
-        Edit
-      </p>
-      <div
-        v-else
-        class="loadingio-spinner-ellipsis-yg3d79y87xd"
-      >
-        <div class="ldio-bzxhjz25vr">
-          <div />
-          <div />
-          <div />
-          <div />
-          <div />
-        </div>
-      </div>
-    </CButton>
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import CField from '@/components/common/c-field';
 import CButton from '@/components/common/c-button';
 import CInput from '@/components/common/c-input';
 

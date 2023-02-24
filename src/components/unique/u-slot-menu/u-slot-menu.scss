@@ -1,12 +1,12 @@
 .slot:hover .u-slot-menu {
   display: block;
 }
-.slot:last-child .moveAction:nth-child(2) {
-  cursor: default;
+.slot:last-child .moveDownAction svg {
+  cursor: not-allowed;
   color: #bcbcbc;
 }
-.slot:first-child .moveAction:first-child svg {
-  cursor: default;
+.slot:first-child .moveUpAction svg {
+  cursor: not-allowed;
   color: #bcbcbc;
 }
 .u-slot-menu {
@@ -26,6 +26,12 @@
     display: flex;
     justify-content: center;
     width: 100%;
+
+    &.moveDownAction {
+      svg {
+        transform: rotate(180deg);
+      }
+    }
 
     &:hover {
       color: #116dff;

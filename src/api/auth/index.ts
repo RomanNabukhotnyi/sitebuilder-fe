@@ -12,8 +12,4 @@ export const login = (
   api.post('/auth/login', payload);
 
 export const refresh = (): Promise<{ accessToken: string }> =>
-  api.get('/auth/refresh', {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('refreshToken')}`,
-    },
-  });
+  api.get('/auth/refresh');

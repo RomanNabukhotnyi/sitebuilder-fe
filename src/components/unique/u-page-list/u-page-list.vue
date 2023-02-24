@@ -40,23 +40,21 @@
               </div>
               <div class="actions">
                 <CButton
+                  label="Edit"
                   class="button__edit"
                   @click.stop="
                     !(loadingDeletePage && element.id === deleteId) &&
                       showEditDialog(element)
                   "
-                >
-                  Edit
-                </CButton>
+                />
                 <CButton
+                  label="Delete"
                   class="button__delete"
                   @click.stop="
                     !(loadingDeletePage && element.id === deleteId) &&
                       deletePage(element.id)
                   "
-                >
-                  Delete
-                </CButton>
+                />
               </div>
             </div>
           </div>
@@ -91,6 +89,7 @@ import Draggable from 'vuedraggable';
 import type { ApiPage } from '@/types/pages/ApiPage';
 
 import CButton from '@/components/common/c-button';
+import { ROUTE_NAMES } from '@/constants/route-names-constants';
 
 const props = defineProps<{
   pages: ApiPage[];
@@ -117,7 +116,13 @@ const draggablePages = computed({
 });
 
 const openPage = (pageId: number): void => {
-  router.push(`/projects/${+route.params.projectId}/pages/${pageId}`);
+  router.push({
+    name: ROUTE_NAMES.SLOTS,
+    params: {
+      projectId: route.params.projectId,
+      pageId,
+    }
+  });
 };
 const showEditDialog = (page: ApiPage) => {
   emit('showEditDialog', page);

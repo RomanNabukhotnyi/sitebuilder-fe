@@ -9,10 +9,7 @@
       <h1>Welcome to SiteBuilder!</h1>
       <p>We're so happy you're here, let’s start by signing up.</p>
       <hr>
-      <USignUpForm
-        :loading="loading"
-        @sign-up="signUp"
-      />
+      <USignUpForm />
       <hr>
       <div class="footer">
         <span>Already have an account?
@@ -24,24 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useToast } from 'vue-toastification';
-
 import USignUpForm from '../../unique/u-sign-up-form';
-
-import { useAuthStore } from '@/stores/auth';
-
-const authStore = useAuthStore();
-const router = useRouter();
-const toast = useToast();
-const loading = computed(() => authStore.loading);
-
-const signUp = async (payload: { email: string; password: string }) => {
-  await authStore.signUp(payload);
-  toast.success('Sign up is successful!');
-  router.push('/login');
-};
 </script>
 
 <style lang="scss" src="./p-sign-up.scss" />

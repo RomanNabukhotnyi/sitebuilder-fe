@@ -8,26 +8,12 @@
       @select="selectOption"
     />
     <CButton
+      :is-loading="loadingCreateSlot"
+      :is-disabled="loadingCreateSlot"
+      label="Create"
       class="button"
-      :disabled="loadingCreateSlot"
       @click="createSlot"
-    >
-      <p v-if="!loadingCreateSlot">
-        Create
-      </p>
-      <div
-        v-else
-        class="loadingio-spinner-ellipsis-yg3d79y87xd"
-      >
-        <div class="ldio-bzxhjz25vr">
-          <div />
-          <div />
-          <div />
-          <div />
-          <div />
-        </div>
-      </div>
-    </CButton>
+    />
   </div>
 </template>
 

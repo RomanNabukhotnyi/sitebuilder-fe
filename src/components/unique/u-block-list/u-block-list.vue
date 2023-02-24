@@ -1,6 +1,6 @@
 <template>
   <div class="u-block-list">
-    <TransitionGroup name="blockList">
+    <CTransitionList>
       <div
         v-for="block in mySlot.blocks"
         :key="block.id"
@@ -40,7 +40,7 @@
           @delete-block="deleteBlock"
         />
       </div>
-    </TransitionGroup>
+    </CTransitionList>
   </div>
 </template>
 
@@ -54,6 +54,7 @@ import type { ImageContent } from '@/types/blocks/ImageContent';
 import type { TextContent } from '@/types/blocks/TextContent';
 import type { TextStyles } from '@/types/blocks/TextStyles';
 
+import CTransitionList from '@/components/common/c-transition-list';
 import UBlockMenu from '../u-block-menu';
 
 defineProps<{

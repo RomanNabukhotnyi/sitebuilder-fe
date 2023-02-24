@@ -1,17 +1,26 @@
 <template>
   <input
     v-model="value"
+    :type="type"
+    :placeholder="placeholder"
     class="c-input"
-    type="text"
   >
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const props = defineProps<{
-  modelValue: string;
-}>();
+interface IProps {
+     modelValue?: string;
+     type?: 'text' | 'password' | 'email' | 'number';
+     placeholder?: string;
+ }
+
+ const props = withDefaults(defineProps<IProps>(), {
+     modelValue: '',
+     type: 'text',
+     placeholder: ''
+ });
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
