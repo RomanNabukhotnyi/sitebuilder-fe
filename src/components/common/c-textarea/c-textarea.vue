@@ -2,6 +2,7 @@
   <textarea
     v-model="value"
     class="c-textarea textarea"
+    @blur="touch"
   />
 </template>
 
@@ -14,6 +15,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
+  (e: 'touch'): void;
 }>();
 
 const value = computed({
@@ -24,6 +26,10 @@ const value = computed({
     emit('update:modelValue', value);
   },
 });
+
+const touch = () => {
+  emit('touch');
+}
 </script>
 
 <style lang="scss" src="./c-textarea.scss" />
