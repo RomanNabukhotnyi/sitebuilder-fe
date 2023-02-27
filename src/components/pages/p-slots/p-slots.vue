@@ -91,7 +91,7 @@ const showEditBlockDialog = (id: number, block: ApiBlock) => {
   editingBlock = block;
   dialogEditBlockVisible.value = true;
 };
-const createSlot = async (slot: { type: 'STATIC' | 'DYNAMIC' }) => {
+const createSlot = async (slot: { type: string }) => {
   await slotsStore.createSlot(+route.params.projectId, {
     pageId: +route.params.pageId,
     type: slot.type,

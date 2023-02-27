@@ -1,24 +1,50 @@
-import { ref, watch } from 'vue';
+import { ref, watch, shallowRef } from 'vue';
+import type { Component } from 'vue';
 
-import type { ValidatorResult } from '@/types/ValidatorResult';
+import CInput from '@/components/common/c-input';
 
-export const useField = (field: {
-  value: string;
+import type { ValidatorResult } from '@/types/validators/ValidatorResult';
+import type { ValidatorError } from '@/types/validators/ValidatorError';
+
+export const useField = (init: {
+  name: string;
+  value?: string;
+  type?: 'text' | 'password' | 'email' | 'number';
+  fieldClass?: string;
+  componentClass?: string;
+  component?: Component;
+  placeholder?: string;
   validators?: { [key: string]: (value: string) => ValidatorResult };
 }) => {
+  const {
+    value: initValue,
+    placeholder: initPlaceholder,
+    validators,
+    name,
+    type: initType,
+    fieldClass: initFieldClass,
+    componentClass: initComponentClass,
+    component: initComponent,
+  } = init;
+  const key = `${Date.now()}-${name}`;
   const valid = ref(true);
-  const value = ref(field.value);
-  const errors = ref<Omit<ValidatorResult, 'isValid'>[]>([]);
-  const isOptional = !!Object.keys(field.validators ?? {}).find(
+  const type = initType ?? 'text';
+  const placeholder = initPlaceholder ?? '';
+  const component = shallowRef(initComponent ?? CInput);
+  const value = ref(initValue ?? '');
+  const fieldClass = initFieldClass;
+  const componentClass = initComponentClass;
+  const errors = ref<ValidatorError[]>([]);
+  const isOptional = !!Object.keys(validators ?? {}).find(
     (k) => k === 'optional'
   );
 
   const reassign = (value: string): void => {
     valid.value = true;
     errors.value = [];
-    Object.keys(field.validators || {}).map((validatorName) => {
-      if (field.validators) {
-        const { name, isValid, message } = field.validators[validatorName](value);
+    Object.keys(validators || {}).map((validatorName) => {
+      if (validators) {
+        const { name, isValid, message } = validators[validatorName](value);
         if (!isValid && name !== 'optional') {
           errors.value.push({
             name,
@@ -27,11 +53,21 @@ export const useField = (field: {
           valid.value = false || isOptional;
         }
       }
-      });
+    });
   };
 
   watch(value, reassign);
-  reassign(field.value);
+  reassign(value.value);
 
-  return { value, valid, errors };
+  return {
+    key,
+    value,
+    valid,
+    type,
+    errors,
+    fieldClass,
+    componentClass,
+    component,
+    placeholder,
+  };
 };

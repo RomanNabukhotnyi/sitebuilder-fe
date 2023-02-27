@@ -2,14 +2,10 @@
   display: flex;
   flex-direction: column;
 
-  .select,
-  .field {
+  .select {
     margin: 10px 0 0;
   }
-  .textarea,
-  .input {
-    width: 100%;
-  }
+
   .error {
     font-size: 10px;
     color: rgb(255, 107, 107);

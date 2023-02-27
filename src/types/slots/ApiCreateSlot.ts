@@ -1,5 +1,5 @@
 export interface ApiCreateSlot {
     pageId: number;
-    type: 'STATIC' | 'DYNAMIC';
+    type: string;
     order?: number;
 }
