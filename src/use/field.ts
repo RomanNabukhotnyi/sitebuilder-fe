@@ -7,67 +7,69 @@ import type { ValidatorResult } from '@/types/validators/ValidatorResult';
 import type { ValidatorError } from '@/types/validators/ValidatorError';
 
 export const useField = (init: {
-  name: string;
-  value?: string;
-  type?: 'text' | 'password' | 'email' | 'number';
-  fieldClass?: string;
-  componentClass?: string;
-  component?: Component;
-  placeholder?: string;
-  validators?: { [key: string]: (value: string) => ValidatorResult };
+	name: string;
+	value?: string;
+	type?: 'text' | 'password' | 'email' | 'number';
+	fieldClass?: string;
+	componentClass?: string;
+	component?: Component;
+	placeholder?: string;
+	validators?: { [key: string]: (value: string) => ValidatorResult };
 }) => {
-  const {
-    value: initValue,
-    placeholder: initPlaceholder,
-    validators,
-    name,
-    type: initType,
-    fieldClass: initFieldClass,
-    componentClass: initComponentClass,
-    component: initComponent,
-  } = init;
-  const key = `${Date.now()}-${name}`;
-  const valid = ref(true);
-  const type = initType ?? 'text';
-  const placeholder = initPlaceholder ?? '';
-  const component = shallowRef(initComponent ?? CInput);
-  const value = ref(initValue ?? '');
-  const fieldClass = initFieldClass;
-  const componentClass = initComponentClass;
-  const errors = ref<ValidatorError[]>([]);
-  const isOptional = !!Object.keys(validators ?? {}).find(
-    (k) => k === 'optional'
-  );
+	const {
+		value: initValue,
+		placeholder: initPlaceholder,
+		validators,
+		name,
+		type: initType,
+		fieldClass: initFieldClass,
+		componentClass: initComponentClass,
+		component: initComponent,
+	} = init;
+	const key = `${Date.now()}-${name}`;
+	const valid = ref(true);
+	const type = initType ?? 'text';
+	const placeholder = initPlaceholder ?? '';
+	const component = shallowRef(initComponent ?? CInput);
+	const value = ref(initValue ?? '');
+	const fieldClass = initFieldClass;
+	const componentClass = initComponentClass;
+	const errors = ref<ValidatorError[]>([]);
 
-  const reassign = (value: string): void => {
-    valid.value = true;
-    errors.value = [];
-    Object.keys(validators || {}).map((validatorName) => {
-      if (validators) {
-        const { name, isValid, message } = validators[validatorName](value);
-        if (!isValid && name !== 'optional') {
-          errors.value.push({
-            name,
-            message,
-          });
-          valid.value = false || isOptional;
-        }
-      }
-    });
-  };
+	const setInvalidState = (name: string, message: string) => {
+		errors.value.push({
+			name,
+			message,
+		});
+		valid.value = false;
+	}
 
-  watch(value, reassign);
-  reassign(value.value);
+	const reassign = (value: string): void => {
+		valid.value = true;
+		errors.value = [];
 
-  return {
-    key,
-    value,
-    valid,
-    type,
-    errors,
-    fieldClass,
-    componentClass,
-    component,
-    placeholder,
-  };
+		Object.keys(validators || {}).map((validatorName) => {
+			if (validators) {
+				const { name, isValid, message } = validators[validatorName](value);
+
+				if (!isValid && (value || name === 'required')) {
+					setInvalidState(name, message)
+				}
+			}
+		});
+	};
+
+	watch(value, reassign, { immediate: true });
+
+	return {
+		key,
+		value,
+		valid,
+		type,
+		errors,
+		fieldClass,
+		componentClass,
+		component,
+		placeholder,
+	};
 };

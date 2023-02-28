@@ -1,4 +1,4 @@
-import { reactive, computed } from 'vue';
+import { computed, reactive } from 'vue';
 import type { Component } from 'vue';
 
 import type { Field } from '@/types/fields/Field';
@@ -19,38 +19,32 @@ type InitValue = {
   }
 }
 
-type FormFields = {
+export type FormFields = {
   [key: string]: Field;
 }
 
 export const useForm = (init: InitValue) => {
-  const formFields: FormFields = {};
+  const formFields: FormFields = reactive({});
 
   for (const [key, value] of Object.entries(init)) {
     formFields[key] = useField({ name: key, ...value});
   }
 
-  const valid = computed(() =>
-    Object.keys(formFields)
-      .filter((k) => {
-        return k !== 'valid';
-      })
-      .reduce((acc, k) => {
-        return acc && formFields[k].valid.value;
-      }, true)
-  );
+  const valid = computed(() => {
+    const validationList = Object.entries(formFields).reduce((acc, [key, value]) => {
+      return [...acc, value.valid];
+    }, [] as Array<any>);
 
-  const getFields = () => reactive(Object.entries(formFields).map(([, value]) => value));
+    return validationList.every(Boolean)
+  })
 
   const reset = () => {
-    Object.keys(formFields).forEach((key) => formFields[key].value.value = '');
+    Object.keys(formFields).forEach((key) => formFields[key].value = '');
   }
 
-  const form = Object.assign({
+  return {
     valid,
-    getFields,
-    reset,
-  }, formFields);
-
-  return reactive(form);
+    formFields,
+    reset
+  }
 };
