@@ -4,25 +4,29 @@
     @submit.prevent="createPage"
   >
     <h4>Create page</h4>
-    <CFieldList :fields="form.getFields()" />
+    <CFieldList
+      v-model:fields="form.fields"
+      :is-show-errors="isSubmitted"
+    />
     <CButton
       :is-loading="loadingCreatePage"
-      :is-disabled="!form.valid || loadingCreatePage"
+      :is-disabled="loadingCreatePage"
       label="Create"
       class="button"
-      @click="createPage"
+      type="submit"
     />
   </form>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+
 import type { ApiPage } from '@/types/pages/ApiPage';
 
 import CButton from '@/components/common/c-button';
 import CFieldList from '@/components/common/c-field-list';
 
-import { useValidators } from '@/use/validators';
-import { useForm } from '@/use/form';
+import { useCreateFormPage } from './use/useCreateFormPage';
 
 const props = defineProps<{
   pages: ApiPage[];
@@ -33,22 +37,16 @@ const emit = defineEmits<{
   (e: 'create', page: Omit<ApiPage, 'id' | 'order'>): void;
 }>();
 
-const { required, exist } = useValidators();
-const form = useForm({
-  name: {
-    placeholder: 'Name',
-    validators: {
-      required,
-      exist: exist(props.pages.map((p) => p.name)),
-    },
-  },
-});
+const form = useCreateFormPage(props.pages);
+
+const isSubmitted = ref(false);
 
 const createPage = () => {
-  emit('create', {
-    name: form.name.value,
-    meta: {},
-  });
+  isSubmitted.value = true;
+
+  if (!form.isValid.value) return;
+
+  emit('create', form.getData());
 };
 </script>
 
