@@ -1,11 +1,131 @@
 <template>
   <div class="u-block-edit-form">
     <h4>Edit block</h4>
-    <div v-if="block.type === BLOCK_TYPES.TEXT">
-      <CFieldList :fields="formText.getFields()" />
+    <div v-if="block.type === 'TEXT'">
+      <CField
+        :errors="formText.text.errors"
+        class="field"
+      >
+        <CTextarea
+          v-model="formText.text.value"
+          v-focus
+          class="textarea"
+          placeholder="Text"
+        />
+      </CField>
+      <CField
+        :errors="formText.subtext.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formText.subtext.value"
+          class="input"
+          placeholder="Subtext"
+        />
+      </CField>
+      <CField
+        :errors="formText.title.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formText.title.value"
+          class="input"
+          placeholder="Title"
+        />
+      </CField>
+      <CField
+        :errors="formText.fontWeight.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formText.fontWeight.value"
+          class="input"
+          placeholder="Font Weight"
+        />
+      </CField>
+      <CField
+        :errors="formText.fontSize.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formText.fontSize.value"
+          class="input"
+          placeholder="Font Size"
+        />
+      </CField>
+      <CField
+        :errors="formText.color.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formText.color.value"
+          class="input"
+          placeholder="Color"
+        />
+      </CField>
     </div>
-    <div v-else-if="block.type === BLOCK_TYPES.IMAGE">
-      <CFieldList :fields="formImage.getFields()" />
+    <div v-else>
+      <CField
+        :errors="formImage.url.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.url.value"
+          v-focus
+          class="input"
+          placeholder="Url"
+        />
+      </CField>
+      <CField
+        :errors="formImage.subtext.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.subtext.value"
+          class="input"
+          placeholder="Subtext"
+        />
+      </CField>
+      <CField
+        :errors="formImage.title.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.title.value"
+          class="input"
+          placeholder="Title"
+        />
+      </CField>
+      <CField
+        :errors="formImage.alt.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.alt.value"
+          class="input"
+          placeholder="Alt"
+        />
+      </CField>
+      <CField
+        :errors="formImage.width.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.width.value"
+          class="input"
+          placeholder="Width"
+        />
+      </CField>
+      <CField
+        :errors="formImage.height.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.height.value"
+          class="input"
+          placeholder="Height"
+        />
+      </CField>
     </div>
     <CButton
       :is-loading="loadingEditBlock"
@@ -28,15 +148,14 @@ import type { ImageStyles } from '@/types/blocks/ImageStyles';
 import type { TextContent } from '@/types/blocks/TextContent';
 import type { ApiUpdateBlock } from '@/types/blocks/ApiUpdateBlock';
 
+import CField from '@/components/common/c-field';
+import CInput from '@/components/common/c-input';
 import CButton from '@/components/common/c-button';
 import CTextarea from '@/components/common/c-textarea';
-import CFieldList from '@/components/common/c-field-list';
 
 import { useValidators } from '@/use/validators';
 import { useEventListener } from '@/use/use-event-listener';
 import { useForm } from '@/use/form';
-
-import { BLOCK_TYPES } from '@/constants/block-types';
 
 const props = defineProps<{
   slotId: number;
@@ -63,104 +182,92 @@ const {
   cssWidthOrHeight,
   optional,
 } = useValidators();
+console.log(props.block.content);
 const formText = useForm({
   text: {
     value:
-      props.block.type === BLOCK_TYPES.TEXT
+      props.block.type === 'TEXT'
         ? (props.block.content as TextContent).text
         : '',
-    placeholder: 'Text',
-    component: CTextarea,
     validators: {
       required,
     },
   },
   subtext: {
-    value: props.block.content.subtext,
-    placeholder: 'Subtext',
+    value: props.block.content.subtext ?? '',
   },
   title: {
-    value: props.block.attributes?.title,
-    placeholder: 'Title',
+    value: props.block.attributes?.title ?? '',
   },
   fontWeight: {
-    value: (props.block.styles as TextStyles)?.fontWeight,
-    placeholder: 'Font weight',
+    value: (props.block.styles as TextStyles)?.fontWeight ?? '',
     validators: {
       optional,
       cssWeight,
     },
   },
   fontSize: {
-    value: (props.block.styles as TextStyles)?.fontSize,
-    placeholder: 'Font size',
+    value: (props.block.styles as TextStyles)?.fontSize ?? '',
     validators: {
       optional,
       cssFontSize,
     },
   },
   color: {
-    value: (props.block.styles as TextStyles)?.color,
-    placeholder: 'Color',
+    value: (props.block.styles as TextStyles)?.color ?? '',
     validators: {
       optional,
       cssColor,
     },
   },
 });
+console.log(props.block);
 const formImage = useForm({
   url: {
     value:
-      props.block.type === BLOCK_TYPES.IMAGE
+      props.block.type === 'IMAGE'
         ? (props.block.content as ImageContent).url
         : '',
-    placeholder: 'Url',
     validators: {
       required,
       url,
     },
   },
   subtext: {
-    value: props.block.content.subtext,
-    placeholder: 'Subtext',
+    value: props.block.content.subtext ?? '',
   },
   title: {
-    value: props.block.attributes?.title,
-    placeholder: 'Title',
+    value: props.block.attributes?.title ?? '',
   },
   alt: {
-    value: (props.block.attributes as ImageAttributes)?.alt,
-    placeholder: 'Alt',
+    value: (props.block.attributes as ImageAttributes)?.alt ?? '',
   },
   width: {
-    value: (props.block.styles as ImageStyles)?.width,
-    placeholder: 'Width',
+    value: (props.block.styles as ImageStyles)?.width ?? '',
     validators: {
       optional,
       cssWidthOrHeight,
     },
   },
   height: {
-    value: (props.block.styles as ImageStyles)?.height,
-    placeholder: 'Height',
+    value: (props.block.styles as ImageStyles)?.height ?? '',
     validators: {
       optional,
       cssWidthOrHeight,
     },
   },
 });
-
 const formValid = computed(() =>
-  props.block.type === BLOCK_TYPES.TEXT ? formText.valid : formImage.valid
+  props.block.type === 'TEXT' ? formText.valid : formImage.valid
 );
 
 function removeEmpty(obj: object) {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null));
 }
 const editBlock = () => {
-  const form = props.block.type === BLOCK_TYPES.TEXT ? formText : formImage;
+  const form = props.block.type === 'TEXT' ? formText : formImage;
   const content: unknown =
-    props.block.type === BLOCK_TYPES.TEXT
+    props.block.type === 'TEXT'
       ? {
           text: form.text.value,
           subtext: form.subtext.value === '' ? undefined : form.subtext.value,
@@ -170,7 +277,7 @@ const editBlock = () => {
           subtext: form.subtext.value === '' ? undefined : form.subtext.value,
         };
   const attributes =
-    props.block.type === BLOCK_TYPES.TEXT
+    props.block.type === 'TEXT'
       ? {
           title: form.title.value === '' ? undefined : form.title.value,
         }
@@ -179,7 +286,7 @@ const editBlock = () => {
           alt: form.alt.value === '' ? undefined : form.alt.value,
         };
   const styles: any =
-    props.block.type === BLOCK_TYPES.TEXT
+    props.block.type === 'TEXT'
       ? {
           fontWeight:
             form.fontWeight.value === '' ? undefined : form.fontWeight.value,

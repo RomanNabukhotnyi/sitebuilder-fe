@@ -1,10 +1,18 @@
 <template>
-  <form
-    class="u-project-edit-form"
-    @submit.prevent="editProject"
-  >
+  <div class="u-project-edit-form">
     <h4>Edit project</h4>
-    <CFieldList :fields="form.getFields()" />
+    <CField
+      :errors="form.name.errors"
+      class="field"
+    >
+      <CInput
+        v-model="form.name.value"
+        v-focus
+        class="input"
+        type="text"
+        placeholder="Name"
+      />
+    </CField>
     <CButton
       :is-loading="loadingEditProject"
       :is-disabled="!form.valid || loadingEditProject"
@@ -12,16 +20,18 @@
       class="button"
       @click="editProject"
     />
-  </form>
+  </div>
 </template>
 
 <script setup lang="ts">
+import CField from '@/components/common/c-field';
+import CButton from '@/components/common/c-button';
+import CInput from '@/components/common/c-input';
+
 import type { ApiProject } from '@/types/projects/ApiProject';
 
-import CButton from '@/components/common/c-button';
-import CFieldList from '@/components/common/c-field-list';
-
 import { useValidators } from '@/use/validators';
+import { useEventListener } from '@/use/use-event-listener';
 import { useForm } from '@/use/form';
 
 const props = defineProps<{
@@ -34,11 +44,11 @@ const emit = defineEmits<{
   (e: 'edit', project: ApiProject): void;
 }>();
 
+const { windowEventListener } = useEventListener();
 const { required, exist } = useValidators();
 const form = useForm({
   name: {
     value: props.project.name,
-    placeholder: 'Name',
     validators: {
       required,
       exist: exist(
@@ -56,6 +66,12 @@ const editProject = () => {
     name: form.name.value,
   });
 };
+
+windowEventListener('keyup', (event) => {
+  if (event.code === 'Enter' && form.valid) {
+    editProject();
+  }
+});
 </script>
 
 <style lang="scss" src="./u-project-edit-form.scss" />

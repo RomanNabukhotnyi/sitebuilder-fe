@@ -1,34 +1,26 @@
 <template>
   <div class="c-field">
     <slot />
-    <div v-if="isErrorsExist && touched">
+    <div v-if="errors && errors.length !== 0">
       <p
         class="field__error"
       >
-        {{ errors![0].message }}
+        {{ errors[0].message }}
       </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-
-import type { ValidatorError } from '@/types/validators/ValidatorError';
+import type { ValidatorResult } from '@/types/ValidatorResult';
 
 interface IProps {
-  errors?: ValidatorError[] | null;
-  touched?: boolean;
+  errors?: Omit<ValidatorResult, 'isValid'>[] | null;
 }
 
-const props = withDefaults(defineProps<IProps>(), {
+withDefaults(defineProps<IProps>(), {
   errors: null,
-  touched: false,
 });
-
-const isErrorsExist = computed(() => {
-     return !!props.errors?.length;
- })
 </script>
 
 <style lang="scss" src="./c-field.scss" />

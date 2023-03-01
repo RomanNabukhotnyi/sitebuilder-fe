@@ -4,7 +4,6 @@
     :type="type"
     :placeholder="placeholder"
     class="c-input"
-    @blur="touch"
   >
 </template>
 
@@ -25,7 +24,6 @@ interface IProps {
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
-  (e: 'touch'): void;
 }>();
 
 const value = computed({
@@ -36,10 +34,6 @@ const value = computed({
     emit('update:modelValue', value);
   },
 });
-
-const touch = () => {
-  emit('touch');
-}
 </script>
 
 <style lang="scss" src="./c.input.scss" />

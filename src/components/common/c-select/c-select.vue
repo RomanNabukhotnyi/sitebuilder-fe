@@ -21,7 +21,7 @@
           v-for="option in options"
           :key="option.name"
           class="option"
-          @click="selectOption(option.value)"
+          @click="selectOption(option)"
         >
           {{ option.name }}
         </div>
@@ -40,21 +40,20 @@ import CIconChevron from '../c-icon-chevron';
 import { useEventListener } from '@/use/use-event-listener';
 
 defineProps<{
-  modelValue: string;
   selected: string;
   options: Option[];
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
+  (e: 'select', option: Option): void;
 }>();
 
 const { windowEventListener } = useEventListener();
 const optionsVisible = ref(false);
 const el = ref<HTMLElement | null>(null);
 
-const selectOption = (value: string) => {
-  emit('update:modelValue', value);
+const selectOption = (option: Option) => {
+  emit('select', option);
   optionsVisible.value = false;
 };
 const hideOptions = (event: Event) => {

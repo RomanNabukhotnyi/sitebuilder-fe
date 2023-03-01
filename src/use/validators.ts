@@ -1,4 +1,4 @@
-import type { ValidatorResult } from "@/types/validators/ValidatorResult";
+import type { ValidatorResult } from "@/types/ValidatorResult";
 
 const widthAndHeightKeywords = ['auto', 'max-content', 'min-content'];
 const weightKeywords = ['normal', 'bold', 'lighter', 'bolder'];
@@ -38,7 +38,7 @@ export const useValidators = () => {
   const required = (value: string): ValidatorResult => {
     const isValid = !!value;
     return {
-      name: 'required',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : 'Value is required',
     };
@@ -46,7 +46,7 @@ export const useValidators = () => {
   const optional = (value: string): ValidatorResult => {
     const isValid = !value;
     return {
-      name: 'optional',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : 'Value is optional',
     };
@@ -54,7 +54,7 @@ export const useValidators = () => {
   const minLength = (num: number) => (value: string): ValidatorResult => {
     const isValid = value.length >= num;
     return {
-      name: 'minLength',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : `Value length can't be less then ${num}. Now it is ${value.length}`,
     };
@@ -62,7 +62,7 @@ export const useValidators = () => {
   const email = (value: string): ValidatorResult => {
     const isValid = !!value.match(/^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/);
     return {
-      name: 'email',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : `That's not a valid email`,
     };
@@ -70,7 +70,7 @@ export const useValidators = () => {
   const exist = (values: string[]) => (value: string): ValidatorResult => {
     const isValid = !values.includes(value);
     return {
-      name: 'exist',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : `Value already exist`,
     };
@@ -80,7 +80,7 @@ export const useValidators = () => {
       /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/
     );
     return {
-      name: 'url',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : `That’s not a valid url`,
     };
@@ -92,7 +92,7 @@ export const useValidators = () => {
     !!value.match(/\d+[.\d+]*px/g) ||
     !!value.match(/\d+[.\d+]*(px|rem|em|ex)/g);
     return {
-      name: 'cssSize',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : `That’s not a valid css size`,
     };
@@ -100,7 +100,7 @@ export const useValidators = () => {
   const cssWidthOrHeight = (value: string): ValidatorResult => {
     const isValid = cssSize(value).isValid || !!widthAndHeightKeywords.find((k) => k === value);
     return {
-      name: 'cssWidthOrHeight',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : `That’s not a valid css width or height`,
     };
@@ -109,7 +109,7 @@ export const useValidators = () => {
     const isValid = (Number(value) < 1000 && Number(value) > 1) ||
     !!weightKeywords.find((k) => k === value);
     return {
-      name: 'cssWeight',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : `That’s not a valid css weight`,
     };
@@ -117,7 +117,7 @@ export const useValidators = () => {
   const cssFontSize = (value: string): ValidatorResult => {
     const isValid = cssSize(value).isValid || !!fontSizeKeywords.find((k) => k === value);
     return {
-      name: 'cssFontSize',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : `That’s not a valid css font size`,
     };
@@ -125,7 +125,7 @@ export const useValidators = () => {
   const cssColor = (value: string): ValidatorResult => {
     const isValid = !!value.match(/^#[a-z0-9]{6}$/g) || !!colorKeywords.find((k) => k === value);
     return {
-      name: 'cssColor',
+      name: Function.name,
       isValid,
       message: isValid ? 'OK' : `That’s not a valid css color`,
     };

@@ -3,7 +3,29 @@
     class="u-sign-up-form"
     @submit.prevent="signUp"
   >
-    <CFieldList :fields="form.getFields()" />
+    <CField
+      :errors="form.email.errors"
+      class="field"
+    >
+      <CInput
+        v-model="form.email.value"
+        class="input"
+        name="Email"
+        placeholder="Work email"
+      />
+    </CField>
+    <CField 
+      :errors="form.password.errors"
+      class="field"
+    >
+      <CInput
+        v-model="form.password.value"
+        class="input"
+        name="Password"
+        type="password"
+        placeholder="Password"
+      />
+    </CField>
     <CButton
       :is-loading="loading"
       :is-disabled="!form.valid || loading"
@@ -17,8 +39,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import CField from '@/components/common/c-field';
+import CInput from '@/components/common/c-input';
 import CButton from '@/components/common/c-button';
-import CFieldList from '@/components/common/c-field-list';
 
 import { useForm } from '@/use/form';
 import { useRouter } from 'vue-router';
@@ -33,15 +56,14 @@ const authStore = useAuthStore();
 const { required, minLength, email } = useValidators();
 const form = useForm({
   email: {
-    placeholder: 'Email',
+    value: '',
     validators: {
       required,
       email,
     },
   },
   password: {
-    placeholder: 'Password',
-    type: 'password',
+    value: '',
     validators: {
       required,
       minLength: minLength(8),

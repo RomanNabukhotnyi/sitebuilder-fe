@@ -40,11 +40,20 @@
       v-if="isOwner"
       class="field"
     >
-      <CFieldList :fields="form.getFields()" />
+      <CField
+        :errors="form.email.errors"
+      >
+        <CInput
+          v-model="form.email.value"
+          v-focus
+          class="input"
+          type="text"
+          placeholder="Email"
+        />
+      </CField>
       <CSelect
-        v-model="selectedPermission"
         class="select"
-        :selected="selectedPermission"
+        :selected="selected"
         :options="options"
         @select="selectOption"
       />
@@ -67,15 +76,14 @@ import type { PreparedProject } from '@/types/projects/PreparedProject';
 import type { Option } from '@/types/Option';
 
 import CTransitionList from '@/components/common/c-transition-list';
+import CField from '@/components/common/c-field';
 import CButton from '@/components/common/c-button';
+import CInput from '@/components/common/c-input';
 import CSelect from '@/components/common/c-select';
-import CFieldList from '@/components/common/c-field-list';
 
 import { useValidators } from '@/use/validators';
 import { useEventListener } from '@/use/use-event-listener';
 import { useForm } from '@/use/form';
-
-import { PERMISSIONS } from '@/constants/permissions';
 
 const { windowEventListener } = useEventListener();
 
@@ -97,13 +105,13 @@ const isOwner = !!props.project.permissions.find(
     permission.email === props.user?.email && permission.permission === 'OWNER'
 );
 const deleteId = ref<number | null>(null);
-const selectedPermission = ref(PERMISSIONS.DESIGNER);
+const selectedPermission = ref<'OWNER' | 'DESIGNER'>('DESIGNER');
+const selected = ref('Designer');
 const options = [{ name: 'Designer', value: 'DESIGNER' }];
 const { required, email } = useValidators();
 const form = useForm({
   email: {
-    placeholder: 'Email',
-    componentClass: 'input',
+    value: '',
     validators: {
       required,
       email,
@@ -113,6 +121,7 @@ const form = useForm({
 
 const selectOption = (option: Option<'OWNER' | 'DESIGNER'>) => {
   selectedPermission.value = option.value;
+  selected.value = option.name;
 };
 const invite = () => {
   emit('invite', props.project.id, {
