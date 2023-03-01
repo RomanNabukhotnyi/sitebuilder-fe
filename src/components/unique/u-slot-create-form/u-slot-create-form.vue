@@ -2,10 +2,10 @@
   <div class="u-slot-create-form">
     <h4>Create slot</h4>
     <CSelect
+      v-model="selectedType"
       class="select"
-      :selected="'Type: ' + selected"
+      :selected="'Type: ' + selectedType"
       :options="options"
-      @select="selectOption"
     />
     <CButton
       :is-loading="loadingCreateSlot"
@@ -24,19 +24,18 @@ import CButton from '@/components/common/c-button';
 import CSelect from '@/components/common/c-select';
 
 import { useEventListener } from '@/use/use-event-listener';
-import type { Option } from '@/types/Option';
+import { SLOT_TYPES } from '@/constants/slot-types';
 
 defineProps<{
   loadingCreateSlot: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: 'createSlot', value: { type: 'STATIC' | 'DYNAMIC' }): void;
+  (e: 'createSlot', value: { type: string }): void;
 }>();
 
 const { windowEventListener } = useEventListener();
-const type = ref<'STATIC' | 'DYNAMIC'>('DYNAMIC');
-const selected = ref('dynamic');
+const selectedType = ref(SLOT_TYPES.DYNAMIC);
 const options = [
   { name: 'static', value: 'STATIC' },
   { name: 'dynamic', value: 'DYNAMIC' },
@@ -44,12 +43,8 @@ const options = [
 
 const createSlot = () => {
   emit('createSlot', {
-    type: type.value,
+    type: selectedType.value,
   });
-};
-const selectOption = (option: Option<'STATIC' | 'DYNAMIC'>) => {
-  type.value = option.value;
-  selected.value = option.name;
 };
 
 windowEventListener('keyup', (event) => {
