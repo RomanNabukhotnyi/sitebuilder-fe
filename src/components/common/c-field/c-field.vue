@@ -1,7 +1,7 @@
 <template>
   <div class="c-field">
     <slot />
-    <div v-if="isErrorsExist && isShowErrors">
+    <div v-if="isErrorsExist && touched">
       <p
         class="field__error"
       >
@@ -18,12 +18,12 @@ import type { ValidatorError } from '@/types/validators/ValidatorError';
 
 interface IProps {
   errors?: ValidatorError[] | null;
-  isShowErrors?: boolean;
+  touched?: boolean;
 }
 
 const props = withDefaults(defineProps<IProps>(), {
   errors: null,
-  isShowErrors: false,
+  touched: false,
 });
 
 const isErrorsExist = computed(() => {

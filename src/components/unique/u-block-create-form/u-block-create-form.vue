@@ -1,8 +1,5 @@
 <template>
-  <form
-    class="u-block-create-form"
-    @submit.prevent="createBlock"
-  >
+  <div class="u-block-create-form">
     <h4>Create block</h4>
     <CSelect
       v-model="selectedType"
@@ -11,25 +8,19 @@
       :options="options"
     />
     <div v-if="selectedType === BLOCK_TYPES.TEXT">
-      <CFieldList
-        v-model:fields="formText.fields"
-        :is-show-errors="isSubmitted"
-      />
+      <CFieldList :fields="formText.getFields()" />
     </div>
     <div v-else-if="selectedType === BLOCK_TYPES.IMAGE">
-      <CFieldList
-        v-model:fields="formImage.fields"
-        :is-show-errors="isSubmitted"
-      />
+      <CFieldList :fields="formImage.getFields()" />
     </div>
     <CButton
       :is-loading="loadingCreateBlock"
-      :is-disabled="loadingCreateBlock"
-      type="submit"
+      :is-disabled="!formValid || loadingCreateBlock"
       label="Create"
       class="button"
+      @click="createBlock"
     />
-  </form>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -39,10 +30,12 @@ import type { ApiBlock } from '@/types/blocks/ApiBlock';
 
 import CSelect from '@/components/common/c-select';
 import CButton from '@/components/common/c-button';
+import CTextarea from '@/components/common/c-textarea';
 import CFieldList from '@/components/common/c-field-list';
 
-import { useCreateFormBlockText } from './use/useCreateFormBlockText';
-import { useCreateFormBlockImage } from './use/useCreateFormBlockImage';
+import { useForm } from '@/use/form';
+import { useValidators } from '@/use/validators';
+import { useEventListener } from '@/use/use-event-listener';
 
 import { BLOCK_TYPES } from '@/constants/block-types';
 
@@ -55,35 +48,137 @@ const emit = defineEmits<{
   (e: 'createBlock', slotId: number, value: ApiBlock): void;
 }>();
 
-const formText = useCreateFormBlockText();
-const formImage = useCreateFormBlockImage();
+const {
+  required,
+  url,
+  cssWeight,
+  cssFontSize,
+  cssColor,
+  cssWidthOrHeight,
+  optional,
+} = useValidators();
+const { windowEventListener } = useEventListener();
+const formText = useForm({
+  text: {
+    placeholder: 'Text',
+    component: CTextarea,
+    validators: {
+      required,
+    },
+  },
+  subtext: {
+    placeholder: 'Subtext',
+  },
+  title: {
+    placeholder: 'Title',
+  },
+  fontWeight: {
+    placeholder: 'Font weight',
+    validators: {
+      optional,
+      cssWeight,
+    },
+  },
+  fontSize: {
+    placeholder: 'Font size',
+    validators: {
+      optional,
+      cssFontSize,
+    },
+  },
+  color: {
+    placeholder: 'Color',
+    validators: {
+      optional,
+      cssColor,
+    },
+  },
+});
+const formImage = useForm({
+  url: {
+    placeholder: 'Url',
+    validators: {
+      required,
+      url,
+    },
+  },
+  subtext: {
+    placeholder: 'Subtext',
+  },
+  title: {
+    placeholder: 'Title',
+  },
+  alt: {
+    placeholder: 'Alt',
+  },
+  width: {
+    placeholder: 'Width',
+    validators: {
+      optional,
+      cssWidthOrHeight,
+    },
+  },
+  height: {
+    placeholder: 'Height',
+    validators: {
+      optional,
+      cssWidthOrHeight,
+    },
+  },
+});
 const selectedType = ref(BLOCK_TYPES.TEXT);
 const options = [
   { name: 'text', value: BLOCK_TYPES.TEXT },
   { name: 'image', value: BLOCK_TYPES.IMAGE },
 ];
-const isFormValid = computed(() =>
-  selectedType.value === BLOCK_TYPES.TEXT
-    ? formText.isValid.value
-    : formImage.isValid.value
+const formValid = computed(() =>
+  selectedType.value === BLOCK_TYPES.TEXT ? formText.valid : formImage.valid
 );
-const isSubmitted = ref(false);
 
+function removeEmpty(obj: object) {
+  return Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null));
+}
 const createBlock = () => {
-  isSubmitted.value = true;
-
-  if (!isFormValid.value) return;
-
-  const { content, attributes, styles } =
+  const form = selectedType.value === BLOCK_TYPES.TEXT ? formText : formImage;
+  const content =
     selectedType.value === BLOCK_TYPES.TEXT
-      ? formText.getData()
-      : formImage.getData();
-
+      ? {
+          text: form.text.value,
+          subtext: form.subtext.value === '' ? undefined : form.subtext.value,
+        }
+      : {
+          url: form.url.value,
+          subtext: form.subtext.value === '' ? undefined : form.subtext.value,
+        };
+  const attributes =
+    selectedType.value === BLOCK_TYPES.TEXT
+      ? {
+          title: form.title.value === '' ? undefined : form.title.value,
+        }
+      : {
+          title: form.title.value === '' ? undefined : form.title.value,
+          alt: form.alt.value === '' ? undefined : form.alt.value,
+        };
+  const styles =
+    selectedType.value === BLOCK_TYPES.TEXT
+      ? {
+          fontWeight:
+            form.fontWeight.value === '' ? undefined : form.fontWeight.value,
+          fontSize:
+            form.fontSize.value === '' ? undefined : form.fontSize.value,
+          color: form.color.value === '' ? undefined : form.color.value,
+        }
+      : {
+          width: form.width.value === '' ? undefined : form.width.value,
+          height: form.height.value === '' ? undefined : form.height.value,
+        };
   emit('createBlock', props.slotId, {
     type: selectedType.value,
     content,
-    attributes,
-    styles,
+    attributes: !Object.keys(removeEmpty(attributes)).length
+      ? undefined
+      : attributes,
+    styles: !Object.keys(removeEmpty(styles)).length ? undefined : styles,
   } as unknown as ApiBlock);
 };
 
@@ -92,6 +187,12 @@ watch(selectedType, () => {
     formText.reset();
   } else {
     formImage.reset();
+  }
+});
+
+windowEventListener('keyup', (event) => {
+  if (event.code === 'Enter' && formValid.value) {
+    createBlock();
   }
 });
 </script>
