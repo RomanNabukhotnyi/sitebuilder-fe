@@ -1,15 +1,15 @@
-import type { Component, Ref } from "vue";
+import type { Component } from "vue";
 
 import type { ValidatorError } from "../validators/ValidatorError";
 
-export interface Field {
+export interface PreparedField {
     key: string;
-    value: Ref<string>;
-    valid: Ref<boolean>;
+    value: string;
+    valid: boolean;
     type?: string;
     fieldClass?: string;
     componentClass?: string;
     placeholder?: string;
     component: Component;
-    errors: Ref<ValidatorError[]>;
+    errors: ValidatorError[];
   }

@@ -4,29 +4,25 @@
     @submit.prevent="editProject"
   >
     <h4>Edit project</h4>
-    <CFieldList
-      v-model:fields="form.fields"
-      :is-show-errors="isSubmitted"
-    />
+    <CFieldList :fields="form.getFields()" />
     <CButton
       :is-loading="loadingEditProject"
-      :is-disabled="loadingEditProject"
+      :is-disabled="!form.valid || loadingEditProject"
       label="Edit"
       class="button"
-      type="submit"
+      @click="editProject"
     />
   </form>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-
 import type { ApiProject } from '@/types/projects/ApiProject';
 
 import CButton from '@/components/common/c-button';
 import CFieldList from '@/components/common/c-field-list';
 
-import { useEditFormProject } from './use/useEditFormProject';
+import { useValidators } from '@/use/validators';
+import { useForm } from '@/use/form';
 
 const props = defineProps<{
   project: ApiProject;
@@ -38,18 +34,26 @@ const emit = defineEmits<{
   (e: 'edit', project: ApiProject): void;
 }>();
 
-const form = useEditFormProject(props.project, props.projects);
-
-const isSubmitted = ref(false);
+const { required, exist } = useValidators();
+const form = useForm({
+  name: {
+    value: props.project.name,
+    placeholder: 'Name',
+    validators: {
+      required,
+      exist: exist(
+        props.projects
+          .map((p) => p.name)
+          .filter((name) => name !== props.project.name)
+      ),
+    },
+  },
+});
 
 const editProject = () => {
-  isSubmitted.value = true;
-
-  if (!form.isValid.value) return;
-  
   emit('edit', {
     ...props.project,
-    ...form.getData(),
+    name: form.name.value,
   });
 };
 </script>

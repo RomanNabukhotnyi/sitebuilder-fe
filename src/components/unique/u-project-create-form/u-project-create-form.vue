@@ -4,29 +4,25 @@
     @submit.prevent="createProject"
   >
     <h4>Create project</h4>
-    <CFieldList
-      v-model:fields="form.fields"
-      :is-show-errors="isSubmitted"
-    />
+    <CFieldList :fields="form.getFields()" />
     <CButton
       :is-loading="loadingCreateProject"
-      :is-disabled="loadingCreateProject"
+      :is-disabled="!form.valid || loadingCreateProject"
       label="Create"
       class="button"
-      type="submit"
+      @click="createProject"
     />
   </form>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-
 import type { ApiProject } from '@/types/projects/ApiProject';
 
 import CButton from '@/components/common/c-button';
 import CFieldList from '@/components/common/c-field-list';
 
-import { useCreateFormProject } from './use/useCreateFormProject';
+import { useValidators } from '@/use/validators';
+import { useForm } from '@/use/form';
 
 const props = defineProps<{
   projects: ApiProject[];
@@ -37,16 +33,21 @@ const emit = defineEmits<{
   (e: 'create', project: Pick<ApiProject, 'name'>): void;
 }>();
 
-const form = useCreateFormProject(props.projects);
-
-const isSubmitted = ref(false);
+const { required, exist } = useValidators();
+const form = useForm({
+  name: {
+    placeholder: 'Name',
+    validators: {
+      required,
+      exist: exist(props.projects.map((p) => p.name)),
+    },
+  },
+});
 
 const createProject = () => {
-  isSubmitted.value = true;
-
-  if (!form.isValid.value) return;
-
-  emit('create', form.getData());
+  emit('create', {
+    name: form.name.value,
+  });
 };
 </script>
 

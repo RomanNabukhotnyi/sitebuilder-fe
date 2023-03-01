@@ -36,15 +36,11 @@
         </div>
       </CTransitionList>
     </div>
-    <form
+    <div
       v-if="isOwner"
-      class="form"
-      @submit.prevent="invite"
+      class="field"
     >
-      <CFieldList
-        v-model:fields="form.fields"
-        :is-show-errors="isSubmitted"
-      />
+      <CFieldList :fields="form.getFields()" />
       <CSelect
         v-model="selectedPermission"
         class="select"
@@ -54,12 +50,12 @@
       />
       <CButton
         :is-loading="loadingAddPermission"
-        :is-disabled="loadingAddPermission"
+        :is-disabled="!form.valid || loadingAddPermission"
         label="Invite"
         class="button"
-        type="submit"
+        @click="invite"
       />
-    </form>
+    </div>
   </div>
 </template>
 
@@ -75,9 +71,13 @@ import CButton from '@/components/common/c-button';
 import CSelect from '@/components/common/c-select';
 import CFieldList from '@/components/common/c-field-list';
 
-import { useCreateFormPermission } from './use/useCreateFormPermission';
+import { useValidators } from '@/use/validators';
+import { useEventListener } from '@/use/use-event-listener';
+import { useForm } from '@/use/form';
 
 import { PERMISSIONS } from '@/constants/permissions';
+
+const { windowEventListener } = useEventListener();
 
 const props = defineProps<{
   project: PreparedProject;
@@ -92,8 +92,6 @@ const emit = defineEmits<{
   (e: 'delete', projectId: number, userId: number): void;
 }>();
 
-const form = useCreateFormPermission();
-
 const isOwner = !!props.project.permissions.find(
   (permission) =>
     permission.email === props.user?.email && permission.permission === 'OWNER'
@@ -101,26 +99,38 @@ const isOwner = !!props.project.permissions.find(
 const deleteId = ref<number | null>(null);
 const selectedPermission = ref(PERMISSIONS.DESIGNER);
 const options = [{ name: 'Designer', value: 'DESIGNER' }];
-const isSubmitted = ref(false);
+const { required, email } = useValidators();
+const form = useForm({
+  email: {
+    placeholder: 'Email',
+    componentClass: 'input',
+    validators: {
+      required,
+      email,
+    },
+  },
+});
 
 const selectOption = (option: Option<'OWNER' | 'DESIGNER'>) => {
   selectedPermission.value = option.value;
 };
 const invite = () => {
-  isSubmitted.value = true;
-
-  if (!form.isValid.value) return;
-
   emit('invite', props.project.id, {
-    ...form.getData(),
+    email: form.email.value,
     permission: selectedPermission.value,
   });
-  form.fields.email.value = '';
+  form.email.value = '';
 };
 const deletePermission = (permissionId: number, userId: number) => {
   deleteId.value = permissionId;
   emit('delete', props.project.id, userId);
 };
+
+windowEventListener('keyup', (event) => {
+  if (event.code === 'Enter' && form.valid) {
+    invite();
+  }
+});
 </script>
 
 <style lang="scss" src="./u-project-user-permissions.scss" />
