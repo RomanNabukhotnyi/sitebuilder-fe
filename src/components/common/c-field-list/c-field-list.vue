@@ -1,7 +1,7 @@
 <template>
   <div class="c-field-list">
     <CField
-      v-for="field in fields"
+      v-for="(field, name, index) in fields"
       :key="field.key"
       :errors="field.errors"
       :is-show-errors="isShowErrors"
@@ -10,6 +10,7 @@
       <component
         :is="field.component"
         v-model="field.value"
+        v-focus="index === 0"
         :class="field.componentClass"
         :type="field.type"
         :placeholder="field.placeholder"
