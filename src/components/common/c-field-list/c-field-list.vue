@@ -1,49 +1,36 @@
 <template>
   <div class="c-field-list">
-    <template v-if="!fields.length">
-      fields list empty
-    </template>
-    <template v-else>
-      <CField
-        v-for="(field, index) in fields"
-        :key="field.key"
-        :errors="field.errors"
-        :touched="touchList[index]"
-        :class="field.fieldClass ?? 'field'"
-      >
-        <component
-          :is="field.component"
-          v-model="field.value"
-          v-focus="index === 0"
-          :class="field.componentClass"
-          :type="field.type"
-          :placeholder="field.placeholder"
-          @touch="touch(index)"
-        />
-      </CField>
-    </template>
+    <CField
+      v-for="field in fields"
+      :key="field.key"
+      :errors="field.errors"
+      :is-show-errors="isShowErrors"
+      :class="field.fieldClass ?? 'field'"
+    >
+      <component
+        :is="field.component"
+        v-model="field.value"
+        :class="field.componentClass"
+        :type="field.type"
+        :placeholder="field.placeholder"
+      />
+    </CField>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { PreparedField } from '@/types/fields/PreparedField';
+import type { Field } from '@/types/fields/Field';
 
 import CField from '../c-field';
 
 interface IProps {
-  fields?: PreparedField[];
+  fields: Record<string, Field>;
+  isShowErrors?: boolean;
 }
 
-const props = withDefaults(defineProps<IProps>(), {
-  fields: () => [],
+withDefaults(defineProps<IProps>(), {
+  isShowErrors: false,
 });
-
-const touchList = ref(Array<boolean>(props.fields.length).fill(false));
-
-const touch = (index: number) => {
-  touchList.value[index] = true;
-}
 </script>
 
 <style lang="scss" src="./c-field-list.scss" />
