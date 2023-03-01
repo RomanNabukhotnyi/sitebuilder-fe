@@ -2,16 +2,136 @@
   <div class="u-block-create-form">
     <h4>Create block</h4>
     <CSelect
-      v-model="selectedType"
       class="select"
-      :selected="'Type: ' + selectedType"
+      :selected="'Type: ' + selected"
       :options="options"
+      @select="selectOption"
     />
-    <div v-if="selectedType === BLOCK_TYPES.TEXT">
-      <CFieldList :fields="formText.getFields()" />
+    <div v-if="selected === 'text'">
+      <CField
+        :errors="formText.text.errors"
+        class="field"
+      >
+        <CTextarea
+          v-model="formText.text.value"
+          v-focus
+          class="textarea"
+          placeholder="Text"
+        />
+      </CField>
+      <CField
+        :errors="formText.subtext.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formText.subtext.value"
+          class="input"
+          placeholder="Subtext"
+        />
+      </CField>
+      <CField
+        :errors="formText.title.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formText.title.value"
+          class="input"
+          placeholder="Title"
+        />
+      </CField>
+      <CField
+        :errors="formText.fontWeight.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formText.fontWeight.value"
+          class="input"
+          placeholder="Font Weight"
+        />
+      </CField>
+      <CField
+        :errors="formText.fontSize.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formText.fontSize.value"
+          class="input"
+          placeholder="Font Size"
+        />
+      </CField>
+      <CField
+        :errors="formText.color.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formText.color.value"
+          class="input"
+          placeholder="Color"
+        />
+      </CField>
     </div>
-    <div v-else-if="selectedType === BLOCK_TYPES.IMAGE">
-      <CFieldList :fields="formImage.getFields()" />
+    <div v-else>
+      <CField
+        :errors="formImage.url.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.url.value"
+          v-focus
+          class="input"
+          placeholder="Url"
+        />
+      </CField>
+      <CField
+        :errors="formImage.subtext.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.subtext.value"
+          class="input"
+          placeholder="Subtext"
+        />
+      </CField>
+      <CField
+        :errors="formImage.title.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.title.value"
+          class="input"
+          placeholder="Title"
+        />
+      </CField>
+      <CField
+        :errors="formImage.alt.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.alt.value"
+          class="input"
+          placeholder="Alt"
+        />
+      </CField>
+      <CField
+        :errors="formImage.width.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.width.value"
+          class="input"
+          placeholder="Width"
+        />
+      </CField>
+      <CField
+        :errors="formImage.height.errors"
+        class="field"
+      >
+        <CInput
+          v-model="formImage.height.value"
+          class="input"
+          placeholder="Height"
+        />
+      </CField>
     </div>
     <CButton
       :is-loading="loadingCreateBlock"
@@ -24,20 +144,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 
+import type { Option } from '@/types/Option';
 import type { ApiBlock } from '@/types/blocks/ApiBlock';
 
+import CField from '@/components/common/c-field';
+import CInput from '@/components/common/c-input';
 import CSelect from '@/components/common/c-select';
 import CButton from '@/components/common/c-button';
 import CTextarea from '@/components/common/c-textarea';
-import CFieldList from '@/components/common/c-field-list';
 
 import { useForm } from '@/use/form';
 import { useValidators } from '@/use/validators';
 import { useEventListener } from '@/use/use-event-listener';
-
-import { BLOCK_TYPES } from '@/constants/block-types';
 
 const props = defineProps<{
   slotId: number;
@@ -60,34 +180,33 @@ const {
 const { windowEventListener } = useEventListener();
 const formText = useForm({
   text: {
-    placeholder: 'Text',
-    component: CTextarea,
+    value: '',
     validators: {
       required,
     },
   },
   subtext: {
-    placeholder: 'Subtext',
+    value: '',
   },
   title: {
-    placeholder: 'Title',
+    value: '',
   },
   fontWeight: {
-    placeholder: 'Font weight',
+    value: '',
     validators: {
       optional,
       cssWeight,
     },
   },
   fontSize: {
-    placeholder: 'Font size',
+    value: '',
     validators: {
       optional,
       cssFontSize,
     },
   },
   color: {
-    placeholder: 'Color',
+    value: '',
     validators: {
       optional,
       cssColor,
@@ -96,52 +215,57 @@ const formText = useForm({
 });
 const formImage = useForm({
   url: {
-    placeholder: 'Url',
+    value: '',
     validators: {
       required,
       url,
     },
   },
   subtext: {
-    placeholder: 'Subtext',
+    value: '',
   },
   title: {
-    placeholder: 'Title',
+    value: '',
   },
   alt: {
-    placeholder: 'Alt',
+    value: '',
   },
   width: {
-    placeholder: 'Width',
+    value: '',
     validators: {
       optional,
       cssWidthOrHeight,
     },
   },
   height: {
-    placeholder: 'Height',
+    value: '',
     validators: {
       optional,
       cssWidthOrHeight,
     },
   },
 });
-const selectedType = ref(BLOCK_TYPES.TEXT);
+const type = ref('TEXT');
+const selected = ref('text');
 const options = [
-  { name: 'text', value: BLOCK_TYPES.TEXT },
-  { name: 'image', value: BLOCK_TYPES.IMAGE },
+  { name: 'text', value: 'TEXT' },
+  { name: 'image', value: 'IMAGE' },
 ];
 const formValid = computed(() =>
-  selectedType.value === BLOCK_TYPES.TEXT ? formText.valid : formImage.valid
+  type.value === 'TEXT' ? formText.valid : formImage.valid
 );
-
+windowEventListener('keyup', (event) => {
+  if (event.code === 'Enter' && formValid.value) {
+    createBlock();
+  }
+});
 function removeEmpty(obj: object) {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null));
 }
 const createBlock = () => {
-  const form = selectedType.value === BLOCK_TYPES.TEXT ? formText : formImage;
+  const form = type.value === 'TEXT' ? formText : formImage;
   const content =
-    selectedType.value === BLOCK_TYPES.TEXT
+    type.value === 'TEXT'
       ? {
           text: form.text.value,
           subtext: form.subtext.value === '' ? undefined : form.subtext.value,
@@ -151,7 +275,7 @@ const createBlock = () => {
           subtext: form.subtext.value === '' ? undefined : form.subtext.value,
         };
   const attributes =
-    selectedType.value === BLOCK_TYPES.TEXT
+    type.value === 'TEXT'
       ? {
           title: form.title.value === '' ? undefined : form.title.value,
         }
@@ -160,7 +284,7 @@ const createBlock = () => {
           alt: form.alt.value === '' ? undefined : form.alt.value,
         };
   const styles =
-    selectedType.value === BLOCK_TYPES.TEXT
+    type.value === 'TEXT'
       ? {
           fontWeight:
             form.fontWeight.value === '' ? undefined : form.fontWeight.value,
@@ -173,7 +297,7 @@ const createBlock = () => {
           height: form.height.value === '' ? undefined : form.height.value,
         };
   emit('createBlock', props.slotId, {
-    type: selectedType.value,
+    type: type.value,
     content,
     attributes: !Object.keys(removeEmpty(attributes)).length
       ? undefined
@@ -181,20 +305,10 @@ const createBlock = () => {
     styles: !Object.keys(removeEmpty(styles)).length ? undefined : styles,
   } as unknown as ApiBlock);
 };
-
-watch(selectedType, () => {
-  if (selectedType.value === BLOCK_TYPES.TEXT) {
-    formText.reset();
-  } else {
-    formImage.reset();
-  }
-});
-
-windowEventListener('keyup', (event) => {
-  if (event.code === 'Enter' && formValid.value) {
-    createBlock();
-  }
-});
+const selectOption = (option: Option) => {
+  type.value = option.value;
+  selected.value = option.name;
+};
 </script>
 
 <style lang="scss" src="./u-block-create-form.scss" />

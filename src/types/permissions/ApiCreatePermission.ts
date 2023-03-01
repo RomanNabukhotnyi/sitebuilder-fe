@@ -1,4 +1,4 @@
 export interface ApiCreatePermission {
     email: string;
-    permission: string;
+    permission: 'OWNER' | 'DESIGNER';
 }

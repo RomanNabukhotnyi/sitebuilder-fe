@@ -30,10 +30,8 @@ app.use(createPinia());
 app.use(router);
 
 app.directive('focus', {
-  mounted(el, bind) {
-    if (bind.value) {
-      el.focus();
-    }
+  mounted(el) {
+    el.focus();
   },
 });
 
