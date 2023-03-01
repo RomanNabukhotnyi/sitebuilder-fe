@@ -1,4 +1,4 @@
-import { ref, watch, shallowRef } from 'vue';
+import { ref, watch, shallowRef, reactive } from 'vue';
 import type { Component } from 'vue';
 
 import CInput from '@/components/common/c-input';
@@ -27,7 +27,7 @@ export const useField = (init: {
     component: initComponent,
   } = init;
   const key = `${Date.now()}-${name}`;
-  const valid = ref(true);
+  const isValid = ref(true);
   const type = initType ?? 'text';
   const placeholder = initPlaceholder ?? '';
   const component = shallowRef(initComponent ?? CInput);
@@ -35,39 +35,36 @@ export const useField = (init: {
   const fieldClass = initFieldClass;
   const componentClass = initComponentClass;
   const errors = ref<ValidatorError[]>([]);
-  const isOptional = !!Object.keys(validators ?? {}).find(
-    (k) => k === 'optional'
-  );
 
   const reassign = (value: string): void => {
-    valid.value = true;
+    isValid.value = true;
     errors.value = [];
+    
     Object.keys(validators || {}).map((validatorName) => {
       if (validators) {
-        const { name, isValid, message } = validators[validatorName](value);
-        if (!isValid && name !== 'optional') {
+        const { name, isValid: isValidatorValid, message } = validators[validatorName](value);
+        if (!isValidatorValid && (value || name === 'required')) {
           errors.value.push({
             name,
             message,
           });
-          valid.value = false || isOptional;
+          isValid.value = false;
         }
       }
     });
   };
 
-  watch(value, reassign);
-  reassign(value.value);
+  watch(value, reassign, { immediate: true });
 
-  return {
+  return reactive({
     key,
     value,
-    valid,
+    isValid,
     type,
     errors,
     fieldClass,
     componentClass,
     component,
     placeholder,
-  };
+  });
 };

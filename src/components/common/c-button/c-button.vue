@@ -1,5 +1,6 @@
 <template>
   <button
+    :type="type"
     :disabled="isDisabled"
     class="c-button"
   >
@@ -14,12 +15,14 @@
 import CLoader from '../c-loader';
 
 interface IProps {
+     type?: 'button' | 'submit' | 'reset';
      label?: string;
      isDisabled?: boolean;
      isLoading?: boolean;
  }
 
  withDefaults(defineProps<IProps>(), {
+     type: 'button',
      label: '',
      isDisabled: false,
      isLoading: false
