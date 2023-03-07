@@ -50,6 +50,7 @@ const emit = defineEmits<{
 }>();
 
 const { windowEventListener } = useEventListener();
+
 const optionsVisible = ref(false);
 const el = ref<HTMLElement | null>(null);
 
@@ -57,6 +58,7 @@ const selectOption = (value: string) => {
   emit('update:modelValue', value);
   optionsVisible.value = false;
 };
+
 const hideOptions = (event: Event) => {
   if (!el.value?.contains(event.target as Node)) {
     optionsVisible.value = false;

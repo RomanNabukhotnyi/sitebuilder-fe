@@ -2,7 +2,7 @@
   <div class="p-main">
     <header>
       <div class="icon">
-        <RouterLink to="/main/projects">
+        <RouterLink :to="{ name: ROUTE_NAMES.PROJECTS }">
           <img
             width="36"
             height="29"

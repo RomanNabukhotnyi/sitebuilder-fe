@@ -1,17 +1,15 @@
 <template>
   <div class="u-slot-list">
     <div
-      v-show="!loadingGetSlots && slots.length !== 0"
+      v-show="!loadingGetSlots && slots.length"
       class="slots"
     >
       <CTransitionList>
         <div
-          v-for="slot in slots"
+          v-for="(slot, index) in slots"
           :key="slot.id"
-          :class="{
-            slot: true,
-            deleteSlot: loadingDeleteSlot && slot.id === deleteId,
-          }"
+          :class="{ deleteSlot: isDeletedSlot(slot.id) }"
+          class="slot"
         >
           <div
             v-if="slot.type === 'STATIC'"
@@ -24,7 +22,7 @@
             class="emptySlot"
             @click="slot.type !== 'STATIC' && showCreateBlockDialog(slot.id)"
           >
-            <CIconAdd />
+            <CIcon icon-name="add" />
           </div>
           <UBlockList
             v-else
@@ -36,7 +34,10 @@
             @delete-block="deleteBlock"
           />
           <USlotMenu
+            :index="index"
+            :slots-length="slots.length"
             :my-slot="slot"
+            class="slot-list__menu"
             @show-create-block-dialog="showCreateBlockDialog"
             @move-up-slot="moveUpSlot"
             @move-down-slot="moveDownSlot"
@@ -62,8 +63,8 @@ import { ref } from 'vue';
 import type { PreparedSlot } from '@/types/slots/PreparedSlot';
 import type { ApiBlock } from '@/types/blocks/ApiBlock';
 
+import CIcon from '@/components/common/c-icon';
 import CTransitionList from '@/components/common/c-transition-list';
-import CIconAdd from '@/components/common/c-icon-add';
 import USlotMenu from '../u-slot-menu';
 import UBlockList from '../u-block-list';
 
@@ -86,36 +87,37 @@ const emit = defineEmits<{
 }>();
 
 const deleteId = ref<number | null>(null);
+const isDeletedSlot = (slotId: number) => props.loadingDeleteSlot && slotId === deleteId.value;
 
 const showCreateBlockDialog = (slotId: number) => {
   emit('showCreateBlockDialog', slotId);
 };
+
 const showEditBlockDialog = (slotId: number, block: ApiBlock) => {
   emit('showEditBlockDialog', slotId, block);
 };
+
 const moveUpSlot = (slotId: number) => {
-  if (props.slots.findIndex((slot) => slot.id === slotId) !== 0) {
-    emit('moveUpSlot', slotId);
-  }
+  emit('moveUpSlot', slotId);
 };
+
 const moveDownSlot = (slotId: number) => {
-  if (
-    props.slots.findIndex((slot) => slot.id === slotId) !==
-    props.slots.length - 1
-  ) {
-    emit('moveDownSlot', slotId);
-  }
+  emit('moveDownSlot', slotId);
 };
+
 const deleteSlot = (id: number) => {
   deleteId.value = id;
   emit('deleteSlot', id);
 };
+
 const moveLeftBlock = (slotId: number, blockId: number) => {
   emit('moveLeftBlock', slotId, blockId);
 };
+
 const moveRightBlock = (slotId: number, blockId: number) => {
   emit('moveRightBlock', slotId, blockId);
 };
+
 const deleteBlock = (slotId: number, blockId: number) => {
   emit('deleteBlock', slotId, blockId);
 };

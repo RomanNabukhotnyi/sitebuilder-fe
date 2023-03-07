@@ -11,12 +11,25 @@
     position: relative;
 
     &:hover {
-      border: 1px solid #419bf9;
+      &:not(.deleteBlock) {
+        outline: 2px solid #419bf9;
+        
+        .block-list__menu {
+          display: block;
+        }
+      }
     }
   }
+
+  .block-list__menu {
+    display: none;
+  }
+
   .deleteBlock {
     opacity: 0.5;
+    cursor: not-allowed;
   }
+
   .type__text {
     height: 100%;
     display: grid;
@@ -24,6 +37,7 @@
     align-items: center;
     padding: 5px;
   }
+
   .type__image {
     height: 100%;
 
