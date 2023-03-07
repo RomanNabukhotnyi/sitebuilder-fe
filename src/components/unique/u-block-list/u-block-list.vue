@@ -2,12 +2,10 @@
   <div class="u-block-list">
     <CTransitionList>
       <div
-        v-for="block in mySlot.blocks"
+        v-for="(block, index) in mySlot.blocks"
         :key="block.id"
-        :class="{
-          block: true,
-          deleteBlock: loadingDeleteBlock && block.id === deleteId,
-        }"
+        :class="{ deleteBlock: isDeletedBlock(block.id) }"
+        class="block"
       >
         <div
           v-if="block.type === 'IMAGE'"
@@ -31,9 +29,12 @@
           {{ (block.content as TextContent).text }}
         </div>
         <UBlockMenu
+          :index="index"
+          :blocks-length="mySlot.blocks.length"
           :block="block"
           :blocks="mySlot.blocks"
           :my-slot="mySlot"
+          class="block-list__menu"
           @show-edit-block-dialog="showEditBlockDialog"
           @move-left-block="moveLeftBlock"
           @move-right-block="moveRightBlock"
@@ -57,7 +58,7 @@ import type { TextStyles } from '@/types/blocks/TextStyles';
 import CTransitionList from '@/components/common/c-transition-list';
 import UBlockMenu from '../u-block-menu';
 
-defineProps<{
+const props = defineProps<{
   mySlot: PreparedSlot;
   loadingDeleteBlock: boolean;
 }>();
@@ -70,6 +71,8 @@ const emit = defineEmits<{
 }>();
 
 const deleteId = ref<number | null>(null);
+
+const isDeletedBlock = (blockId: number) => props.loadingDeleteBlock && blockId === deleteId.value;
 
 const showEditBlockDialog = (slotId: number, block: ApiBlock) => {
   emit('showEditBlockDialog', slotId, block);

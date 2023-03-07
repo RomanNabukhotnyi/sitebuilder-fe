@@ -6,11 +6,8 @@
         <div
           v-for="permission in project.permissions"
           :key="permission.id"
-          :class="{
-            permission: true,
-            deletePermission:
-              loadingDeletePermission && permission.id === deleteId,
-          }"
+          :class="{ deletePermission: isDeletedPermission(permission.id) }"
+          class="permission"
         >
           <div class="email">
             {{ permission.email }}
@@ -24,9 +21,7 @@
               class="actions"
             >
               <CButton
-                :is-disabled="
-                  loadingDeletePermission && permission.id === deleteId
-                "
+                :is-disabled="isDeletedPermission(permission.id)"
                 label="Delete"
                 class="button__delete"
                 @click.stop="deletePermission(permission.id, permission.userId)"
@@ -102,6 +97,7 @@ const deleteId = ref<number | null>(null);
 const selectedPermission = ref(PERMISSIONS.DESIGNER);
 const options = [{ name: 'Designer', value: 'DESIGNER' }];
 const isSubmitted = ref(false);
+const isDeletedPermission = (permissionId: number) => props.loadingDeletePermission && permissionId === deleteId.value;
 
 const selectOption = (option: Option<'OWNER' | 'DESIGNER'>) => {
   selectedPermission.value = option.value;

@@ -11,26 +11,32 @@
   .permissions {
     margin: 10px 0;
   }
+
   .permission {
     display: flex;
     align-items: center;
     margin: 5px 0;
     justify-content: space-between;
   }
+
   .deletePermission {
     opacity: 0.5;
   }
+
   .roleAndActions {
     display: flex;
     align-items: center;
   }
+
   .role {
     margin: 0 10px 0 0;
     padding: auto;
   }
+
   .actions {
     display: flex;
   }
+
   .button__delete {
     background-color: #ff4747;
 
@@ -38,20 +44,24 @@
       background-color: #a9b5c2;
     }
   }
+
   .form {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: 15px 0;
   }
+
   .input {
     width: fit-content;
   }
+
   .error {
     position: absolute;
     font-size: 10px;
     color: rgb(255, 107, 107);
   }
+  
   .button {
     width: 20%;
   }

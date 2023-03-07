@@ -7,6 +7,7 @@
     left: 0;
     z-index: 998;
   }
+
   .menu {
     position: absolute;
     top: calc(100% - 10px);
@@ -16,10 +17,12 @@
     border: 1px solid #edeced;
     z-index: 999;
   }
+
   .email {
     margin: 10px;
     text-align: center;
   }
+
   .action {
     padding: 10px;
     border-top: 1px solid #edeced;
@@ -29,10 +32,12 @@
       background-color: #f2f2f2;
     }
   }
+
   /* animations */
   .menu-enter-active {
     transition: all 0.5s ease;
   }
+  
   .menu-enter-from {
     opacity: 0.9;
     transform: scale(0.9);

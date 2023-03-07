@@ -4,10 +4,8 @@
     viewBox="0 0 8 5"
     width="8px"
     height="5px"
-    :class="{
-      chevron: true,
-      'chevron--flip': isFlip,
-    }"
+    :class="{ 'chevron--flip': isFlip }"
+    class="chevron"
     fill="currentColor"
   >
     <g class="chevron__group">

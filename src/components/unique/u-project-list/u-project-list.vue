@@ -1,7 +1,7 @@
 <template>
   <div class="u-project-list">
     <div
-      v-show="!loadingGetProjects && projects.length !== 0"
+      v-show="!loadingGetProjects && projects.length"
       class="projectsContainer"
     >
       <CTransitionList>
@@ -10,7 +10,7 @@
           :key="project.id"
           :class="{
             project: true,
-            deleteProject: loadingDeleteProject && project.id === deleteId,
+            deleteProject: isDeletedProject(project.id),
           }"
         >
           <UProjectMenu
@@ -25,13 +25,9 @@
           />
           <div
             :class="{
-              projectHover: !(loadingDeleteProject && project.id === deleteId),
+              projectHover: !isDeletedProject(project.id),
             }"
-            @click="
-              !(loadingDeleteProject && project.id === deleteId) &&
-                !menuVisible &&
-                openProject(project.id)
-            "
+            @click="openProject(project.id)"
           />
           <div class="imageContainer">
             <button
@@ -82,7 +78,7 @@ import type { PreparedProject } from '@/types/projects/PreparedProject';
 import UProjectMenu from '../u-project-menu';
 import { ROUTE_NAMES } from '@/constants/route-names-constants';
 
-defineProps<{
+const props = defineProps<{
   user: { email: string } | null;
   projects: PreparedProject[];
   loadingGetProjects: boolean;
@@ -100,8 +96,11 @@ const router = useRouter();
 const menuVisible = ref(false);
 const menuProjectId = ref<number | null>(null);
 const deleteId = ref<number | null>(null);
+const isDeletedProject = (projectId: number) => props.loadingDeleteProject && projectId === deleteId.value;
 
 const openProject = (projectId: number) => {
+  if (isDeletedProject(projectId)) return;
+
   router.push({
     name: ROUTE_NAMES.PAGES,
     params: {
