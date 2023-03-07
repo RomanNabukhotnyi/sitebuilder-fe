@@ -10,6 +10,6 @@ export interface ApiBlock {
   type: 'TEXT' | 'IMAGE';
   content: TextContent | ImageContent;
   attributes: TextAttributes | ImageAttributes;
-  styles: TextStyles | ImageStyles;
+  styles: TextStyles | ImageStyles | null;
   order: number;
 }

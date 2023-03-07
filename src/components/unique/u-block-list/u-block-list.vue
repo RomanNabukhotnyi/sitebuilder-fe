@@ -11,11 +11,8 @@
       >
         <div
           v-if="block.type === 'IMAGE'"
+          :style="getStyles(block.styles)"
           class="type__image"
-          :style="{
-            width: block.styles ? (block.styles as ImageStyles).width : undefined,
-            height: block.styles ? (block.styles as ImageStyles).height : undefined,
-          }"
         >
           <img :src="(block.content as ImageContent).url">
         </div>
@@ -84,6 +81,13 @@ const deleteBlock = (slotId: number, blockId: number) => {
   deleteId.value = blockId;
   emit('deleteBlock', slotId, blockId);
 };
+
+function getStyles(styles: ImageStyles) {
+    return {
+        width: styles?.width,
+        height: styles?.height,
+    }
+}
 </script>
 
 <style lang="scss" src="./u-block-list.scss" />

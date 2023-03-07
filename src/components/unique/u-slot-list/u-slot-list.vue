@@ -1,17 +1,15 @@
 <template>
   <div class="u-slot-list">
     <div
-      v-show="!loadingGetSlots && slots.length !== 0"
+      v-show="!loadingGetSlots && slots.length"
       class="slots"
     >
       <CTransitionList>
         <div
-          v-for="slot in slots"
+          v-for="(slot, index) in slots"
           :key="slot.id"
-          :class="{
-            slot: true,
-            deleteSlot: loadingDeleteSlot && slot.id === deleteId,
-          }"
+          :class="{ deleteSlot: loadingDeleteSlot && slot.id === deleteId }"
+          class="slot"
         >
           <div
             v-if="slot.type === 'STATIC'"
@@ -37,6 +35,9 @@
           />
           <USlotMenu
             :my-slot="slot"
+            :index="index"
+            :slots-length="slots.length"
+            class="slot-list__menu"
             @show-create-block-dialog="showCreateBlockDialog"
             @move-up-slot="moveUpSlot"
             @move-down-slot="moveDownSlot"

@@ -1,41 +1,43 @@
 <template>
   <div class="u-slot-menu">
-    <div
-      class="menuAction moveUpAction"
-      @click="moveUpSlot"
-    >
-      <CIconArrow />
-    </div>
-    <div
-      class="menuAction moveDownAction"
-      @click="moveDownSlot"
-    >
-      <CIconArrow />
-    </div>
-    <div
-      :class="mySlot.type === 'STATIC' ? 'disabled' : 'menuAction'"
-      @click="mySlot.type !== 'STATIC' && showCreateBlockDialog(mySlot.id)"
-    >
-      <CIconAdd />
-    </div>
-    <div
-      class="menuAction"
-      @click="deleteSlot"
-    >
-      <CIconDelete />
-    </div>
+      <CActionMenu
+          :is-column="true"
+          :options-list="optionsList"
+          @action="handleAction"
+      />
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+
+import CIconAdd from '@/components/common/c-icon-add';
+import CIconDelete from '@/components/common/c-icon-delete';
+import CActionMenu from '@/components/common/c-action-menu';
+import CIconArrowUp from '@/components/common/c-icon-arrow-up';
+import CIconArrowDown from '@/components/common/c-icon-arrow-down';
+
+import type { TOptionsList } from '@/types/ActionMenu';
 import type { PreparedSlot } from '@/types/slots/PreparedSlot';
 
-import CIconArrow from '@/components/common/c-icon-arrow';
-import CIconDelete from '@/components/common/c-icon-delete';
-import CIconAdd from '@/components/common/c-icon-add';
+enum E_ACTION {
+    moveUpSlot = 'moveUpSlot',
+    moveDownSlot = 'moveDownSlot',
+    showCreateBlockDialog = 'showCreateBlockDialog',
+    deleteSlot = 'deleteSlot'
+}
+
+interface IActionMap {
+    moveUpSlot: () => void
+    moveDownSlot: () => void
+    showCreateBlockDialog: () => void
+    deleteSlot: () => void
+}
 
 const props = defineProps<{
   mySlot: PreparedSlot;
+  index: number;
+  slotsLength: number;
 }>();
 
 const emit = defineEmits<{
@@ -45,18 +47,57 @@ const emit = defineEmits<{
   (e: 'showCreateBlockDialog', slotId: number): void;
 }>();
 
-const showCreateBlockDialog = (slotId: number) => {
-  emit('showCreateBlockDialog', slotId);
+const showCreateBlockDialog = () => {
+  emit('showCreateBlockDialog',  props.mySlot.id);
 };
+
 const moveUpSlot = () => {
   emit('moveUpSlot', props.mySlot.id);
 };
+
 const moveDownSlot = () => {
   emit('moveDownSlot', props.mySlot.id);
 };
+
 const deleteSlot = () => {
   emit('deleteSlot', props.mySlot.id);
 };
+
+const actionMap: IActionMap = {
+    moveUpSlot,
+    moveDownSlot,
+    showCreateBlockDialog,
+    deleteSlot
+}
+
+const optionsList = computed<TOptionsList>(() => {
+    return [
+        {
+            iconComponent: CIconArrowUp,
+            isDisabled: props.mySlot.order === 1,
+            actionName: E_ACTION.moveUpSlot
+        },
+        {
+            iconComponent: CIconArrowDown,
+            isDisabled: props.index === props.slotsLength - 1,
+            actionName: E_ACTION.moveDownSlot
+        },
+        {
+            iconComponent: CIconAdd,
+            isDisabled: props.mySlot.type === 'STATIC',
+            actionName: E_ACTION.showCreateBlockDialog
+        },
+        {
+            iconComponent: CIconDelete,
+            isDisabled: false,
+            actionName: E_ACTION.deleteSlot
+        },
+    ]
+})
+
+function handleAction(action: keyof typeof E_ACTION | string) {
+    actionMap[action]?.()
+}
 </script>
 
 <style lang="scss" src="./u-slot-menu.scss" />
