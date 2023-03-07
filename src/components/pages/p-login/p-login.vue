@@ -12,7 +12,7 @@
       <ULoginForm />
       <hr>
       <div class="footer">
-        <span class="footer">No account yet? <RouterLink to="/sign-up">Sign up</RouterLink></span>
+        <span class="footer">No account yet? <RouterLink :to="{ name: ROUTE_NAMES.SIGN_UP }">Sign up</RouterLink></span>
       </div>
     </div>
   </div>
@@ -20,6 +20,8 @@
 
 <script setup lang="ts">
 import ULoginForm from '../../unique/u-login-form';
+
+import { ROUTE_NAMES } from '@/constants/route-names-constants';
 </script>
 
 <style lang="scss" src="./p-login.scss" />

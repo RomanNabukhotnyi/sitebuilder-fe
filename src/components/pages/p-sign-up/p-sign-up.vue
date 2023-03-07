@@ -13,7 +13,7 @@
       <hr>
       <div class="footer">
         <span>Already have an account?
-          <RouterLink to="/login">Login</RouterLink>
+          <RouterLink :to="{ name: ROUTE_NAMES.LOGIN }">Login</RouterLink>
         </span>
       </div>
     </div>
@@ -22,6 +22,8 @@
 
 <script setup lang="ts">
 import USignUpForm from '../../unique/u-sign-up-form';
+
+import { ROUTE_NAMES } from '@/constants/route-names-constants';
 </script>
 
 <style lang="scss" src="./p-sign-up.scss" />

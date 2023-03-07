@@ -3,6 +3,7 @@ import { createPinia } from 'pinia';
 import Toast, { POSITION } from 'vue-toastification';
 import { useToast, type PluginOptions } from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
+import 'material-icons/iconfont/material-icons.css';
 
 import App from './App.vue';
 

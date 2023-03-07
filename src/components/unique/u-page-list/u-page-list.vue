@@ -1,7 +1,7 @@
 <template>
   <div class="u-page-list">
     <div
-      v-show="!loadingGetPages && pages.length !== 0"
+      v-show="!loadingGetPages && pages.length"
       class="pagesContainer"
     >
       <Draggable
@@ -18,23 +18,13 @@
           <div
             :class="{
               page: true,
-              deletePage: loadingDeletePage && element.id === deleteId,
+              deletePage: isDeletedPage(element.id),
             }"
           >
             <div
               class="pageImage"
-              @click="
-                !(loadingDeletePage && element.id === deleteId) &&
-                  openPage(element.id)
-              "
-            >
-              <!-- <img
-                class="pageImage"
-                width="240"
-                height="520"
-                src="https://img.zeplin.io/https%3A%2F%2Fcdn.zeplin.io%2F638878ea1a052582d3461e31%2Fscreens%2Fd3c4ec2b-e88d-4f68-a1ff-ac47e9b32cc7.png?w=240&amp;cropTop=0&amp;cropLeft=0&amp;cropWidth=240&amp;cropHeight=520"
-              > -->
-            </div>
+              @click="openPage(element.id)"
+            />
             <div class="page__body">
               <div class="page__name">
                 <p>{{ element.name }}</p>
@@ -43,18 +33,12 @@
                 <CButton
                   label="Edit"
                   class="button__edit"
-                  @click.stop="
-                    !(loadingDeletePage && element.id === deleteId) &&
-                      showEditDialog(element)
-                  "
+                  @click.stop="showEditDialog(element)"
                 />
                 <CButton
                   label="Delete"
                   class="button__delete"
-                  @click.stop="
-                    !(loadingDeletePage && element.id === deleteId) &&
-                      deletePage(element.id)
-                  "
+                  @click.stop="deletePage(element.id)"
                 />
               </div>
             </div>
@@ -104,9 +88,9 @@ const emit = defineEmits<{
   (e: 'delete', id: number): void;
 }>();
 
-const deleteId = ref<number | null>(null);
 const router = useRouter();
 const route = useRoute();
+const deleteId = ref<number | null>(null);
 const draggablePages = computed({
   get() {
     return props.pages;
@@ -115,20 +99,28 @@ const draggablePages = computed({
     emit('updateOrders', value);
   },
 });
+const isDeletedPage = (pageId: number) =>
+  props.loadingDeletePage && pageId === deleteId.value;
 
 const openPage = (pageId: number): void => {
+  if (isDeletedPage(pageId)) return;
+
   router.push({
     name: ROUTE_NAMES.SLOTS,
     params: {
       projectId: route.params.projectId,
       pageId,
-    }
+    },
   });
 };
 const showEditDialog = (page: ApiPage) => {
+  if (isDeletedPage(page.id)) return;
+
   emit('showEditDialog', page);
 };
 const deletePage = (id: number): void => {
+  if (isDeletedPage(id)) return;
+
   deleteId.value = id;
   emit('delete', id);
 };
