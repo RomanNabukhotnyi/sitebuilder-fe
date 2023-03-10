@@ -46,17 +46,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type StyleValue } from 'vue';
+import { ref } from 'vue';
 
+import type { StyleValue } from 'vue';
 import type { PreparedSlot } from '@/types/slots/PreparedSlot';
 import type { ApiBlock } from '@/types/blocks/ApiBlock';
 import type { ImageStyles } from '@/types/blocks/ImageStyles';
 import type { ImageContent } from '@/types/blocks/ImageContent';
 import type { TextContent } from '@/types/blocks/TextContent';
 import type { TextStyles } from '@/types/blocks/TextStyles';
+import type { IMoveBlockData } from '@/types/blocks/MoveEvents';
 
+import UBlockMenu from '@/components/unique/u-block-menu';
 import CTransitionList from '@/components/common/c-transition-list';
-import UBlockMenu from '../u-block-menu';
+
+import { E_MOVE_BLOCK_DIRECTION } from '@/types/blocks/MoveEvents';
 
 const props = defineProps<{
   mySlot: PreparedSlot;
@@ -65,8 +69,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'showEditBlockDialog', slotId: number, block: ApiBlock): void;
-  (e: 'moveLeftBlock', slotId: number, blockId: number): void;
-  (e: 'moveRightBlock', slotId: number, blockId: number): void;
+  (e: 'moveBlock', data: IMoveBlockData): void;
   (e: 'deleteBlock', slotId: number, blockId: number): void;
 }>();
 
@@ -77,15 +80,26 @@ const isDeletedBlock = (blockId: number) => props.loadingDeleteBlock && blockId 
 const showEditBlockDialog = (slotId: number, block: ApiBlock) => {
   emit('showEditBlockDialog', slotId, block);
 };
-const moveLeftBlock = (slotId: number, blockId: number) => {
-  emit('moveLeftBlock', slotId, blockId);
-};
-const moveRightBlock = (slotId: number, blockId: number) => {
-  emit('moveRightBlock', slotId, blockId);
-};
+
 const deleteBlock = (slotId: number, blockId: number) => {
-  deleteId.value = blockId;
-  emit('deleteBlock', slotId, blockId);
+    deleteId.value = blockId;
+    emit('deleteBlock', slotId, blockId);
+};
+
+const moveLeftBlock = (slotId: number, blockId: number) => {
+    emit('moveBlock', {
+        slotId,
+        blockId,
+        direction: E_MOVE_BLOCK_DIRECTION.LEFT
+    });
+};
+
+const moveRightBlock = (slotId: number, blockId: number) => {
+    emit('moveBlock', {
+        slotId,
+        blockId,
+        direction: E_MOVE_BLOCK_DIRECTION.RIGHT
+    });
 };
 </script>
 
