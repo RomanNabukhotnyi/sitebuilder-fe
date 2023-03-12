@@ -15,6 +15,9 @@ import CActionMenu from '@/components/common/c-action-menu';
 
 import type { PreparedSlot } from '@/types/slots/PreparedSlot';
 import type { OptionsListItem } from '@/types/ActionMenu';
+import type { MoveSlotData } from '@/types/slots/MoveSlotData';
+
+import { MOVE_SLOT_DIRECTIONS } from '@/constants/move-directions';
 
 enum E_ACTION {
   moveUpSlot = 'moveUpSlot',
@@ -34,8 +37,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'moveUpSlot', slotId: number): void;
-  (e: 'moveDownSlot', slotId: number): void;
+  (e: 'moveSlot', data: MoveSlotData): void;
   (e: 'deleteSlot', slotId: number): void;
   (e: 'showCreateBlockDialog', slotId: number): void;
 }>();
@@ -70,11 +72,17 @@ const showCreateBlockDialog = () => {
 };
 
 const moveUpSlot = () => {
-  emit('moveUpSlot', props.mySlot.id);
+  emit('moveSlot', {
+    slotId: props.mySlot.id,
+    direction: MOVE_SLOT_DIRECTIONS.UP,
+  });
 };
 
 const moveDownSlot = () => {
-  emit('moveDownSlot', props.mySlot.id);
+  emit('moveSlot', {
+    slotId: props.mySlot.id,
+    direction: MOVE_SLOT_DIRECTIONS.DOWN,
+  });
 };
 
 const deleteSlot = () => {
@@ -90,7 +98,7 @@ const actionMap: IActionMap = {
 
 const handleAction = (action: string) => {
   actionMap[action]?.();
-}
+};
 </script>
 
 <style lang="scss" src="./u-slot-menu.scss" />
