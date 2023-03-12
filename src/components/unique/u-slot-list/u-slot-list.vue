@@ -29,8 +29,7 @@
             :my-slot="slot"
             :loading-delete-block="loadingDeleteBlock"
             @show-edit-block-dialog="showEditBlockDialog"
-            @move-left-block="moveLeftBlock"
-            @move-right-block="moveRightBlock"
+            @move-block="moveBlock"
             @delete-block="deleteBlock"
           />
           <USlotMenu
@@ -39,8 +38,7 @@
             :my-slot="slot"
             class="slot-list__menu"
             @show-create-block-dialog="showCreateBlockDialog"
-            @move-up-slot="moveUpSlot"
-            @move-down-slot="moveDownSlot"
+            @move-slot="moveSlot"
             @delete-slot="deleteSlot"
           />
         </div>
@@ -60,13 +58,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import type { PreparedSlot } from '@/types/slots/PreparedSlot';
-import type { ApiBlock } from '@/types/blocks/ApiBlock';
-
 import CIcon from '@/components/common/c-icon';
 import CTransitionList from '@/components/common/c-transition-list';
-import USlotMenu from '../u-slot-menu';
-import UBlockList from '../u-block-list';
+import USlotMenu from '@/components/unique/u-slot-menu';
+import UBlockList from '@/components/unique/u-block-list';
+
+import type { PreparedSlot } from '@/types/slots/PreparedSlot';
+import type { ApiBlock } from '@/types/blocks/ApiBlock';
+import type { MoveBlockData } from '@/types/blocks/MoveBlockData';
+import type { MoveSlotData } from '@/types/slots/MoveSlotData';
 
 const props = defineProps<{
   slots: PreparedSlot[];
@@ -76,13 +76,11 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'moveUpSlot', slotId: number): void;
-  (e: 'moveDownSlot', slotId: number): void;
+  (e: 'moveSlot', data: MoveSlotData): void;
   (e: 'deleteSlot', slotId: number): void;
   (e: 'showCreateBlockDialog', slotId: number): void;
   (e: 'showEditBlockDialog', slotId: number, block: ApiBlock): void;
-  (e: 'moveLeftBlock', slotId: number, blockId: number): void;
-  (e: 'moveRightBlock', slotId: number, blockId: number): void;
+  (e: 'moveBlock', data: MoveBlockData): void;
   (e: 'deleteBlock', slotId: number, blockId: number): void;
 }>();
 
@@ -97,12 +95,8 @@ const showEditBlockDialog = (slotId: number, block: ApiBlock) => {
   emit('showEditBlockDialog', slotId, block);
 };
 
-const moveUpSlot = (slotId: number) => {
-  emit('moveUpSlot', slotId);
-};
-
-const moveDownSlot = (slotId: number) => {
-  emit('moveDownSlot', slotId);
+const moveSlot = (data: MoveSlotData) => {
+  emit('moveSlot', data);
 };
 
 const deleteSlot = (id: number) => {
@@ -110,12 +104,8 @@ const deleteSlot = (id: number) => {
   emit('deleteSlot', id);
 };
 
-const moveLeftBlock = (slotId: number, blockId: number) => {
-  emit('moveLeftBlock', slotId, blockId);
-};
-
-const moveRightBlock = (slotId: number, blockId: number) => {
-  emit('moveRightBlock', slotId, blockId);
+const moveBlock = (data: MoveBlockData) => {
+  emit('moveBlock', data);
 };
 
 const deleteBlock = (slotId: number, blockId: number) => {

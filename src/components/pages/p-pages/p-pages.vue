@@ -4,7 +4,7 @@
       <UPageCreateForm
         :loading-create-page="loadingCreatePage"
         :pages="pages"
-        @create="createPage"
+        @create="handleCreatePage"
       />
     </CModal>
     <CModal v-model:show="dialogEditVisible">
@@ -12,7 +12,7 @@
         :page="editingPage!"
         :loading-edit-page="loadingEditPage"
         :pages="pages"
-        @edit="editPage"
+        @edit="handleEditPage"
       />
     </CModal>
     <div class="panel">
@@ -32,8 +32,8 @@
         :loading-delete-page="loadingDeletePage"
         :pages="filterPages"
         @show-edit-dialog="showEditDialog"
-        @delete="deletePage"
-        @update-orders="updateOrders"
+        @delete="handleDeletePage"
+        @update-order="handleUpdateOrder"
       />
     </div>
   </div>
@@ -42,6 +42,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
 
 import type { ApiPage } from '@/types/pages/ApiPage';
 
@@ -56,11 +57,14 @@ import { usePagesStore } from '@/stores/pages';
 
 const pagesStore = usePagesStore();
 const route = useRoute();
-const pages = computed(() => pagesStore.pages);
-const loadingGetPages = computed(() => pagesStore.loadingGetPages);
-const loadingCreatePage = computed(() => pagesStore.loadingCreatePage);
-const loadingEditPage = computed(() => pagesStore.loadingEditPage);
-const loadingDeletePage = computed(() => pagesStore.loadingDeletePage);
+
+const {
+  pages,
+  loadingGetPages,
+  loadingCreatePage,
+  loadingEditPage,
+  loadingDeletePage,
+} = storeToRefs(pagesStore);
 const dialogCreateVisible = ref(false);
 const dialogEditVisible = ref(false);
 const searchQuery = ref('');
@@ -70,40 +74,47 @@ const filterPages = computed(() =>
     project.name.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 );
+const projectId = computed<number>(() => +route.params.projectId);
+
 
 const showCreateDialog = () => {
   dialogCreateVisible.value = true;
 };
+
 const showEditDialog = (page: ApiPage) => {
   editingPage.value = page;
   dialogEditVisible.value = true;
 };
-const createPage = async (page: Omit<ApiPage, 'id' | 'order'>) => {
-  await pagesStore.createPage(+route.params.projectId, {
+
+const handleCreatePage = async (page: Omit<ApiPage, 'id' | 'order'>) => {
+  await pagesStore.createPage(projectId.value, {
     ...page,
   });
   dialogCreateVisible.value = false;
 };
-const updateOrders = async (pages: ApiPage[]) => {
+
+const handleUpdateOrder = async (pages: ApiPage[]) => {
   await pagesStore.updatePageOrder(
-    +route.params.projectId,
+    projectId.value,
     pages.map((page, index) => ({ id: page.id, order: index + 1 }))
   );
   pagesStore.pages = pages;
 };
-const editPage = async (page: ApiPage) => {
-  await pagesStore.updatePage(page.id, +route.params.projectId, {
+
+const handleEditPage = async (page: ApiPage) => {
+  await pagesStore.updatePage(page.id, projectId.value, {
     name: page.name,
     meta: page.meta,
   });
   dialogEditVisible.value = false;
 };
-const deletePage = async (id: number) => {
-  await pagesStore.deletePage(id, +route.params.projectId);
+
+const handleDeletePage = (id: number) => {
+  pagesStore.deletePage(id, projectId.value);
 };
 
 onMounted(() => {
-  pagesStore.getPages(+route.params.projectId);
+  pagesStore.getPages(projectId.value);
 });
 </script>
 

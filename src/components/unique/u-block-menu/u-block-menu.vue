@@ -15,6 +15,9 @@ import CActionMenu from '@/components/common/c-action-menu';
 import type { OptionsListItem } from '@/types/ActionMenu';
 import type { PreparedSlot } from '@/types/slots/PreparedSlot';
 import type { ApiBlock } from '@/types/blocks/ApiBlock';
+import type { MoveBlockData } from '@/types/blocks/MoveBlockData';
+
+import { MOVE_BLOCK_DIRECTIONS } from '@/constants/move-directions';
 
 enum E_ACTION {
   showEditBlockDialog = 'showEditBlockDialog',
@@ -37,8 +40,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'showEditBlockDialog', slotId: number, block: ApiBlock): void;
-  (e: 'moveLeftBlock', slotId: number, blockId: number): void;
-  (e: 'moveRightBlock', slotId: number, blockId: number): void;
+  (e: 'moveBlock', data: MoveBlockData): void;
   (e: 'deleteBlock', slotId: number, blockId: number): void;
 }>();
 
@@ -72,11 +74,19 @@ const showEditBlockDialog = () => {
 };
 
 const moveLeftBlock = () => {
-  emit('moveLeftBlock', props.mySlot.id, props.block.id);
+  emit('moveBlock', {
+    slotId: props.mySlot.id,
+    blockId: props.block.id,
+    direction: MOVE_BLOCK_DIRECTIONS.LEFT
+  });
 };
 
 const moveRightBlock = () => {
-  emit('moveRightBlock', props.mySlot.id, props.block.id);
+  emit('moveBlock', {
+    slotId: props.mySlot.id,
+    blockId: props.block.id,
+    direction: MOVE_BLOCK_DIRECTIONS.RIGHT
+  });
 };
 
 const deleteBlock = () => {

@@ -27,7 +27,7 @@
       <UMainUserMenu
         v-model:show="menuVisible"
         :user="user"
-        @logout="logout"
+        @logout="handleLogout"
       />
     </header>
 
@@ -38,20 +38,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import UMainUserMenu from '@/components/unique/u-main-user-menu';
 
 import { useAuthStore } from '@/stores/auth';
 import { ROUTE_NAMES } from '@/constants/route-names-constants';
+import { storeToRefs } from 'pinia';
 
 const authStore = useAuthStore();
 const router = useRouter();
-const user = computed(() => authStore.user);
+
+const { user } = storeToRefs(authStore);
 const menuVisible = ref(false);
 
-const logout = async () => {
+const handleLogout = async () => {
   await authStore.logout();
   router.push({ name: ROUTE_NAMES.LOGIN });
 };

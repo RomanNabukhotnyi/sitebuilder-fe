@@ -36,8 +36,7 @@
           :my-slot="mySlot"
           class="block-list__menu"
           @show-edit-block-dialog="showEditBlockDialog"
-          @move-left-block="moveLeftBlock"
-          @move-right-block="moveRightBlock"
+          @move-block="moveBlock"
           @delete-block="deleteBlock"
         />
       </div>
@@ -54,9 +53,10 @@ import type { ImageStyles } from '@/types/blocks/ImageStyles';
 import type { ImageContent } from '@/types/blocks/ImageContent';
 import type { TextContent } from '@/types/blocks/TextContent';
 import type { TextStyles } from '@/types/blocks/TextStyles';
+import type { MoveBlockData } from '@/types/blocks/MoveBlockData';
 
 import CTransitionList from '@/components/common/c-transition-list';
-import UBlockMenu from '../u-block-menu';
+import UBlockMenu from '@/components/unique/u-block-menu';
 
 const props = defineProps<{
   mySlot: PreparedSlot;
@@ -65,8 +65,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'showEditBlockDialog', slotId: number, block: ApiBlock): void;
-  (e: 'moveLeftBlock', slotId: number, blockId: number): void;
-  (e: 'moveRightBlock', slotId: number, blockId: number): void;
+  (e: 'moveBlock', data: MoveBlockData): void;
   (e: 'deleteBlock', slotId: number, blockId: number): void;
 }>();
 
@@ -77,11 +76,8 @@ const isDeletedBlock = (blockId: number) => props.loadingDeleteBlock && blockId 
 const showEditBlockDialog = (slotId: number, block: ApiBlock) => {
   emit('showEditBlockDialog', slotId, block);
 };
-const moveLeftBlock = (slotId: number, blockId: number) => {
-  emit('moveLeftBlock', slotId, blockId);
-};
-const moveRightBlock = (slotId: number, blockId: number) => {
-  emit('moveRightBlock', slotId, blockId);
+const moveBlock = (data: MoveBlockData) => {
+  emit('moveBlock', data);
 };
 const deleteBlock = (slotId: number, blockId: number) => {
   deleteId.value = blockId;
