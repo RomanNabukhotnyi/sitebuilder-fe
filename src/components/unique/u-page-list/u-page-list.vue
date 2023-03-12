@@ -83,7 +83,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'updateOrders', orders: ApiPage[]): void;
+  (e: 'updateOrder', orders: ApiPage[]): void;
   (e: 'showEditDialog', page: ApiPage): void;
   (e: 'delete', id: number): void;
 }>();
@@ -96,7 +96,7 @@ const draggablePages = computed({
     return props.pages;
   },
   set(value: ApiPage[]) {
-    emit('updateOrders', value);
+    emit('updateOrder', value);
   },
 });
 const isDeletedPage = (pageId: number) =>

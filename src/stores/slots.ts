@@ -3,12 +3,47 @@ import { defineStore } from 'pinia';
 import { IError } from '@/types/IError';
 import type { PreparedSlot } from '@/types/slots/PreparedSlot';
 
-import { createSlot, getSlotsByPageId, updateSlotOrder, deleteSlot } from '@/api/slots';
-import { createBlock, getBlocksBySlotId, updateBlock, updateBlockOrder, deleteBlock } from '@/api/blocks';
-import type { Order } from '@/types/Order';
+import {
+  createSlot,
+  getSlotsByPageId,
+  updateSlotOrder,
+  deleteSlot,
+} from '@/api/slots';
+import {
+  createBlock,
+  getBlocksBySlotId,
+  updateBlock,
+  updateBlockOrder,
+  deleteBlock,
+} from '@/api/blocks';
 import type { ApiCreateSlot } from '@/types/slots/ApiCreateSlot';
 import type { ApiCreateBlock } from '@/types/blocks/ApiCreateBlock';
 import type { ApiUpdateBlock } from '@/types/blocks/ApiUpdateBlock';
+
+interface IUpdateSlotOrderParams {
+  pageId: number;
+  projectId: number;
+  slots: PreparedSlot[];
+}
+
+interface IUpdateBlockOrderParams {
+  slotId: number;
+  projectId: number;
+  blocks: PreparedSlot['blocks'];
+}
+
+interface IDeleteBlockParams {
+  slotId: number;
+  blockId: number;
+  projectId: number;
+}
+
+interface IUpdateBlockParams {
+  slotId: number;
+  blockId: number;
+  projectId: number;
+  payload: ApiUpdateBlock;
+}
 
 interface State {
   slots: PreparedSlot[];
@@ -31,10 +66,7 @@ export const useSlotsStore = defineStore('slots', {
     loadingDeleteBlock: false,
   }),
   actions: {
-    async createSlot(
-      projectId: number,
-      payload: ApiCreateSlot
-    ): Promise<void> {
+    async createSlot(projectId: number, payload: ApiCreateSlot): Promise<void> {
       try {
         this.loadingCreateSlot = true;
         const slot = await createSlot(projectId, payload);
@@ -76,13 +108,17 @@ export const useSlotsStore = defineStore('slots', {
         this.loadingGetSlots = false;
       }
     },
-    async updateSlotOrder(
-      pageId: number,
-      projectId: number,
-      orders: Order[]
-    ): Promise<void> {
+    async updateSlotOrder({
+      pageId,
+      projectId,
+      slots,
+    }: IUpdateSlotOrderParams): Promise<void> {
       try {
-        await updateSlotOrder(projectId, pageId, orders);
+        const order = slots.map((slot, index) => ({
+          id: slot.id,
+          order: index + 1,
+        }));
+        await updateSlotOrder(projectId, pageId, order);
       } catch (error) {
         throw new IError(error);
       }
@@ -116,12 +152,12 @@ export const useSlotsStore = defineStore('slots', {
         this.loadingCreateBlock = false;
       }
     },
-    async updateBlock(
-      slotId: number,
-      blockId: number,
-      projectId: number,
-      payload: ApiUpdateBlock
-    ): Promise<void> {
+    async updateBlock({
+      slotId,
+      blockId,
+      projectId,
+      payload,
+    }: IUpdateBlockParams): Promise<void> {
       try {
         this.loadingEditBlock = true;
         const block = await updateBlock(projectId, blockId, payload);
@@ -136,22 +172,26 @@ export const useSlotsStore = defineStore('slots', {
         this.loadingEditBlock = false;
       }
     },
-    async updateBlockOrder(
-      slotId: number,
-      projectId: number,
-      orders: Order[]
-    ): Promise<void> {
+    async updateBlockOrder({
+      slotId,
+      projectId,
+      blocks,
+    }: IUpdateBlockOrderParams): Promise<void> {
       try {
-        await updateBlockOrder(projectId, slotId, orders);
+        const order = blocks.map((block, index) => ({
+          id: block.id,
+          order: index + 1,
+        }));
+        await updateBlockOrder(projectId, slotId, order);
       } catch (error) {
         throw new IError(error);
       }
     },
-    async deleteBlock(
-      slotId: number,
-      blockId: number,
-      projectId: number
-    ): Promise<void> {
+    async deleteBlock({
+      slotId,
+      blockId,
+      projectId,
+    }: IDeleteBlockParams): Promise<void> {
       try {
         this.loadingDeleteBlock = true;
         await deleteBlock(projectId, blockId);

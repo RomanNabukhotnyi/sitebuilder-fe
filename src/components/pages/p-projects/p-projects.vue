@@ -4,7 +4,7 @@
       <UProjectCreateForm
         :loading-create-project="loadingCreateProject"
         :projects="projects"
-        @create="createProject"
+        @create="handleCreateProject"
       />
     </CModal>
     <CModal v-model:show="dialogEditVisible">
@@ -12,7 +12,7 @@
         :loading-edit-project="loadingEditProject"
         :project="editingProject!"
         :projects="projects"
-        @edit="editProject"
+        @edit="handleEditProject"
       />
     </CModal>
     <CModal v-model:show="permissionsVisible">
@@ -22,8 +22,8 @@
         :user="user"
         :loading-add-permission="loadingAddPermission"
         :loading-delete-permission="loadingDeletePermission"
-        @invite="addPermission"
-        @delete="deletePermission"
+        @invite="handleAddPermission"
+        @delete="handleDeletePermission"
       />
     </CModal>
     <CModal v-model:show="apiKeyVisible">
@@ -33,9 +33,9 @@
         :loading-create-api-key="loadingCreateApiKey"
         :loading-refresh-api-key="loadingRefreshApiKey"
         :loading-delete-api-key="loadingDeleteApiKey"
-        @create="createApiKey"
-        @refresh="refreshApiKey"
-        @delete="deleteApiKey"
+        @create="handleCreateApiKey"
+        @refresh="handleRefreshApiKey"
+        @delete="handleDeleteApiKey"
       />
     </CModal>
     <div class="panel">
@@ -59,7 +59,7 @@
         @show-permissions="showPermissions"
         @show-api-key="showApiKey"
         @show-edit-dialog="showEditDialog"
-        @delete="deleteProject"
+        @delete="handleDeleteProject"
       />
     </div>
   </div>
@@ -67,6 +67,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import type { PreparedProject } from '@/types/projects/PreparedProject';
 import type { ApiCreatePermission } from '@/types/permissions/ApiCreatePermission';
@@ -84,20 +85,21 @@ import { useProjectsStore } from '@/stores/projects';
 import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();
-const user = computed(() => authStore.user);
 const projectsStore = useProjectsStore();
-const projects = computed(() => projectsStore.projects);
-const loadingGetProjects = computed(() => projectsStore.loadingGetProjects);
-const loadingCreateProject = computed(() => projectsStore.loadingCreateProject);
-const loadingEditProject = computed(() => projectsStore.loadingEditProject);
-const loadingDeleteProject = computed(() => projectsStore.loadingDeleteProject);
-const loadingAddPermission = computed(() => projectsStore.loadingAddPermission);
-const loadingDeletePermission = computed(
-  () => projectsStore.loadingDeletePermission
-);
-const loadingCreateApiKey = computed(() => projectsStore.loadingCreateApiKey);
-const loadingRefreshApiKey = computed(() => projectsStore.loadingRefreshApiKey);
-const loadingDeleteApiKey = computed(() => projectsStore.loadingDeleteApiKey);
+
+const { user } = storeToRefs(authStore);
+const {
+  projects,
+  loadingGetProjects,
+  loadingCreateProject,
+  loadingEditProject,
+  loadingDeleteProject,
+  loadingAddPermission,
+  loadingDeletePermission,
+  loadingCreateApiKey,
+  loadingRefreshApiKey,
+  loadingDeleteApiKey,
+} = storeToRefs(projectsStore);
 const dialogCreateVisible = ref(false);
 const dialogEditVisible = ref(false);
 const permissionsVisible = ref(false);
@@ -115,45 +117,56 @@ const filterProjects = computed(() =>
 const showCreateDialog = () => {
   dialogCreateVisible.value = true;
 };
+
 const showPermissions = (project: PreparedProject) => {
   permissionsProject.value = project;
   permissionsVisible.value = true;
 };
+
 const showApiKey = (project: PreparedProject) => {
   apiKeyProject.value = project;
   apiKeyVisible.value = true;
 };
+
 const showEditDialog = (project: PreparedProject) => {
   editingProject.value = project;
   dialogEditVisible.value = true;
 };
-const createProject = async (project: { name: string }) => {
+
+const handleCreateProject = async (project: { name: string }) => {
   await projectsStore.createProject({ name: project.name });
   dialogCreateVisible.value = false;
 };
-const editProject = async (project: { id: number; name: string }) => {
+
+const handleEditProject = async (project: { id: number; name: string }) => {
   await projectsStore.updateProject(project.id, {
     name: project.name,
   });
   dialogEditVisible.value = false;
 };
-const deleteProject = async (id: number) => {
-  await projectsStore.deleteProject(id);
+
+const handleDeleteProject = (id: number) => {
+  projectsStore.deleteProject(id);
 };
-const addPermission = async (id: number, payload: ApiCreatePermission) => {
-  await projectsStore.createPermission(id, payload);
+
+const handleAddPermission = (id: number, payload: ApiCreatePermission) => {
+  projectsStore.createPermission(id, payload);
 };
-const deletePermission = async (projectId: number, userId: number) => {
-  await projectsStore.deletePermission(projectId, userId);
+
+const handleDeletePermission = (projectId: number, userId: number) => {
+  projectsStore.deletePermission(projectId, userId);
 };
-const createApiKey = async (projectId: number) => {
-  await projectsStore.createApiKey(projectId);
+
+const handleCreateApiKey = (projectId: number) => {
+  projectsStore.createApiKey(projectId);
 };
-const refreshApiKey = async (id: number, projectId: number) => {
-  await projectsStore.refreshApiKey(id, projectId);
+
+const handleRefreshApiKey = (id: number, projectId: number) => {
+  projectsStore.refreshApiKey(id, projectId);
 };
-const deleteApiKey = async (id: number, projectId: number) => {
-  await projectsStore.deleteApiKey(id, projectId);
+
+const handleDeleteApiKey = (id: number, projectId: number) => {
+  projectsStore.deleteApiKey(id, projectId);
 };
 
 onMounted(() => {
